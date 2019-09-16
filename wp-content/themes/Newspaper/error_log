@@ -1,0 +1,24 @@
+[09-Sep-2018 11:29:51 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6
+[09-Sep-2018 11:29:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6
+[15-Sep-2018 14:25:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6
+[15-Sep-2018 14:25:10 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6
+[13-Oct-2018 08:43:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6
+[13-Oct-2018 08:43:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function get_header() in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php:6
+Stack trace:
+#0 {main}
+  thrown in /home/vyqzob54uy0z/public_html/4wayvoice.com/wp-content/themes/Newspaper/index.php on line 6

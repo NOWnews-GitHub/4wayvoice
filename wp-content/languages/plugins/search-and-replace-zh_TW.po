@@ -1,0 +1,461 @@
+# Translation of Plugins - Search &amp; Replace - Stable (latest release) in Chinese (Taiwan)
+# This file is distributed under the same license as the Plugins - Search &amp; Replace - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-06-06 14:37:39+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: zh_TW\n"
+"Project-Id-Version: Plugins - Search &amp; Replace - Stable (latest release)\n"
+
+#: inc/FileDownloader.php:351
+msgid "The file you are looking for doesn't exists."
+msgstr "尋找的檔案不存在。"
+
+#: inc/FileDownloader.php:158
+msgid "Row"
+msgstr "資料列"
+
+#: inc/FileDownloader.php:149
+msgid "Columns Changes:"
+msgstr "資料行變更總數:"
+
+#: inc/templates/replace-domain.php:86
+msgid "Underscore suffix \"_\" can be omitted"
+msgstr "底線 (_) 可以省略。"
+
+#: inc/templates/replace-domain.php:83
+msgid "E.g new_"
+msgstr "例如 new_"
+
+#: inc/templates/replace-domain.php:13
+msgid "If you want to migrate your site to another domain, enter the new URL in the field \"Replace with\" and click \"Do Replace Domain/Url\". You can then download a database backup containing the new URL."
+msgstr "如需將這個網站移轉至其他網域名稱，請在 [取代為] 欄位中輸入新網址，然後點擊 [執行取代網域名稱/網址]，便能下載一份已完成新網址置換的網站資料庫備份。"
+
+#: inc/templates/search-replace.php:47
+msgid "Using comma delimited( , ). For example to replace cat with dog: cat,dog"
+msgstr "請使用逗號 (,) 分隔。舉例來說，要將「貓」取代成「狗」就輸入「貓,狗」。"
+
+#: inc/templates/search-replace.php:42
+msgid "search value, replace value (one per line)"
+msgstr "請以逗號分隔搜尋值及取代值，並以每行一對資料的方式輸入"
+
+#: inc/templates/search-replace.php:38
+msgid "CSV Format Search/Replace:"
+msgstr "CSV 格式資料搜尋及取代"
+
+#: inc/Database/Exporter.php:633
+msgid "Cannot Process the file - Search &amp; Replace"
+msgstr "無法處理檔案 - Search &amp; Replace"
+
+#: inc/Database/Exporter.php:632
+msgid "Seems was not possible to create the file for some reason."
+msgstr "由於某種原因，造成無法建立檔案。"
+
+#. Translators: %s print the error message.
+#: inc/Page/SqlImport.php:155
+msgid "Upload Error: %s"
+msgstr "上傳錯誤: %s"
+
+#: inc/Page/SqlImport.php:119
+msgid "There is no error, the file uploaded with success"
+msgstr "沒有發生錯誤，檔案已成功上傳。"
+
+#: inc/Page/SearchReplace.php:160
+msgid "No Tables were selected. You must select at least one table to perform the action."
+msgstr "尚未選取任何資料表。請選取至少一個資料表以執行這項操作。"
+
+#: inc/Page/SearchReplace.php:125
+msgid "You must provide at least a search string or a csv data"
+msgstr "必須提供至少一個搜尋字串或一筆 CSV 資料。"
+
+#: inc/Page/SearchReplace.php:61
+msgid "Your search contains your current site url. Replacing your site url can cause your site to break. Are you sure you wish to proceed?"
+msgstr "搜尋字串中包含了這個網站的網址，取代目前網站的網址會導致網站服務中斷。確定要繼續進行操作？"
+
+#. Author of the plugin
+msgid "Inpsyde GmbH"
+msgstr "Inpsyde GmbH"
+
+#. Description of the plugin
+msgid "Search & Replace data in your whole WordPress setup, backup and import your database, change table prefix or migrate your domain to another domain."
+msgstr "這個外掛能在 WordPress 網站中進行搜尋及取代，並能為網站資料庫進行備份及匯出，還能修改資料表前置詞或為網站進行網域名稱/網址的變更。"
+
+#. Plugin URI of the plugin
+msgid "https://wordpress.org/plugins/search-and-replace/"
+msgstr "https://tw.wordpress.org/plugins/search-and-replace/"
+
+#: inpsyde-search-replace.php:56
+msgid "back"
+msgstr "返回"
+
+#. translators: %1$s will replace with the PHP version of the client.
+#: inpsyde-search-replace.php:49
+msgid "This plugin can not be activated because it requires at least PHP version %1$s. "
+msgstr "由於這個外掛的 PHP 最低版本需求為 %1$s 版，所以無法目前無法啟用。"
+
+#: inc/templates/sql-import.php:28
+msgid "Maximum file size: "
+msgstr "檔案大小上限: "
+
+#: inc/templates/sql-import.php:19
+msgid "Select SQL file to upload. "
+msgstr "選取 SQL 檔案以進行上傳"
+
+#: inc/templates/search-replace.php:99
+msgid "Use GZ compression"
+msgstr "使用 GZ 壓縮"
+
+#: inc/templates/search-replace.php:91
+msgid "Save changes to Database"
+msgstr "將變更儲存至資料庫"
+
+#: inc/templates/search-replace.php:85
+msgid "Export SQL file with changes"
+msgstr "匯出含有變更的 SQL 檔案"
+
+#: inc/templates/search-replace.php:79
+msgid "Export SQL file or write changes to DB?"
+msgstr "匯出 SQL 檔案或將變更寫入資料庫"
+
+#: inc/templates/search-replace.php:70
+msgid "Dry Run"
+msgstr "執行模擬作業"
+
+#: inc/templates/search-replace.php:61
+msgid "Select all tables"
+msgstr "選取所有資料表"
+
+#: inc/templates/search-replace.php:55
+msgid "Select tables"
+msgstr "選取資料表"
+
+#: inc/templates/replace-domain.php:74
+msgid "New prefix: "
+msgstr "新的前置詞"
+
+#: inc/templates/replace-domain.php:63
+msgid "Current prefix: "
+msgstr "目前的前置詞"
+
+#: inc/templates/replace-domain.php:54
+msgid "Change database prefix"
+msgstr "變更資料庫前置詞"
+
+#: inc/templates/replace-domain.php:46
+msgid "New URL"
+msgstr "輸入新網址"
+
+#: inc/templates/search-replace.php:28 inc/templates/replace-domain.php:38
+msgid "Replace with: "
+msgstr "取代為"
+
+#: inc/templates/search-replace.php:18 inc/templates/replace-domain.php:27
+msgid "Search for: "
+msgstr "搜尋字串"
+
+#: inc/templates/db-backup.php:14
+msgid "Create a backup of your database by clicking \"Create SQL File\"."
+msgstr "點擊 [建立 SQL 檔案] 便能備份網站資料庫。"
+
+#. translators: $1 is a url
+#: inc/templates/credits.php:125
+msgid "If you love open source and especially WordPress, if you love to organize your working days by yourself, and you want to use your pragmatic problem-solving skills and result-oriented work methods: <a href=\"%s\">join our team</a>!"
+msgstr "如果你熱愛開源軟體 (特別是 WordPress)，而且想擁有自主的工作主導權，並希望展現個人解決問題的能力及結果導向的工作方法，那就<a href=\"%s\" target=\"_blank\">加入我們的團隊</a>吧！"
+
+#: inc/templates/credits.php:114
+msgid "freedom for personal development and responsible, self-reliant action"
+msgstr "個人發展及自主負責的自由，具備獨立工作能力"
+
+#: inc/templates/credits.php:113
+msgid "a wide variety of tasks"
+msgstr "多樣化的工作"
+
+#: inc/templates/credits.php:112
+msgid "deliberately flat hierarchies and short decision paths"
+msgstr "極為扁平化的組織架構以及極短的決策路徑"
+
+#: inc/templates/credits.php:111
+msgid "flexible working hours in remote office"
+msgstr "透過遠端工作模式自主彈性工時"
+
+#: inc/templates/credits.php:110
+msgid "challenging and exciting projects"
+msgstr "充滿挑戰性、令人興奮的專案"
+
+#: inc/templates/credits.php:103
+msgid "At the moment we’re looking for developers for WordPress based products and services. If you’re not a developer and want to be part of us, we’d be happy to recieve your unsolicited application. At Inpsyde you can expect an open, modern and lively company culture:"
+msgstr "我們目前正在招募有志於 WordPress 相關產品及服務的開發人員，如果你不是開發人員但想成為我們的一份子，我們相當樂意收到這種自發性的申請。在 Inpsyde，你可以看到開放、現代以及充滿活力的的公司文化:"
+
+#: inc/templates/credits.php:96
+msgid "As the biggest WordPress enterprise in Europe, we’re dynamically growing and constantly looking for new employees. So, do you want to shape WordPress in an interesting and exciting work environment? Here we are!"
+msgstr "作為歐洲最大的 WordPress 生態圈企業，我們持續不斷的成長並招聘新員工。如果你想在一個有趣、令人興奮的工作環境中對 WordPress 產生影響力，那就是這了！"
+
+#: inc/templates/credits.php:94
+msgid "Working at Inpsyde"
+msgstr "與 Inpsyde 一起工作"
+
+#: inc/templates/credits.php:81
+msgid "Look at our other <a href=\"%s\">free WordPress plugins</a>."
+msgstr "請參考我們的其他<a href=\"%s\" target=\"_blank\">免費 WordPress 外掛</a>。"
+
+#: inc/templates/credits.php:63
+msgid "Inpsyde is a WordPress <a href=\"%1$s\">VIP Service Partner</a> and <a href=\"%2$s\">WooCommerce Expert</a>."
+msgstr "Inpsyde 為 WordPress <a href=\"%1$s\" target=\"_blank\">VIP Service Partner</a> (VIP 服務合作夥伴) 及 <a href=\"%2$s\" target=\"_blank\">WooCommerce Expert</a> (WooCommerce 專家)。"
+
+#: inc/templates/credits.php:54
+msgid "Inpsyde has developed enterprise solutions with the world’s most popular open-source CMS ever since it was a kitten. We still do, inconvincibly convinced."
+msgstr "Inpsyde 自開業以來，便致力於開發最熱門的開源 CMS (內容管理系統) 的企業解決方案，始終如一。"
+
+#: inc/templates/credits.php:52
+msgid "We are Inpsyde"
+msgstr "我們是 Inpsyde"
+
+#: inc/templates/credits.php:37
+msgid "You can contribute the Plugin go to the repository on <a href=\"%s\">github</a> making changes, creating issues, or submitting changes."
+msgstr "請前往這個外掛的 <a href=\"%s\" target=\"_blank\">GitHub 存放庫</a>參與專案，參與者可以為外掛進行變更、提出問題或提交變更。"
+
+#: inc/templates/credits.php:33
+msgid "You rock! contribute the plugin."
+msgstr "貢獻個人超強的能力是參與這個外掛的最佳方式"
+
+#: inc/templates/credits.php:17
+msgid "Search and Replace is refactored in 2015 by <a href=\"%1$s\">Inpsyde GmbH</a>, maintained since 2006 and based on the original from <a href=\"%2$s\">Mark Cunningham</a>."
+msgstr "Search and Replace 外掛最早由 <a href=\"%2$s\" target=\"_blank\">Mark Cunningham</a> 所開發，<a href=\"%1$s\" target=\"_blank\">Inpsyde GmbH</a> 從 2006 年開始接手維護，並於 2015 年全面改寫程式碼。"
+
+#: inc/templates/credits.php:13
+msgid "Hey nice to have you here!"
+msgstr "你好！很高興你願意閱讀這頁面的內容"
+
+#: inc/Page/SqlImport.php:146
+msgid "A PHP extension stopped the file upload."
+msgstr "檔案上傳已由 PHP 擴充模組停止。"
+
+#: inc/Page/SqlImport.php:143
+msgid "Failed to write file to disk."
+msgstr "無法將檔案寫入磁碟。"
+
+#: inc/Page/SqlImport.php:139
+msgid "Missing a temporary folder."
+msgstr "找不到暫存資料夾。"
+
+#: inc/Page/SqlImport.php:135
+msgid "No file was uploaded."
+msgstr "檔案並未上傳。"
+
+#: inc/Page/SqlImport.php:131
+msgid "The uploaded file was only partially uploaded"
+msgstr "上傳的檔案不完整"
+
+#: inc/Page/SqlImport.php:127
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"
+msgstr "上傳的檔案超過了 HTML 表單中 MAX_FILE_SIZE 參數的設定值"
+
+#: inc/Page/SqlImport.php:123
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini"
+msgstr "上傳的檔案超過了 php.ini 中 upload_max_filesize 參數的設定值"
+
+#. Translators: %s print the sql source.
+#: inc/Page/SqlImport.php:108
+msgid "The SQL file was successfully imported. %s SQL queries were performed."
+msgstr "SQL 檔案已成功匯入，並已執行 %s 項 SQL 查詢。"
+
+#: inc/Page/SqlImport.php:98
+msgid "The file does not seem to be a valid SQL file. Import not possible."
+msgstr "這個檔案並非有效的 SQL 檔案，因此無法進行匯入。"
+
+#: inc/Page/SqlImport.php:86
+msgid "The file has neither '.gz' nor '.sql' Extension. Import not possible."
+msgstr "這個檔案的副檔名不是 .gz 或 .sql，因此無法進行匯入。"
+
+#: inc/Page/SqlImport.php:60
+msgid "Import SQL file"
+msgstr "匯入 SQL 檔案"
+
+#: inc/Page/SqlImport.php:34
+msgid "SQL Import"
+msgstr "匯入 SQL 資料"
+
+#: inc/Page/SearchReplace.php:174
+msgid "Search field is empty."
+msgstr "[搜尋字串] 欄位留空。"
+
+#: inc/Page/SearchReplace.php:206
+msgid "The following changes were made to the database: "
+msgstr "資料庫中發生了下列變更: "
+
+#: inc/Page/SearchReplace.php:198
+msgid "Dry run is selected. No changes were made to the database and no SQL file was written ."
+msgstr "已啟用 [執行模擬作業]，所以資料庫並未進行變更，也沒有建立 SQL 檔案。"
+
+#: inc/Page/SearchReplace.php:275
+msgid "Do Search & Replace"
+msgstr "執行搜尋/取代"
+
+#: inc/Page/ReplaceDomain.php:100
+msgid "Replace Domain URL"
+msgstr "取代網域名稱/網址"
+
+#: inc/Page/ReplaceDomain.php:92
+msgid "Do Replace Domain/Url"
+msgstr "執行取代網域名稱/網址"
+
+#: inc/Page/ReplaceDomain.php:56
+msgid "Replace Field should not be empty."
+msgstr "[取代為] 欄位不該留空。"
+
+#: inc/Page/Credits.php:24
+msgid "Credits"
+msgstr "致謝"
+
+#: inc/Page/BackupDatabase.php:67
+msgid "Create SQL File"
+msgstr "建立 SQL 檔案"
+
+#: inc/Page/BackupDatabase.php:41
+msgid "Backup Database"
+msgstr "備份網站資料庫"
+
+#: inc/Page/AbstractPage.php:88
+msgid "Submit"
+msgstr "傳送"
+
+#: inc/Page/AbstractPage.php:55
+msgid "Errors:"
+msgstr "錯誤:"
+
+#. Plugin Name of the plugin
+#: inc/Page/Manager.php:104 inc/Page/AbstractPage.php:26
+#: inc/Page/SearchReplace.php:85
+msgid "Search & Replace"
+msgstr "搜尋/取代"
+
+#: inc/FileDownloader.php:167
+msgid "New value"
+msgstr "新值"
+
+#: inc/FileDownloader.php:164
+msgid "Old value"
+msgstr "舊值"
+
+#: inc/FileDownloader.php:161
+msgid "Column"
+msgstr "資料行"
+
+#: inc/FileDownloader.php:146
+msgid "Table:"
+msgstr "資料表:"
+
+#: inc/FileDownloader.php:127
+msgid "View details"
+msgstr "檢視詳細資料"
+
+#. translators: %s is the count of selected cells after search in tables.
+#: inc/FileDownloader.php:237
+msgid "%s cell needs to be updated."
+msgid_plural "%s cells need to be updated."
+msgstr[0] "%s 個資料格需要更新。"
+
+#. translators: %s is the count of tables.
+#: inc/FileDownloader.php:226
+msgid "%s table was processed. "
+msgid_plural "%s tables were processed. "
+msgstr[0] "%s 個資料表已完成處理，其中有 "
+
+#: inc/FileDownloader.php:84
+msgid "Download SQL File"
+msgstr "下載 SQL 檔案"
+
+#: inc/FileDownloader.php:78
+msgid "Your SQL file was created!"
+msgstr "已將網站資料庫備份為 SQL 檔案！"
+
+#: inc/Page/SearchReplace.php:225 inc/FileDownloader.php:69
+msgid "Search pattern not found."
+msgstr "沒有設定搜尋模式。"
+
+#. translators: $1 is the number of rows found in database
+#: inc/Database/Replace.php:270
+msgid "Error updating row: %d."
+msgstr "更新資料列時發生錯誤: %d。"
+
+#: inc/Database/Replace.php:78
+msgid "Search and replace pattern can't be the same!"
+msgstr "搜尋模式及取代模式不能相同！"
+
+#. Translators: %s is the value of the size in kByte.
+#: inc/Database/Manager.php:77
+msgid "(%s KB)"
+msgstr "(%s KB)"
+
+#: inc/Database/Exporter.php:238
+msgid "There was an error writing a line to the backup script: %s"
+msgstr "寫入備份指令碼時發生錯誤: %s"
+
+#. translators: $1 is the name of the table
+#: inc/Database/Exporter.php:550
+msgid "End of data contents of table %s"
+msgstr "資料表 %s 的資料表內容結尾"
+
+#. translators: $1 is the name of the new table
+#: inc/Database/Exporter.php:389
+msgid "Data contents of table %s"
+msgstr "資料表 %s 的資料內容"
+
+#. translators: $1 is the name of the table
+#: inc/Database/Exporter.php:379
+msgid "Error getting table structure of %s"
+msgstr "取得資料表 %s 的資料表結構時發生錯誤"
+
+#. translators: $1 is the name of the table
+#: inc/Database/Exporter.php:364
+msgid "Error with SHOW CREATE TABLE for %s."
+msgstr "為資料表 %s 執行 SHOW CREATE TABLE 指令時發生錯誤。"
+
+#: inc/Database/Exporter.php:352
+msgid "Table structure of table %s"
+msgstr "資料表 %s 的資料表結構"
+
+#: inc/Database/Exporter.php:338
+msgid "Delete any existing table %s"
+msgstr "刪除所有名稱為 %s 的資料表"
+
+#: inc/Database/Exporter.php:329
+msgid "Error getting table details"
+msgstr "取得資料表詳細資料時發生錯誤"
+
+#: inc/Database/Exporter.php:323
+msgid "Table: %s"
+msgstr "資料表: %s"
+
+#. translators: $1 and $2 are the name of the database.
+#: inc/Database/Exporter.php:152
+msgid "Changed table prefix: From %1$s to %2$s "
+msgstr "已變更的資料表前置詞: 由 %1$s 變更為 %2$s"
+
+#: inc/Database/Exporter.php:146
+msgid "Database: %s"
+msgstr "資料庫名稱: %s"
+
+#: inc/Database/Exporter.php:145
+msgid "Hostname: %s"
+msgstr "主機名稱: %s"
+
+#: inc/Database/Exporter.php:144
+msgid "Generated: %s"
+msgstr "備份時間: %s"
+
+#: inc/Database/Exporter.php:142
+msgid "WordPress MySQL database backup"
+msgstr "WordPress MySQL 資料庫備份"
+
+#: inc/Database/Exporter.php:123
+msgid "The backup directory is not writable!"
+msgstr "備份目錄無法寫入！"
+
+#: inc/Database/Exporter.php:133
+msgid "Could not open the backup file for writing!"
+msgstr "無法開啟備份檔案進行寫入！"
