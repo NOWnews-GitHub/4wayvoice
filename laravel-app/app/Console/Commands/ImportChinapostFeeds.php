@@ -22,7 +22,11 @@ class ImportChinapostFeeds extends Command
      */
     protected $description = 'import Chinapost xml';
 
-    const FEEDS_SOURCE = 'chinapost';
+    protected $feedsSource = 'chinapost';
+    protected $authorId = 27;
+    protected $categoryIds = '491';
+    protected $publishStatus = 'publish';
+    protected $wordpressRootPath = '/var/vhosts/4wayvoice.nownews.com';
 
     /**
      * Execute the console command.
@@ -49,20 +53,24 @@ class ImportChinapostFeeds extends Command
 
         foreach ($feeds as $feed) {
             $postId = (int)$feed->{'post-id'};
-            $title = (string)$feed->title;
-            $pubDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
-            $content = (string)$feed->children('content', true);
+            $postTitle = (string)$feed->title;
+            $postDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
+            $postContent = (string)$feed->children('content', true);
 
             // ignore if post exists
-            if ($this->isPostExists(self::FEEDS_SOURCE, $postId)) {
+            if ($this->isPostExists($this->feedsSource, $postId)) {
                 continue;
             }
 
+            // import wordpress post
+            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"" . htmlspecialchars($postTitle, ENT_QUOTES) . "\" --post_status=\"{$this->publishStatus}\" --post_content=\"{$postContent}\" --porcelain";
+            $wpPostId = (int)shell_exec($wpCli);
+
             // record post_id to prevent repeat import
-            $this->recordPost(self::FEEDS_SOURCE, $postId);
+            $this->recordPost($this->feedsSource, $postId);
 
             // print messages
-            $this->line("Import Completed ! post_id: {$postId}, title: {$title}");
+            $this->line("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
         }
     }
 
