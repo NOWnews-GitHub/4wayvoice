@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\WordpressFeed;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ImportChinapostFeeds extends Command
 {
@@ -21,6 +21,8 @@ class ImportChinapostFeeds extends Command
      * @var string
      */
     protected $description = 'import Chinapost xml';
+
+    const FEEDS_SOURCE = 'chinapost';
 
     /**
      * Execute the console command.
@@ -45,40 +47,49 @@ class ImportChinapostFeeds extends Command
 
         $feeds = $xml->channel->item;
 
-        $posts = [];
         foreach ($feeds as $feed) {
-            $postId = $feed->{'post-id'};
-            $title = $feed->title;
-            $pubDate = $feed->pubDate;
-            $content = $feed->children('content', true);
-            $posts[] = [
-                'postId' => (int)$postId,
-                'title' => (string)$title,
-                'pubDate' => Carbon::parse($pubDate, 'Asia/Taipei')->toDateTimeString(),
-                'content' => (string)$content,
-            ];
+            $postId = (int)$feed->{'post-id'};
+            $title = (string)$feed->title;
+            $pubDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
+            $content = (string)$feed->children('content', true);
+
+            // ignore if post exists
+            if ($this->isPostExists(self::FEEDS_SOURCE, $postId)) {
+                continue;
+            }
+
+            // record post_id to prevent repeat import
+            $this->recordPost(self::FEEDS_SOURCE, $postId);
+
+            // print messages
+            $this->line("Import Completed ! post_id: {$postId}, title: {$title}");
         }
     }
 
-    protected function isPostsExists(string $guid)
+    protected function isPostExists(string $source, string $postId)
     {
-        $post = DB::table('cna_feed')
-            ->where('guid', $guid)
+        $wordpressFeed = new WordpressFeed;
+        $wordpressFeed = $wordpressFeed
+            ->where([
+                'source' => $source,
+                'post_id' => $postId,
+            ])
             ->first();
 
-        if (!$post) {
+        if (!$wordpressFeed) {
             return false;
         }
 
-        $this->warn("Duid is exists: {$guid}");
+        $this->warn("The post is exists, source: {$source}, post_id: {$postId}");
 
         return true;
     }
 
-    protected function deletePostRecord(string $guid)
+    protected function recordPost(string $source, string $postId): void
     {
-        DB::table('cna_feed')
-            ->where('guid', $guid)
-            ->delete();
+        WordpressFeed::create([
+            'source' => $source,
+            'post_id' => $postId,
+        ]);
     }
 }
