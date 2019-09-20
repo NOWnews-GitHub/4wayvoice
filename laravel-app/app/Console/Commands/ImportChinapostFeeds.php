@@ -53,9 +53,9 @@ class ImportChinapostFeeds extends Command
 
         foreach ($feeds as $feed) {
             $postId = (int)$feed->{'post-id'};
-            $postTitle = (string)$feed->title;
+            $postTitle = htmlspecialchars((string)$feed->title, ENT_QUOTES);
             $postDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
-            $postContent = (string)$feed->children('content', true);
+            $postContent = html_entity_decode((string)$feed->children('content', true));
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
@@ -63,7 +63,7 @@ class ImportChinapostFeeds extends Command
             }
 
             // import wordpress post
-            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"" . htmlspecialchars($postTitle, ENT_QUOTES) . "\" --post_status=\"{$this->publishStatus}\" --post_content=\"{$postContent}\" --porcelain";
+            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content=\"{$postContent}\" --porcelain";
             $wpPostId = (int)shell_exec($wpCli);
 
             // record post_id to prevent repeat import
