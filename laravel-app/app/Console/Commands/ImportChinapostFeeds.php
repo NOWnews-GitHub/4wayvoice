@@ -55,7 +55,7 @@ class ImportChinapostFeeds extends Command
             $postId = (int)$feed->{'post-id'};
             $postTitle = htmlspecialchars((string)$feed->title, ENT_QUOTES);
             $postDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
-            $postContent = html_entity_decode((string)$feed->children('content', true));
+            $postContent = htmlspecialchars((string)$feed->children('content', true), ENT_QUOTES);
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
