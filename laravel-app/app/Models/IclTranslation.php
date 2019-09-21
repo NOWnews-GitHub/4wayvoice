@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class WpIclTranslation extends Model
+class IclTranslation extends Model
 {
     protected $primaryKey = 'translation_id';
     protected $connection = 'wordpress';

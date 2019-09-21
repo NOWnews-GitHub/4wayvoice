@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\WordpressFeed;
-use App\Models\WpIclTranslation;
+use App\Models\IclTranslation;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
