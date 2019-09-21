@@ -105,9 +105,14 @@ class ImportChinapostFeeds extends Command
         ]);
     }
 
-    protected function switchPostWpmlLanguage(int $postId, string $lang): IclTranslation
+    protected function switchPostWpmlLanguage(int $postId, string $lang): ?IclTranslation
     {
-        $iclTranslation = IclTranslation::where('element_id', '590743')->first();
+        $iclTranslation = IclTranslation::where('element_id', $postId)->first();
+
+        if (!$iclTranslation) {
+            return $iclTranslation;
+        }
+
         $iclTranslation->language_code = $lang;
         $iclTranslation->save();
 
