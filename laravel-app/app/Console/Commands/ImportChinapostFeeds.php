@@ -27,6 +27,7 @@ class ImportChinapostFeeds extends Command
     protected $authorId = 27;
     protected $categoryIds = '491';
     protected $publishStatus = 'publish';
+    protected $postWpmlLanguage = 'en';
     protected $wordpressRootPath = '/var/vhosts/4wayvoice.nownews.com';
 
     /**
@@ -67,6 +68,8 @@ class ImportChinapostFeeds extends Command
             $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content=\"{$postContent}\" --porcelain";
             $wpPostId = (int)shell_exec($wpCli);
 
+            $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
+
             // record post_id to prevent repeat import
             $this->recordPost($this->feedsSource, $postId);
 
@@ -100,5 +103,14 @@ class ImportChinapostFeeds extends Command
             'source' => $source,
             'post_id' => $postId,
         ]);
+    }
+
+    protected function switchPostWpmlLanguage(int $postId, string $lang): IclTranslation
+    {
+        $iclTranslation = IclTranslation::where('element_id', '590743')->first();
+        $iclTranslation->language_code = $lang;
+        $iclTranslation->save();
+
+        return $iclTranslation;
     }
 }
