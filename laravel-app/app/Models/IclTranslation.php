@@ -8,6 +8,7 @@ class IclTranslation extends Model
 {
     protected $primaryKey = 'translation_id';
     protected $connection = 'wordpress';
+    public $timestamps = false;
 
     protected $fillable = [
         'translation_id',
