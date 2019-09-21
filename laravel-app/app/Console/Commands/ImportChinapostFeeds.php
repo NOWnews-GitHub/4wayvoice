@@ -55,9 +55,9 @@ class ImportChinapostFeeds extends Command
 
         foreach ($feeds as $feed) {
             $postId = (int)$feed->{'post-id'};
-            $postTitle = htmlspecialchars((string)$feed->title, ENT_QUOTES);
+            $postTitle = (string)$feed->title;
             $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
-            $postContent = htmlspecialchars((string)$feed->children('content', true), ENT_QUOTES);
+            $postContent = html_entity_decode((string)$feed->children('content', true));
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
@@ -65,7 +65,7 @@ class ImportChinapostFeeds extends Command
             }
 
             // import wordpress post
-            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content=\"{$postContent}\" --porcelain";
+            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content='{$postContent}' --porcelain";
             $wpPostId = (int)shell_exec($wpCli);
 
             $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
