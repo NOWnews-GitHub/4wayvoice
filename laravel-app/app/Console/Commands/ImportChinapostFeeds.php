@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\WordpressFeed;
+use App\Models\WpIclTranslation;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -54,7 +55,7 @@ class ImportChinapostFeeds extends Command
         foreach ($feeds as $feed) {
             $postId = (int)$feed->{'post-id'};
             $postTitle = htmlspecialchars((string)$feed->title, ENT_QUOTES);
-            $postDate =  Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
+            $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
             $postContent = htmlspecialchars((string)$feed->children('content', true), ENT_QUOTES);
 
             // ignore if post exists
