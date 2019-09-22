@@ -91,7 +91,7 @@ class ImportChinapostFeeds extends Command
 
             // record post_id to prevent repeat import
             $this->line('record post_id...');
-            $this->recordPost($this->feedsSource, $postId);
+            $this->recordPost($this->feedsSource, $postId, $wpPostId);
 
             // print messages
             $this->line("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
@@ -117,11 +117,12 @@ class ImportChinapostFeeds extends Command
         return true;
     }
 
-    protected function recordPost(string $source, string $postId): void
+    protected function recordPost(string $source, string $postId, string $wpPostId): void
     {
         WordpressFeed::create([
             'source' => $source,
             'post_id' => $postId,
+            'wp_post_id' => $wpPostId,
         ]);
     }
 
