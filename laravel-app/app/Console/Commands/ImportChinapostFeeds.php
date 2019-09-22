@@ -65,12 +65,6 @@ class ImportChinapostFeeds extends Command
             $thumbnailAlt = $matches[3];
             $postContent = str_replace($thumbnailImgTag, '', $postContent);
 
-            // import image into media
-            $this->line('import image into media...');
-            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$this->authorId} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
-            $mediaId = (int)shell_exec($wpCli);
-            $this->info("media id: {$mediaId}");
-
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
                 continue;
@@ -83,6 +77,12 @@ class ImportChinapostFeeds extends Command
             $this->info("wp post id: {$wpPostId}");
 
             $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
+
+            // import image into media
+            $this->line('import image into media...');
+            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$this->authorId} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
+            $mediaId = (int)shell_exec($wpCli);
+            $this->info("media id: {$mediaId}");
 
             // set post thumbnail
             $this->line('set post thumbnail...');
