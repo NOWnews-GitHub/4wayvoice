@@ -66,8 +66,10 @@ class ImportChinapostFeeds extends Command
             $postContent = str_replace($thumbnailImgTag, '', $postContent);
 
             // import image into media
+            $this->line('import image into media...');
             $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$this->authorId} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
             $mediaId = (int)shell_exec($wpCli);
+            $this->info("media id: {$mediaId}");
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
@@ -75,16 +77,20 @@ class ImportChinapostFeeds extends Command
             }
 
             // import wordpress post
+            $this->line('import wordpress post...');
             $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content='{$postContent}' --porcelain";
             $wpPostId = (int)shell_exec($wpCli);
+            $this->info("wp post id: {$wpPostId}");
 
             $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
 
             // set post thumbnail
+            $this->line('set post thumbnail...');
             $wpCli = "wp post meta update {$wpPostId} _thumbnail_id {$mediaId} --allow-root --path=\"{$this->wordpressRootPath}\"";
             shell_exec($wpCli);
 
             // record post_id to prevent repeat import
+            $this->line('record post_id...');
             $this->recordPost($this->feedsSource, $postId);
 
             // print messages
