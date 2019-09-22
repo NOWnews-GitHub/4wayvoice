@@ -62,7 +62,7 @@ class ImportChinapostFeeds extends Command
             preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-thumbnail.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $matches);
             $thumbnailImgTag = $matches[1];
             $thumbnailUrl = $matches[2];
-            $thumbnailAlt = $matches[3];
+            $thumbnailAlt = explode('"', $matches[3])[0];
             $postContent = str_replace($thumbnailImgTag, '', $postContent);
 
             // ignore if post exists
@@ -94,7 +94,8 @@ class ImportChinapostFeeds extends Command
             $this->recordPost($this->feedsSource, $postId, $wpPostId);
 
             // print messages
-            $this->line("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
+            $this->info("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
+            $this->line('');
         }
     }
 
