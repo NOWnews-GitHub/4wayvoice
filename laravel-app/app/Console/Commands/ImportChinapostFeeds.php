@@ -59,6 +59,16 @@ class ImportChinapostFeeds extends Command
             $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
             $postContent = html_entity_decode((string)$feed->children('content', true));
 
+            preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-thumbnail.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $matches);
+            $thumbnailImgTag = $matches[1];
+            $thumbnailUrl = $matches[2];
+            $thumbnailAlt = $matches[3];
+            $postContent = str_replace($thumbnailImgTag, '', $postContent);
+
+            // import image into media
+            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$this->authorId} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
+            $mediaId = (int)shell_exec($wpCli);
+
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
                 continue;
@@ -69,6 +79,10 @@ class ImportChinapostFeeds extends Command
             $wpPostId = (int)shell_exec($wpCli);
 
             $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
+
+            // set post thumbnail
+            $wpCli = "wp post meta update {$wpPostId} _thumbnail_id {$mediaId} --allow-root --path=\"{$this->wordpressRootPath}\"";
+            shell_exec($wpCli);
 
             // record post_id to prevent repeat import
             $this->recordPost($this->feedsSource, $postId);
