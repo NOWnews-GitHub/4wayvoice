@@ -57,7 +57,7 @@ class ImportChinapostFeeds extends Command
             $postId = (int)$feed->{'post-id'};
             $postTitle = (string)$feed->title;
             $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
-            $postContent = html_entity_decode((string)$feed->children('content', true));
+            $postContent = html_entity_decode((string)$feed->children('content', true), ENT_QUOTES);
 
             preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-thumbnail.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $matches);
             $thumbnailImgTag = $matches[1];
