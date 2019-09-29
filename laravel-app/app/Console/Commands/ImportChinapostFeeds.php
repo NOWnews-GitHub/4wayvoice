@@ -63,7 +63,11 @@ class ImportChinapostFeeds extends Command
             $thumbnailImgTag = $matches[1];
             $thumbnailUrl = $matches[2];
             $thumbnailAlt = explode('"', $matches[3])[0];
-            $postContent = str_replace($thumbnailImgTag, '', $postContent);
+//            $postContent = str_replace($thumbnailImgTag, '', $postContent);
+            
+            if ($postId === 743375) {
+                dd($matches[3], $thumbnailAlt, $postContent);
+            }
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
@@ -141,3 +145,4 @@ class ImportChinapostFeeds extends Command
         return $iclTranslation;
     }
 }
+
