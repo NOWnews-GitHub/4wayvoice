@@ -14,7 +14,7 @@ class ImportChinapostFeeds extends Command
      *
      * @var string
      */
-    protected $signature = 'import:ChinapostXML';
+    protected $signature = 'import:ChinapostXML {--feedUrl=}';
 
     /**
      * The console command description.
@@ -24,26 +24,73 @@ class ImportChinapostFeeds extends Command
     protected $description = 'import Chinapost xml';
 
     protected $feedsSource = 'chinapost';
-    protected $authorId = 27;
-    protected $categoryIds = '491';
-    protected $publishStatus = 'publish';
-    protected $postWpmlLanguage = 'en';
     protected $wordpressRootPath = '/var/vhosts/4wayvoice.nownews.com';
+
+    const FEED_INFO = [
+        [
+            'url' => 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-foreigners/feed',
+            'authorId' => 27,
+            'categoryIds' => 491,
+            'publishStatus' => 'publish',
+            'postWpmlLanguage' => 'en',
+        ],
+        [
+            'url' => 'https://chinapost.nownews.com/category/news/asia-news/feed',
+            'authorId' => 27,
+            'categoryIds' => 1112,
+            'publishStatus' => 'publish',
+            'postWpmlLanguage' => 'en',
+        ],
+        [
+            'url' => 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-',
+            'authorId' => 27,
+            'categoryIds' => 1114,
+            'publishStatus' => 'publish',
+            'postWpmlLanguage' => 'en',
+        ],
+        [
+            'url' => 'https://chinapost.nownews.com/category/news/bilingual-news/feed',
+            'authorId' => 27,
+            'categoryIds' => 1156,
+            'publishStatus' => 'publish',
+            'postWpmlLanguage' => 'zh-hant',
+        ],
+    ];
 
     /**
      * Execute the console command.
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
-        $feedsUrl = 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-foreigners/feed';
+        $feedUrl = $this->option('feedUrl');
 
+        if (!isset($feedUrl)) {
+            $this->error("Missing feedUrl option");
+            exit;
+        }
+
+        $feedTarget = collect(self::FEED_INFO)
+            ->first(function ($item) use ($feedUrl) {
+                return $item['url'] === $feedUrl;
+            });
+
+        if (!isset($feedTarget)) {
+            $this->error("Invalid feedUrl: {$feedUrl}");
+            exit;
+        }
+
+        $this->importFeeds($feedTarget);
+    }
+
+    public function importFeeds(array $feedTarget): void
+    {
         // get xml info
-        $result = file_get_contents($feedsUrl);
+        $result = file_get_contents($feedTarget['url']);
 
         // turn xml string into SimpleXMLElement
-        $this->info("Download xml from {$feedsUrl}...");
+        $this->info("Download xml from {$feedTarget['url']}...");
         $xml = simplexml_load_string($result, 'SimpleXMLElement', LIBXML_NOCDATA);
 
         if (!$xml) {
@@ -59,15 +106,14 @@ class ImportChinapostFeeds extends Command
             $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
             $postContent = html_entity_decode((string)$feed->children('content', true), ENT_QUOTES);
 
+            // parse thumbnail image info
             preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-thumbnail.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $matches);
             $thumbnailImgTag = $matches[1];
             $thumbnailUrl = $matches[2];
             $thumbnailAlt = explode('"', $matches[3])[0];
-//            $postContent = str_replace($thumbnailImgTag, '', $postContent);
-            
-            if ($postId === 743375) {
-                dd($matches[3], $thumbnailAlt, $postContent);
-            }
+
+            // remove thumbnail image in content
+            $postContent = str_replace($thumbnailImgTag, '', $postContent);
 
             // ignore if post exists
             if ($this->isPostExists($this->feedsSource, $postId)) {
@@ -76,15 +122,15 @@ class ImportChinapostFeeds extends Command
 
             // import wordpress post
             $this->line('import wordpress post...');
-            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$this->authorId} --post_category={$this->categoryIds} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$this->publishStatus}\" --post_content='{$postContent}' --porcelain";
+            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$feedTarget['authorId']} --post_category={$feedTarget['categoryIds']} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$feedTarget['publishStatus']}\" --post_content='{$postContent}' --porcelain";
             $wpPostId = (int)shell_exec($wpCli);
             $this->info("wp post id: {$wpPostId}");
 
-            $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $this->postWpmlLanguage);
+            $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $feedTarget['postWpmlLanguage']);
 
             // import image into media
             $this->line('import image into media...');
-            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$this->authorId} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
+            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$feedTarget['authorId']} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
             $mediaId = (int)shell_exec($wpCli);
             $this->info("media id: {$mediaId}");
 
@@ -149,4 +195,3 @@ class ImportChinapostFeeds extends Command
         return $iclTranslation;
     }
 }
-
