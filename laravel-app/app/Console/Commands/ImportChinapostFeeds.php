@@ -42,7 +42,7 @@ class ImportChinapostFeeds extends Command
             'postWpmlLanguage' => ['en'],
         ],
         [
-            'url' => 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-',
+            'url' => 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-entertainment/feed',
             'authorId' => 27,
             'categoryIds' => '1114',
             'publishStatus' => 'publish',
