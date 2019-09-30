@@ -52,7 +52,7 @@ class ImportChinapostFeeds extends Command
             'url' => 'https://chinapost.nownews.com/category/news/bilingual-news/feed',
             'authorId' => 27,
             'categoryIds' => '1119,1156',
-            'publishStatus' => 'draft',
+            'publishStatus' => 'publish',
             'postWpmlLanguage' => ['en', 'zh-hant'],
         ],
     ];
