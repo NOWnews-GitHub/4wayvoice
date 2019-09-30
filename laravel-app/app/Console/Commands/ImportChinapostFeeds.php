@@ -122,7 +122,7 @@ class ImportChinapostFeeds extends Command
 
             foreach ($feedTarget['postWpmlLanguage'] as $language) {
                 // import wordpress post
-                $this->line('import wordpress post...');
+                $this->line("import wordpress post language {$language}...");
                 $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$feedTarget['authorId']} --post_category={$feedTarget['categoryIds']} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$feedTarget['publishStatus']}\" --post_content='{$postContent}' --porcelain";
                 $wpPostId = (int)shell_exec($wpCli);
                 $this->info("wp post id: {$wpPostId}");
