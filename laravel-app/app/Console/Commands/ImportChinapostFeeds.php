@@ -32,28 +32,28 @@ class ImportChinapostFeeds extends Command
             'authorId' => 27,
             'categoryIds' => '491',
             'publishStatus' => 'publish',
-            'postWpmlLanguage' => 'en',
+            'postWpmlLanguage' => ['en'],
         ],
         [
             'url' => 'https://chinapost.nownews.com/category/news/asia-news/feed',
             'authorId' => 27,
             'categoryIds' => '1112',
             'publishStatus' => 'publish',
-            'postWpmlLanguage' => 'en',
+            'postWpmlLanguage' => ['en'],
         ],
         [
             'url' => 'https://chinapost.nownews.com/category/news/taiwan-news/taiwan-',
             'authorId' => 27,
             'categoryIds' => '1114',
             'publishStatus' => 'publish',
-            'postWpmlLanguage' => 'en',
+            'postWpmlLanguage' => ['en'],
         ],
         [
             'url' => 'https://chinapost.nownews.com/category/news/bilingual-news/feed',
             'authorId' => 27,
             'categoryIds' => '1119,1156',
-            'publishStatus' => 'publish',
-            'postWpmlLanguage' => 'zh-hant',
+            'publishStatus' => 'draft',
+            'postWpmlLanguage' => ['en', 'zh-hant'],
         ],
     ];
 
@@ -120,13 +120,15 @@ class ImportChinapostFeeds extends Command
                 continue;
             }
 
-            // import wordpress post
-            $this->line('import wordpress post...');
-            $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$feedTarget['authorId']} --post_category={$feedTarget['categoryIds']} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$feedTarget['publishStatus']}\" --post_content='{$postContent}' --porcelain";
-            $wpPostId = (int)shell_exec($wpCli);
-            $this->info("wp post id: {$wpPostId}");
+            foreach ($feedTarget['postWpmlLanguage'] as $language) {
+                // import wordpress post
+                $this->line('import wordpress post...');
+                $wpCli = "wp post create --allow-root --path=\"{$this->wordpressRootPath}\" --post_type=post --post_author={$feedTarget['authorId']} --post_category={$feedTarget['categoryIds']} --post_date=\"{$postDate}\" --post_title=\"{$postTitle}\" --post_status=\"{$feedTarget['publishStatus']}\" --post_content='{$postContent}' --porcelain";
+                $wpPostId = (int)shell_exec($wpCli);
+                $this->info("wp post id: {$wpPostId}");
 
-            $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $feedTarget['postWpmlLanguage']);
+                $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $language);
+            }
 
             // import image into media
             $this->line('import image into media...');
