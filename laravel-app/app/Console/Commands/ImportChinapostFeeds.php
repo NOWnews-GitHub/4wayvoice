@@ -124,10 +124,14 @@ class ImportChinapostFeeds extends Command
 
     protected function recordPost(string $source, string $postId, string $wpPostId): void
     {
+        $now = Carbon::now('Asia/Taipei');
+
         WordpressFeed::create([
             'source' => $source,
             'post_id' => $postId,
             'wp_post_id' => $wpPostId,
+            'created_at' => $now,
+            'updated_at' => $now,
         ]);
     }
 
