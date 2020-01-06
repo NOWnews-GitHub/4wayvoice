@@ -106,6 +106,13 @@ class ImportChinapostFeeds extends Command
             $postDate = Carbon::parse($feed->pubDate, 'Asia/Taipei')->toDateTimeString();
             $postContent = html_entity_decode((string)$feed->children('content', true), ENT_QUOTES);
 
+            preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-large.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $largeImageMatches);
+            $largeImgTag = $largeImageMatches[1];
+            $largeImgUrl = $largeImageMatches[2];
+            $largeImgAlt = explode('"', $largeImageMatches[3])[0];
+echo $largeImgUrl . "\r\n";
+
+
             // parse thumbnail image info
             preg_match('/(?:[\s\S]+)?(<img width="[\d]+" height="[\d]+" src="(https:\/\/[\s\S]+\.(?:jpg|png))".*attachment-thumbnail.* alt="(.*)".*\/>)(?:[\s\S]+)?/i', $postContent, $matches);
             $thumbnailImgTag = $matches[1];
@@ -127,27 +134,49 @@ class ImportChinapostFeeds extends Command
                 $wpPostId = (int)shell_exec($wpCli);
                 $this->info("wp post id: {$wpPostId}");
 
+            
+                // import image into media
+                $this->line('import image into media...');
+                $wpCli = "wp media import {$largeImgUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$feedTarget['authorId']} --title=\"{$postTitle}\" --caption=\"{$largeImgAlt}\" --porcelain";
+                $mediaId = (int)shell_exec($wpCli);
+                $this->info("media id: {$mediaId}");
+
+                // set post thumbnail
+                $this->line('set post thumbnail...');
+                $wpCli = "wp post meta update {$wpPostId} _thumbnail_id {$mediaId} --allow-root --path=\"{$this->wordpressRootPath}\"";
+                shell_exec($wpCli);
+                
+                // record post_id to prevent repeat import
+                $this->line('record post_id...');
+                $this->recordPost($this->feedsSource, $postId, $wpPostId);
+
+                // print messages
+                $this->info("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
+                $this->line('');
+
                 $iclTranslation = $this->switchPostWpmlLanguage($wpPostId, $language);
             }
-
+/*
             // import image into media
             $this->line('import image into media...');
-            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$feedTarget['authorId']} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
+//            $wpCli = "wp media import {$thumbnailUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$feedTarget['authorId']} --title=\"{$postTitle}\" --caption=\"{$thumbnailAlt}\" --porcelain";
+            $wpCli = "wp media import {$largeImgUrl} --allow-root --path=\"{$this->wordpressRootPath}\" --user={$feedTarget['authorId']} --title=\"{$postTitle}\" --caption=\"{$largeImgAlt}\" --porcelain";
             $mediaId = (int)shell_exec($wpCli);
             $this->info("media id: {$mediaId}");
+*/
 
             // set post thumbnail
-            $this->line('set post thumbnail...');
-            $wpCli = "wp post meta update {$wpPostId} _thumbnail_id {$mediaId} --allow-root --path=\"{$this->wordpressRootPath}\"";
-            shell_exec($wpCli);
+//            $this->line('set post thumbnail...');
+//            $wpCli = "wp post meta update {$wpPostId} _thumbnail_id {$mediaId} --allow-root --path=\"{$this->wordpressRootPath}\"";
+//            shell_exec($wpCli);
 
             // record post_id to prevent repeat import
-            $this->line('record post_id...');
-            $this->recordPost($this->feedsSource, $postId, $wpPostId);
+//            $this->line('record post_id...');
+//            $this->recordPost($this->feedsSource, $postId, $wpPostId);
 
             // print messages
-            $this->info("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
-            $this->line('');
+//            $this->info("Import Completed ! wp_post_id: {$wpPostId}, title: {$postTitle}");
+//            $this->line('');
         }
     }
 

@@ -393,6 +393,12 @@ if( ! function_exists( 'tie_get_post_meta' )){
 		// Prepare the post info section
 		$post_meta = $before.'<div class="post-meta">';
 
+		global $post;
+
+		if( !empty( get_post_meta( $post->ID, 'byline', true ) ) ) {
+			$post_meta .= "<span>". get_post_meta( $post->ID, 'byline', true ) ."</span>";
+		}
+
 		// Trending
 		if( ! empty( $trending ) ){
 			$post_meta .= tie_get_trending_icon( 'trending-sm meta-item' );

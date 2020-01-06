@@ -14,3 +14,10 @@ function tie_theme_child_styles_scripts() {
 	/* Uncomment this line if you want to add custom javascript */
 	//wp_enqueue_script( 'jannah-child-js', get_stylesheet_directory_uri() .'/js/scripts.js', '', false, true );
 }
+
+//BEGIN App API Meta
+register_rest_field( 'post', 'metadata', array(
+	'get_callback' => function ( $data ) {
+		return get_post_meta( $data['id'], '', '' );
+	}, ));
+//END App API Meta

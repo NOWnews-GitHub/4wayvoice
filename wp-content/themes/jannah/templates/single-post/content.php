@@ -53,6 +53,24 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 			<?php the_content(); ?>
 
 			<?php
+				global $post;
+				if ( !empty(get_post_meta( $post->ID, 'relatedArticleTitle1', true )) || !empty(get_post_meta( $post->ID, 'relatedArticleTitle2', true )) || !empty(get_post_meta( $post->ID, 'relatedArticleTitle3', true )) ) {
+						echo "<div class='mag-box-title the-global-title'><h3>Read More from 4wayvoice</h3></div>";
+						echo "<ul>";
+						if ( !empty(get_post_meta( $post->ID, 'relatedArticleTitle1', true )) ) {
+								echo "<li><a href=". get_post_meta( $post->ID, 'relatedArticleLink1', true ) .">" . get_post_meta( $post->ID, 'relatedArticleTitle1', true ) . "</a></li>";
+						}
+						if ( !empty(get_post_meta( $post->ID, 'relatedArticleTitle2', true )) ) {
+								echo "<li><a href=". get_post_meta( $post->ID, 'relatedArticleLink2', true ) .">" . get_post_meta( $post->ID, 'relatedArticleTitle2', true ) . "</a></li>";
+						}
+						if ( !empty(get_post_meta( $post->ID, 'relatedArticleTitle3', true )) ) {
+								echo "<li><a href=". get_post_meta( $post->ID, 'relatedArticleLink3', true ) .">" . get_post_meta( $post->ID, 'relatedArticleTitle3', true ) . "</a></li>";
+						}
+						echo "</ul>";
+				}
+			?>
+
+			<?php
 				/**
 				 * TieLabs/after_post_content hook.
 				 *
@@ -67,6 +85,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 		</div><!-- .entry-content /-->
 
+        <script data-cfasync="false" async type="text/javascript">var truvidScript = document.createElement('script'); truvidScript.async = true; truvidScript.setAttribute('data-cfasync','false'); truvidScript.type = 'text/javascript'; truvidScript.src = '//stg.truvidplayer.com/index.php?sub_user_id=748&widget_id=3155&playlist_id=2286&m=a&cb=' + (Math.random() * 10000000000000000); var currentScript = document.currentScript || document.scripts[document.scripts.length - 1]; currentScript.parentNode.insertBefore(truvidScript, currentScript.nextSibling);</script>
+
 		<?php
 			/**
 			 * TieLabs/after_post_entry hook.
@@ -79,7 +99,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 		?>
 
 	</article><!-- #the-post /-->
-
+  
 	<?php
 		/**
 		 * TieLabs/before_post_components hook.
