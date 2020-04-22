@@ -22,9 +22,8 @@ if( ! class_exists( 'TIE_SOUNDCLOUD_WIDGET' )){
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
 			// Get the widget settings
-			$url  = empty( $instance['url'] ) ? '' : $instance['url'];
-			$play = empty( $instance['autoplay'] ) ? 'false' : 'true';
-
+			$url  = ! empty( $instance['url'] )      ? $instance['url'] : '';
+			$play = ! empty( $instance['autoplay'] ) ? 'true' : 'false';
 
 			echo ( $args['before_widget'] );
 
@@ -45,8 +44,8 @@ if( ! class_exists( 'TIE_SOUNDCLOUD_WIDGET' )){
 
 			$instance = $old_instance;
 			$instance['title']    = strip_tags( $new_instance['title'] );
-			$instance['url']      = $new_instance['url'] ;
-			$instance['autoplay'] = $new_instance['autoplay'];
+			$instance['url']      = ! empty( $new_instance['url'] )      ? $new_instance['url']      : false;
+			$instance['autoplay'] = ! empty( $new_instance['autoplay'] ) ? $new_instance['autoplay'] : false;
 			return $instance;
 
 		}
@@ -58,9 +57,9 @@ if( ! class_exists( 'TIE_SOUNDCLOUD_WIDGET' )){
 			$defaults = array( 'title' => esc_html__( 'SoundCloud', TIELABS_TEXTDOMAIN ) );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title    = isset( $instance['title'] ) ? $instance['title'] : '';
-			$url      = isset( $instance['url'] )   ? $instance['url'] : '';
-			$autoplay = isset( $instance['autoplay'] ) ? $instance['autoplay'] : ''; ?>
+			$title    = ! empty( $instance['title'] )    ? $instance['title'] : '';
+			$url      = ! empty( $instance['url'] )      ? $instance['url'] : '';
+			$autoplay = ! empty( $instance['autoplay'] ) ? $instance['autoplay'] : ''; ?>
 
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', TIELABS_TEXTDOMAIN) ?></label>
@@ -89,4 +88,3 @@ if( ! class_exists( 'TIE_SOUNDCLOUD_WIDGET' )){
 	}
 
 }
-?>

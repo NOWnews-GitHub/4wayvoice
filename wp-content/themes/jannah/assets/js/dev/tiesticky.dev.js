@@ -498,7 +498,7 @@
         this.notTop(); // fixed nav
 
         if (this.behaviorMode =='default' && currentScrollY < (this.offset + 100) ){
-          jQuery('.autocomplete-suggestions').hide();
+          jQuery('#autocomplete-suggestions').hide();
         }
       }
 
@@ -519,7 +519,7 @@
         if((currentScrollY > this.offset) && this.behaviorMode !='default'){
           this.elem.classList.remove('unpinned-no-transition');
 
-          jQuery('.autocomplete-suggestions').hide();
+          jQuery('#autocomplete-suggestions').hide();
         }
       }
 

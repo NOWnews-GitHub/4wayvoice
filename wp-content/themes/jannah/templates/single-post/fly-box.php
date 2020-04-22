@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 $post_id = get_the_id();
 
-
 // Post titles length
 $title_length = tie_get_option( 'check_also_title_length' ) ? tie_get_option( 'check_also_title_length' ) : '';
 
@@ -53,7 +52,7 @@ if( $check_also_query->have_posts() ):
 	<div id="check-also-box" class="container-wrapper check-also-<?php echo esc_attr( $check_also_position ) ?>">
 
 		<div <?php tie_box_class( 'widget-title' ) ?>>
-			<h4><?php esc_html_e( 'Check Also', TIELABS_TEXTDOMAIN ); ?></h4>
+			<div class="the-subtitle"><?php esc_html_e( 'Check Also', TIELABS_TEXTDOMAIN ); ?></div>
 
 			<a href="#" id="check-also-close" class="remove">
 				<span class="screen-reader-text"><?php esc_html_e( 'Close', TIELABS_TEXTDOMAIN ); ?></span>
@@ -73,6 +72,7 @@ if( $check_also_query->have_posts() ):
 					'count'           => 0,
 					'show_score'      => true,
 					'title_length'    => $title_length,
+					'media_icon'      => false,
 				));
 
 				$do_not_duplicate = array();

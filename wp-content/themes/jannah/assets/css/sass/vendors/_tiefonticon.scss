@@ -2,11 +2,12 @@
   font-family: 'tiefonticon';
   src:url('../fonts/tiefonticon/tiefonticon.eot');
   src:url('../fonts/tiefonticon/tiefonticon.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/tiefonticon/tiefonticon.ttf') format('truetype'),
     url('../fonts/tiefonticon/tiefonticon.woff') format('woff'),
+    url('../fonts/tiefonticon/tiefonticon.ttf') format('truetype'),
     url('../fonts/tiefonticon/tiefonticon.svg?#tiefonticon') format('svg');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 [class^="tie-icon-"], [class*=" tie-icon-"] {

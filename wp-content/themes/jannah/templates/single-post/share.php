@@ -8,25 +8,38 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.4.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 // Disable on bbPress pages
-if( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() )	return;
+if( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() ){
+	return;
+}
 
 // Check if the share buttons is hidden on mobiles
-if( TIELABS_HELPER::is_mobile_and_hidden( 'share_post_'.$share_position )) return;
+if( TIELABS_HELPER::is_mobile_and_hidden( 'share_post_'.$share_position ) ){
+	return;
+}
 
+// Reset the main Post query - Some plugins' widgets change the main post query
+wp_reset_postdata();
 
+// Check if the sharing buttons are active
 if( tie_get_postdata( 'tie_hide_share_'.$share_position ) == 'no' ||
 	( get_post_type() == 'page' && tie_get_option( 'share_buttons_pages' ) && tie_get_option( 'share_post_'.$share_position ) && ! tie_get_postdata( 'tie_hide_share_'.$share_position ) ) ||
-	( get_post_type() == 'post' && tie_get_option( 'share_post_'.$share_position ) && ! tie_get_postdata( 'tie_hide_share_'.$share_position ) )){
+	( TIELABS_HELPER::is_supported_post_type() && tie_get_option( 'share_post_'.$share_position ) && ! tie_get_postdata( 'tie_hide_share_'.$share_position ) )){
+
+	// Post Title
+	$post_title = get_the_title();
+	$post_title = html_entity_decode( $post_title, ENT_QUOTES, 'UTF-8' );
+	$post_title = rawurlencode( $post_title );
+	$post_title = str_replace( '#', '%23', $post_title );
+	$post_title = esc_html( $post_title );
 
 	$counter      = 0;
-	$post_title   = htmlspecialchars( urlencode( html_entity_decode( esc_attr( get_the_title() ), ENT_COMPAT, 'UTF-8')), ENT_COMPAT, 'UTF-8');
 	$share_class  = '';
 	$share_style  = tie_get_option( 'share_style_'.$share_position );
 	$button_class = '';
@@ -78,19 +91,9 @@ if( tie_get_postdata( 'tie_hide_share_'.$share_position ) == 'no' ||
 			'text'  => esc_html__( 'Twitter', TIELABS_TEXTDOMAIN ),
 		),
 
-		'google' => array(
-			'url'  => 'https://plusone.google.com/_/+1/confirm?hl=en&amp;url='. $post_link .'&amp;name='. $post_title,
-			'text' => esc_html__( 'Google+', TIELABS_TEXTDOMAIN ),
-		),
-
 		'linkedin' => array(
-			'url'  => 'https://www.linkedin.com/shareArticle?mini=true&amp;url='. $post_link .'&amp;title='. $post_title,
+			'url'  => 'https://www.linkedin.com/shareArticle?mini=true&amp;url='. get_permalink() .'&amp;title='. $post_title, // Shortlink causes issue
 			'text' => esc_html__( 'LinkedIn', TIELABS_TEXTDOMAIN ),
-		),
-
-		'stumbleupon' => array(
-			'url'  => 'https://www.stumbleupon.com/submit?url='. $post_link .'&amp;title='. $post_title,
-			'text' => esc_html__( 'StumbleUpon', TIELABS_TEXTDOMAIN ),
 		),
 
 		'tumblr' => array(
@@ -124,21 +127,27 @@ if( tie_get_postdata( 'tie_hide_share_'.$share_position ) == 'no' ||
 			'icon' => 'fa fa-get-pocket',
 		),
 
+		'skype' => array(
+			'url'   => 'https://web.skype.com/share?url='. $post_link .'&text='. $post_title,
+			'text'  => esc_html__( 'Skype', TIELABS_TEXTDOMAIN ),
+			'icon'  => 'fa fa-skype',
+		),
+
 		'whatsapp' => array(
-			'url'   => 'whatsapp://send?text='. $post_title .' - '.$post_link,
+			'url'   => 'https://api.whatsapp.com/send?text='. $post_title .'%20'.$post_link,
 			'text'  => esc_html__( 'WhatsApp', TIELABS_TEXTDOMAIN ),
 			'avoid_esc' => true,
 		),
 
 		'telegram' => array(
-			'url'   => 'tg://msg?text='. $post_title .' - '.$post_link,
+			'url'   => 'https://telegram.me/share/url?url='. $post_link .'&text='. $post_title,
 			'text'  => esc_html__( 'Telegram', TIELABS_TEXTDOMAIN ),
 			'icon'  => 'fa fa-paper-plane',
 			'avoid_esc' => true,
 		),
 
 		'viber' => array(
-			'url'   => 'viber://forward?text='. $post_title .' - '.$post_link,
+			'url'   => 'viber://forward?text='. $post_title .'%20'.$post_link,
 			'text'  => esc_html__( 'Viber', TIELABS_TEXTDOMAIN ),
 			'icon'  => 'fa fa-volume-control-phone',
 			'avoid_esc' => true,
@@ -183,7 +192,6 @@ if( tie_get_postdata( 'tie_hide_share_'.$share_position ) == 'no' ||
 				$button['url'] = esc_url( $button['url'] );
 			}
 
-
 			$active_share_buttons[] = '<a href="'. $button['url'] .'" rel="external noopener" target="_blank" class="'. $network.'-share-btn' . $button_class .'"><span class="'. $icon .'"></span> <span class="'. $text_class .'">'. $button['text'] .'</span></a>';
 		}
 	}
@@ -202,7 +210,6 @@ if( tie_get_postdata( 'tie_hide_share_'.$share_position ) == 'no' ||
 					}
 
 					echo implode( '', $active_share_buttons );
-
 				?>
 			</div><!-- .share-links /-->
 		</div><!-- .post-footer-on-top /-->

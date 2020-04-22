@@ -7,7 +7,6 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-
 /**
  * Show the normal Pages head
  */
@@ -16,7 +15,10 @@ if( ! function_exists( 'tie_show_page_head' )){
 	add_action( 'TieLabs/before_single_post_title', 'tie_show_page_head', 10 );
 	function tie_show_page_head(){
 
-		if( is_page() || ( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() ) || ( is_singular() && ! is_singular('post') ) ){
+
+		$exclude_post_types = apply_filters( 'TieLabs/page_head/exc_post_types', TIELABS_HELPER::get_supported_post_types() );
+
+		if( is_page() || ( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() ) || ( is_singular() && ! in_array( get_post_type(), $exclude_post_types ) ) ){
 
 			TIELABS_HELPER::get_template_part( 'templates/page', 'head' );
 		}
@@ -32,7 +34,7 @@ if( ! function_exists( 'tie_show_post_head_featured' )){
 	add_action( 'TieLabs/before_single_post_title', 'tie_show_post_head_featured', 10 );
 	function tie_show_post_head_featured(){
 
-		if( ! is_singular('post') ){
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
 			return;
 		}
 
@@ -47,7 +49,7 @@ if( ! function_exists( 'tie_show_post_head_featured' )){
 			TIELABS_HELPER::get_template_part( 'templates/single-post/head' );
 		}
 
-		# Get the top share buttons
+		// Get the top share buttons
 		TIELABS_HELPER::get_template_part( 'templates/single-post/share', '', array( 'share_position' => 'top' ) );
 
 		if( $post_layout == 1 ){
@@ -74,7 +76,9 @@ if( ! function_exists( 'tie_story_highlights' )){
 		if( ! empty( $story_highlights ) && is_array( $story_highlights ) ){
 			echo '
 				<div id="story-highlights">
-					<div '. tie_box_class( 'widget-title', false ) .'><h4>'. esc_html__( 'Story Highlights', TIELABS_TEXTDOMAIN ) .'</h4></div>
+					<div '. tie_box_class( 'widget-title', false ) .'>
+						<div class="the-subtitle">'. esc_html__( 'Story Highlights', TIELABS_TEXTDOMAIN ) .'</div>
+					</div>
 					<ul>';
 						foreach( $story_highlights as $highlight ){
 							echo '<li>'. $highlight .'</li>';
@@ -121,7 +125,7 @@ if( ! function_exists( 'tie_post_source_via' )){
 	add_action( 'TieLabs/after_post_content', 'tie_post_source_via', 20 );
 	function tie_post_source_via(){
 
-		if( ! is_singular( 'post' ) ){
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
 			return;
 		}
 
@@ -142,7 +146,7 @@ if( ! function_exists( 'tie_post_source_via' )){
 
 			if( ! empty( $get_data ) && is_array( $get_data ) ){
 				echo'
-					<div class="post-bottom-meta">
+					<div class="post-bottom-meta '. str_replace( 'tie_', 'post-bottom-', $item ) .'">
 						<div class="post-bottom-meta-title">
 							<span class="fa '. $args['icon'] .'" aria-hidden="true"></span> '. $args['title'] .'
 						</div>
@@ -178,7 +182,7 @@ if( ! function_exists( 'tie_post_tags' )){
 		}
 
 		if(( tie_get_option( 'post_tags' ) && ! tie_get_postdata( 'tie_hide_tags' ) ) || tie_get_postdata( 'tie_hide_tags' ) == 'no' ){
-			the_tags( '<div class="post-bottom-meta"><div class="post-bottom-meta-title"><span class="fa fa-tags" aria-hidden="true"></span> '. esc_html__( 'Tags', TIELABS_TEXTDOMAIN ) .'</div><span class="tagcloud">', ' ', '</span></div>' );
+			the_tags( '<div class="post-bottom-meta post-bottom-tags"><div class="post-bottom-meta-title"><span class="fa fa-tags" aria-hidden="true"></span> '. esc_html__( 'Tags', TIELABS_TEXTDOMAIN ) .'</div><span class="tagcloud">', ' ', '</span></div>' );
 		}
 	}
 }
@@ -192,13 +196,13 @@ if( ! function_exists( 'tie_edit_post_button' )){
 	add_action( 'TieLabs/after_post_content', 'tie_edit_post_button', 40 );
 	function tie_edit_post_button(){
 
-		if( ! is_singular( 'post' ) ){
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
 			return;
 		}
 
 		edit_post_link(
 			'<span class="fa fa-edit" aria-hidden="true"></span> '. esc_html__( 'Edit Post', TIELABS_TEXTDOMAIN ),
-			'<div class="post-bottom-meta"><div class="post-bottom-meta-title">',
+			'<div class="post-bottom-meta post-bottom-edit"><div class="post-bottom-meta-title">',
 			'</div></div>'
 		);
 	}
@@ -238,14 +242,21 @@ if( ! function_exists( 'tie_post_about_author' )){
 	add_action( 'TieLabs/post_components', 'tie_post_about_author', 30 );
 	function tie_post_about_author(){
 
-		if( ! is_singular( 'post' ) ){
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
 			return;
 		}
 
-
 		if( (( tie_get_option( 'post_authorbio' ) && ! tie_get_postdata( 'tie_hide_author' ) ) || tie_get_postdata( 'tie_hide_author' ) == 'no' ) && ! TIELABS_HELPER::is_mobile_and_hidden( 'post_authorbio' ) ){
 
-			tie_author_box( get_the_author(), get_the_author_meta( 'ID' ) );
+			// Get the Authors IDs
+			$post_authors = tie_get_post_authors();
+
+			if ( is_array( $post_authors ) && ! empty( $post_authors ) ) {
+				foreach ( $post_authors as $author ) {
+					tie_author_box( $author );
+				}
+			}
+
 		}
 	}
 }
@@ -259,14 +270,16 @@ if( ! function_exists( 'tie_post_newsletter' )){
 	add_action( 'TieLabs/post_components', 'tie_post_newsletter', 40 );
 	function tie_post_newsletter(){
 
-		if( ! is_singular( 'post' ) ){
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
 			return;
 		}
 
-		# Check if the newsletter is hidden on mobiles
-		if( TIELABS_HELPER::is_mobile_and_hidden( 'post_newsletter' )) return;
+		// Check if the newsletter is hidden on mobiles
+		if( TIELABS_HELPER::is_mobile_and_hidden( 'post_newsletter' ) ){
+			return;
+		}
 
-		if( ( ( tie_get_option( 'post_newsletter' ) && ! tie_get_postdata( 'tie_hide_newsletter' ) ) || tie_get_postdata( 'tie_hide_newsletter' ) == 'no' ) && ( tie_get_option( 'post_newsletter_mailchimp' ) || tie_get_option( 'post_newsletter_feedburner' ) )){
+		if( ( ( tie_get_option( 'post_newsletter' ) && ! tie_get_postdata( 'tie_hide_newsletter' ) ) || tie_get_postdata( 'tie_hide_newsletter' ) == 'no' ) ){
 
 			TIELABS_HELPER::get_template_part( 'templates/single-post/newsletter' );
 		}
@@ -314,7 +327,6 @@ elseif( tie_get_option( 'related_position') == 'footer' ){
 if( ! function_exists( 'tie_related_posts' )){
 
 	function tie_related_posts(){
-
 		TIELABS_HELPER::get_template_part( 'templates/single-post/related' );
 	}
 }
@@ -360,7 +372,7 @@ if( ! function_exists( 'tie_mobile_share_buttons' )){
 	add_action( 'TieLabs/after_footer', 'tie_mobile_share_buttons' );
 	function tie_mobile_share_buttons(){
 
-		if( ! is_singular( 'post' ) ){
+		if( ! TIELABS_HELPER::is_supported_post_type() || TIELABS_HELPER::has_builder() ){
 			return;
 		}
 
@@ -377,7 +389,7 @@ if( ! function_exists( 'tie_mobile_toggle_content_button' )){
 	add_action( 'TieLabs/after_post_entry', 'tie_mobile_toggle_content_button' );
 	function tie_mobile_toggle_content_button(){
 
-		if( ! is_singular( 'post' ) || ! tie_get_option( 'mobile_post_show_more' )){
+		if( ! TIELABS_HELPER::is_supported_post_type() || ! tie_get_option( 'mobile_post_show_more' )){
 			return;
 		} ?>
 

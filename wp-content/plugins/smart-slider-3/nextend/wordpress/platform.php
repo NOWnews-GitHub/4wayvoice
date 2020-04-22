@@ -53,6 +53,10 @@ class N2Platform {
     public static function getPublicDir() {
         $upload_dir = wp_upload_dir();
 
+        if (!stream_is_local($upload_dir['basedir'])) {
+            return $upload_dir['basedir'];
+        }
+
         return N2Filesystem::fixPathSeparator(str_replace('//', '/', $upload_dir['basedir']));
     }
 

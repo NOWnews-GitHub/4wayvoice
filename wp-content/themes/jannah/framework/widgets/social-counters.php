@@ -132,15 +132,13 @@ if( ! class_exists( 'TIE_SOCIAL_COUNTER_WIDGET' )){
 				<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>" class="widefat" type="text" />
 			</p>
 
+			<label><?php esc_html_e( 'Style', TIELABS_TEXTDOMAIN) ?></label>
+
 			<div class="tie-styles-list-widget">
 				<p>
-					<label><?php esc_html_e( 'Style', TIELABS_TEXTDOMAIN) ?></label>
-
-					<br class="clear">
-
 					<?php
 						for ( $i=1; $i < 13; $i++ ){ ?>
-							<label>
+							<label class="tie-widget-options">
 								<input name="<?php echo esc_attr( $this->get_field_name( 'style' ) ); ?>" type="radio" value="<?php echo esc_attr( $i ) ?>" <?php echo checked( $style, $i ) ?>> <img src="<?php echo TIELABS_TEMPLATE_URL .'/framework/admin/assets/images/widgets/counter-'.$i.'.png'; ?>" />
 							</label>
 							<?php
@@ -163,4 +161,3 @@ if( ! class_exists( 'TIE_SOCIAL_COUNTER_WIDGET' )){
 	}
 
 }
-?>

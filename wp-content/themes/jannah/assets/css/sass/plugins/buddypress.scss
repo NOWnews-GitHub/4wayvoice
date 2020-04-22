@@ -2,7 +2,7 @@
 //
 // Buddypress scss primary scss stylesheet
 //
-// 
+//
 // This file compiles to buddypress.css.
 //
 // Imported into this file are the building block partial files
@@ -78,6 +78,10 @@ Hello, this is the BuddyPress Nouveau stylesheet.
 8.0 - Classes - Messages, Ajax, Widgets, Buttons, Tooltips
 
 9.0 - Layout Classes.
+
+10.0 - Buddypress RTL
+
+11.0 - Youzer Plugin
 --------------------------------------------------------------*/
 
 /**
@@ -476,4 +480,9 @@ Hello, this is the BuddyPress Nouveau stylesheet.
 @import "buddypress/_bp_rtl";
 
 
-
+/**
+*-------------------------------------------------------------------------------
+* @section 11.0 - Youzer Plugin CSS
+*-------------------------------------------------------------------------------
+*/
+@import "buddypress/_bp_plugin_youzer";

@@ -22,21 +22,30 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 		 */
 		function __construct( $atts ) {
 
-			$user_data = $this->remote_get( $atts['username'] );
-
-			if( ! empty( $user_data['error'] ) ){
-				return TIELABS_HELPER::notice_message( $user_data['error'] );
+			// Check if there is no a username || userid
+			if( empty( $atts['username'] ) || empty( $atts['userid'] ) ){
+				return TIELABS_HELPER::notice_message( esc_html__( 'You need to set the Username and the UserID.', TIELABS_TEXTDOMAIN ) );
 			}
 
+			// Set the global variables
+			$this->username      = $atts['username'];
+			$this->userid        = $atts['userid'];
 			$this->link_to       = ! empty( $atts['link'] )      ? $atts['link']      : 'file';
 			$this->number_images = ! empty( $atts['number'] )    ? $atts['number']    : 6;
 			$this->show_card     = ! empty( $atts['user_data'] ) ? $atts['user_data'] : false;
 
+			// Get the raw data
+			$user_data = $this->get_data();
 
+			// Print if there is an error
+			if( ! empty( $user_data['error'] ) ){
+				return TIELABS_HELPER::notice_message( $user_data['error'] );
+			}
+
+			// Display
 			$this->show_card( $user_data );
 			$this->show_photos( $user_data );
 		}
-
 
 
 		/**
@@ -75,30 +84,48 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 
 				<div class="tie-insta-counts clearfix">
 					<ul>
+
+				<?php
+					if( $posts ){ ?>
 						<li>
 							<span class="counts-number"><?php echo $this->format_number( $posts ) ?></span>
-							<span>Posts</span>
+							<span><?php esc_html_e( 'Posts', TIELABS_TEXTDOMAIN ) ?></span>
 						</li>
+						<?php
+					}
+
+					if( $followed ){ ?>
 						<li>
 							<span class="counts-number"><?php echo $this->format_number( $followed ) ?></span>
-							<span>Followers</span>
+							<span><?php esc_html_e( 'Followers', TIELABS_TEXTDOMAIN ) ?></span>
 						</li>
+						<?php
+					}
+
+					if( $follow ){ ?>
 						<li>
 							<span class="counts-number"><?php echo $this->format_number( $follow ) ?></span>
-							<span>Following</span>
+							<span><?php esc_html_e( 'Following', TIELABS_TEXTDOMAIN ) ?></span>
 						</li>
+						<?php
+					}
+				?>
 					</ul>
 				</div>
 
-				<div class="tie-insta-desc">
-					<?php echo $this->links_mentions( $biography, true ); ?>
-				</div>
+				<?php
+					if( $biography ){ ?>
+						<div class="tie-insta-desc">
+							<?php echo $this->links_mentions( $biography, true ); ?>
+						</div>
+
+						<?php
+					}
+				?>
 
 			</div>
 			<?php
-
 		}
-
 
 
 		/**
@@ -131,20 +158,59 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 							$img_link  = false;
 							$is_video  = ! empty( $image['node']['is_video'] ) ? true : false;
 							$lightbox  = array();
+
+							// Comments
+							if( ! empty( $image['node']['edge_media_to_comment']['count'] ) ){
+								$comments = $image['node']['edge_media_to_comment']['count'];
+							}
+
+							// Likes
+							if( ! empty( $image['node']['edge_media_preview_like']['count'] ) ){
+								$likes = $image['node']['edge_media_preview_like']['count'];
+							}
+							elseif( ! empty( $image['node']['edge_liked_by']['count'] ) ){
+								$likes = $image['node']['edge_liked_by']['count'];
+							}
+
+							// Thumbnail
 							$thumbnail = $image['node']['thumbnail_src'];
-							$comments  = $this->format_number( $image['node']['edge_media_to_comment']['count'] );
-							$likes     = $this->format_number( $image['node']['edge_media_preview_like']['count'] );
+
+							// If the 320 x 320 image exists use it
+							if( ! empty( $image['node']['thumbnail_resources'][2]['src'] ) ){
+								$thumbnail = $image['node']['thumbnail_resources'][2]['src'];
+							}
 
 							$photo_desc = '';
 
+							if( ! empty( $image['node']['edge_media_to_caption']['edges'][0]['node']['text'] ) ){
+								$photo_desc = wp_trim_words ( $image['node']['edge_media_to_caption']['edges'][0]['node']['text'], 40 );
+								$photo_desc = $this->links_mentions( $photo_desc );
+							}
+
 							if( $this->link_to ){
 								if( $this->link_to == 'file' && ! empty( $image['node']['display_url'] ) && ! $is_video ){
+
 									$img_link = $image['node']['display_url'];
 
+									$lightbox[] = 'aria-label="Instagram Photo"';
 									$lightbox[] = 'class="lightbox-enabled"';
-									$lightbox[] = 'data-options="thumbnail: \''. $thumbnail .'\', width: 640, height: 640"';
+									$lightbox[] = 'data-options="thumbnail: \''. $thumbnail .'\', width: 800, height: 800"';
 									$lightbox[] = 'data-title="'. $photo_desc .'"';
-									$lightbox[] = 'data-caption="&lt;span class=\'fa fa-heart\'&gt;&lt;/span&gt; &nbsp;'. $likes .'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span class=\'fa fa-comment\'&gt;&lt;/span&gt; &nbsp;'. $comments .'"';
+
+									// Caption
+									if( ! empty( $comments ) || ! empty( $likes ) ){
+
+										$caption = 'data-caption="';
+										if( ! empty( $likes ) ){
+											$caption .= '&lt;span class=\'fa fa-heart\'&gt;&lt;/span&gt; &nbsp;'. $this->format_number( $likes ) .'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+										}
+										if( ! empty( $comments ) ){
+											$caption .= '&lt;span class=\'fa fa-comment\'&gt;&lt;/span&gt; &nbsp;'. $this->format_number( $comments );
+										}
+										$caption .= '"';
+
+										$lightbox[] = $caption;
+									}
 
 								}
 								elseif( ! empty( $image['node']['shortcode'] ) ) {
@@ -152,10 +218,6 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 								}
 							}
 
-							if( ! empty( $image['node']['edge_media_to_caption']['edges'][0]['node']['text'] ) ){
-								$photo_desc = wp_trim_words ( $image['node']['edge_media_to_caption']['edges'][0]['node']['text'], 40 );
-								$photo_desc = $this->links_mentions( $photo_desc );
-							}
 							?>
 
 							<div class="tie-insta-post">
@@ -164,11 +226,15 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 									if( ! empty( $img_link ) ){
 										echo '<a href="'. esc_url( $img_link ) .'" '. join( ' ', $lightbox ) .' target="_blank" rel="nofollow noopener">';
 									}
-								?>
 
-								<img src="<?php echo $thumbnail ?>" width="640" height="640" alt="" />
+									// Lazy Load
+									if( tie_get_option( 'lazy_load' ) ){
+										echo '<img class="lazy-img" src="'. tie_lazyload_placeholder('square') .'" data-src="'. $thumbnail .'" width="320" height="320" alt="Instagram Photo" />';
+									}
+									else{
+										echo '<img src="'. $thumbnail .'" width="320" height="320" alt="Instagram Photo" />';
+									}
 
-								<?php
 									if( $is_video ){
 										echo '<span class="media-video"><span class="fa fa-video-camera"></span></span>';
 									}
@@ -187,13 +253,15 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 						}
 					}
 
+					// Enqueue the LightBox Js file
+					wp_enqueue_script( 'tie-js-ilightbox' );
+
 					?>
 				</div>
 			</div>
 
 			<?php
 		}
-
 
 
 		/**
@@ -211,7 +279,6 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 
 			return $text;
 		}
-
 
 
 		/**
@@ -235,50 +302,79 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 		}
 
 
-
 		/**
-		 * Prepare the Username
+		 * Make the connection to Instagram
 		 */
-		private function prepare_username( $username = false ){
+		private function remote_get( $api_url = false ){
 
-			if( ! empty( $username ) ){
-				return str_replace( '@', '', TIELABS_HELPER::remove_spaces( $username ) );
-			}
+			$args = array(
+				'timeout'    => 10,
+				'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36',
+				'headers'    => array(
+					'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+					'Accept-Encoding' => 'gzip, deflate, br',
+					'Accept-Language' => 'en-US,en;q=0.9,ar;q=0.8,fr;q=0.7,it;q=0.6,es;q=0.5,pt;q=0.4,tr;q=0.3',
+					'Dnt' => '1',
+					'Sec-Fetch-Mode' => 'navigate',
+					'Sec-Fetch-Site' => 'cross-site',
+					'Sec-Fetch-User' => '?1',
+					'Upgrade-Insecure-Requests' => '1',
+				),
+			);
 
-			return false;
+			return wp_remote_get( $api_url, $args );
 		}
-
 
 
 		/**
 		 * Make the connection to Instagram
 		 */
-		private function remote_get( $username = false ){
+		private function get_data(){
 
-			$username = $this->prepare_username( $username );
-
-			// Check if there is no a username
-			if( empty( $username ) ){
-				return array( 'error' => esc_html__( 'Can not find the user!', TIELABS_TEXTDOMAIN ) );
-			}
+			// debug
+			// delete_option( 'tie_instagram_ip_blocked' );
+			// delete_transient( 'tie_insta_'.$this->username );
 
 			// Check if we have a cached version
-			if( get_transient( 'tie_insta_'.$username ) !== false ){
-				return get_transient( 'tie_insta_'.$username );
+			if( get_transient( 'tie_insta_'.$this->username ) !== false ){
+				return get_transient( 'tie_insta_'.$this->username );
 			}
 
-			// Make a new connection
-			$api_url = 'https://www.instagram.com/'. $username;
-			$request = wp_remote_get( $api_url, array( 'timeout' => 10 ) );
+			// Check the connection method we need to use
+			if( get_option( 'tie_instagram_ip_blocked' ) ){
+				$request = $this->get_by_userid();
+			}
+			else{
+				$request = $this->get_by_username();
+			}
+
+			// Return if there is an error
+			if( ! empty( $request['error'] ) ){
+				return $request;
+			}
+
+			// Set the cache for 12 hours
+			set_transient( 'tie_insta_'.$this->username, $request, rand(5,20)*HOUR_IN_SECONDS );
+
+			return $request;
+		}
 
 
-			// Have Error
+		/**
+		 * Make the connection to Instagram by Username
+		 */
+		private function get_by_username(){
+
+			$request = $this->remote_get( 'https://www.instagram.com/'. $this->username );
+
+			// Error
 			if( empty( $request ) || is_wp_error( $request ) ){
 				return array( 'error' => esc_html__( 'Can not connect to Instagram!', TIELABS_TEXTDOMAIN ) );
 			}
 
 			// Get the data from the HTNL
 			$data = wp_remote_retrieve_body( $request );
+
 			$pattern = '/window\._sharedData = (.*);<\/script>/';
 			preg_match( $pattern, $data, $matches );
 
@@ -295,6 +391,15 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 					return array( 'error' => esc_html__( 'Can not decoding the instagram json', TIELABS_TEXTDOMAIN ) );
 				}
 
+				// Check if we redirected to the Login page then use the alt method
+				if( ! empty( $instagram_data['entry_data']['LoginAndSignupPage'] ) ){
+
+					update_option( 'tie_instagram_ip_blocked', true, 'no' );
+
+					return $this->get_by_userid();
+					//return array( 'error' => esc_html__( 'Instagram redirected to login and signup page. Rate limiting occured. Try to use other ip or try crawling with authentication.', TIELABS_TEXTDOMAIN ) );
+				}
+
 				// Check if the images set is available
 				if( empty( $instagram_data['entry_data']['ProfilePage'][0]['graphql']['user'] ) ){
 					return array( 'error' => esc_html__( 'Can not find the user!', TIELABS_TEXTDOMAIN ) );
@@ -304,7 +409,7 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 				$user_data = array(
 					'photos'  => false,
 					'profile' => array(
-						'username' => $username,
+						'username' => $this->username,
 					),
 				);
 
@@ -336,17 +441,79 @@ if( ! class_exists( 'TIELABS_INSTAGRAM' )){
 					$user_data['profile']['avatar'] = $instagram_data['entry_data']['ProfilePage'][0]['graphql']['user']['profile_pic_url'];
 				}
 
-				// Set the cache for 12 hours
-				set_transient( 'tie_insta_'.$username , $user_data, 12*HOUR_IN_SECONDS );
-
 				return $user_data;
 			}
-
-			return array( 'error' => esc_html__( 'Something went wrong!', TIELABS_TEXTDOMAIN ) );
 		}
 
 
+		/**
+		 * Make the connection to Instagram by UserID
+		 */
+		private function get_by_userid(){
+
+			$api_url = "https://www.instagram.com/graphql/query/?query_id=17880160963012870&id=$this->userid&first=12&after=";
+
+			$request = $this->remote_get( $api_url );
+
+			// Error
+			if( empty( $request ) || is_wp_error( $request ) ){
+				return array( 'error' => esc_html__( 'Can not connect to Instagram!', TIELABS_TEXTDOMAIN ) );
+			}
+
+			$data = wp_remote_retrieve_body( $request );
+
+			// Check if there is an error with the JSON decoding
+			$instagram_data = json_decode( $data, true );
+
+			if( $instagram_data === null && json_last_error() !== JSON_ERROR_NONE ){
+				return array( 'error' => esc_html__( 'Can not decoding the instagram json', TIELABS_TEXTDOMAIN ) );
+			}
+
+			// All the good :)
+			$user_data = array(
+				'photos'  => false,
+				'profile' => array(
+					'username' => $this->username,
+				),
+			);
+
+			if( ! empty( $instagram_data['data']['user']['edge_owner_to_timeline_media']['edges'] ) ){
+				$user_data['photos'] = $instagram_data['data']['user']['edge_owner_to_timeline_media']['edges'];
+			}
+
+			// New Request to get the ptofile data
+			$profile_request = $this->remote_get( "https://www.instagram.com/web/search/topsearch/?context=blended&query=$this->username" );
+
+			if( ! empty( $profile_request ) && ! is_wp_error( $profile_request ) ){
+
+				$profile = wp_remote_retrieve_body( $profile_request );
+				$profile = json_decode( $profile, true );
+
+				if( ! empty( $profile['users'] ) ){
+
+					foreach ( $profile['users'] as $user ) {
+						if( $user['user']['pk'] == $this->userid ) {
+
+							if( ! empty( $user['user']['follower_count'] ) ){
+								$user_data['profile']['followed'] = $user['user']['follower_count'];
+							}
+
+							if( ! empty( $user['user']['full_name'] ) ){
+								$user_data['profile']['full_name'] = $user['user']['full_name'];
+							}
+
+							if( ! empty( $user['user']['profile_pic_url'] ) ){
+								$user_data['profile']['avatar'] = $user['user']['profile_pic_url'];
+							}
+
+							break;
+						}
+					}
+				}
+			}
+
+			return $user_data;
+		}
+
 	}
 }
-
-

@@ -3,7 +3,6 @@
 @import "../utils/variables";
 @import "../utils/mixins";
 
-@import "bourbon";
 @import "woocommerce/mixins";
 @import "woocommerce/variables";
 @import "woocommerce/animation";
@@ -507,6 +506,9 @@
 		}
 
 		.panel {
+
+			padding-top: 30px;
+
 			p{
 				margin-bottom: 25px;
 				line-height: 26px;
@@ -565,7 +567,7 @@
 		}
 
 		@include breakpoint(max_min_xs){
-			max-height: none;
+			max-height: none !important;
 
 			li{
 				width: 100%;
@@ -901,13 +903,18 @@
 	}
 
 	.woocommerce-pagination{
-		margin: 60px 0 90px;
+		margin: 10px 0 50px;
 		text-align: center;
 
-		.page-numbers{
+		ul.page-numbers{
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+
 			li{
 				float: left;
 				margin-right: 10px;
+				list-style: none;
 
 				a,
 				span{
@@ -1050,12 +1057,14 @@
 			}
 
 			h2 {
-				clear: none;
+				//clear: none;
+				display: none;
 			}
 
 			ol.commentlist {
 				@include clearfix();
 				margin: 0;
+				padding: 0;
 				width: 100%;
 				background: none;
 				list-style: none;
@@ -1067,6 +1076,7 @@
 					position: relative;
 					background: 0;
 					border: 0;
+					list-style: none;
 
 					.meta {
 						color: $subtext;
@@ -1140,11 +1150,6 @@
 				float: left;
 				clear: both;
 			}
-		}
-
-		#add-comment-block{
-			padding: 0;
-			border: 0;
 		}
 	}
 
@@ -1236,10 +1241,6 @@
 				width: 100%;
 			}
 		}
-	}
-
-	.woocommerce-Reviews-title{
-		display: none;
 	}
 
 	p.stars {
@@ -1337,7 +1338,7 @@
 	}
 
 	table.shop_table {
-		border: 1px solid rgba(0,0,0,0.1);
+		border:none;
 		margin: 0 -1px 60px 0;
 		text-align: left;
 		width: 100%;
@@ -1347,11 +1348,13 @@
 		th {
 			font-weight: 700;
 			padding: 9px 12px;
+			border:none;
 		}
 
 		td {
 			padding: 6px 12px;
 			vertical-align: middle;
+			border:none;
 
 			small {
 				font-weight: normal;

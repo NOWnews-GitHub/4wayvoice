@@ -36,8 +36,8 @@ if( ! class_exists( 'TIE_LOGIN_WIDGET' )){
 		 * Handles updating settings for widget instance.
 		 */
 		public function update( $new_instance, $old_instance ){
-			$instance             = $old_instance;
-			$instance['title']    = sanitize_text_field( $new_instance['title'] );
+			$instance          = $old_instance;
+			$instance['title'] = sanitize_text_field( $new_instance['title'] );
 			return $instance;
 		}
 
@@ -71,4 +71,3 @@ if( ! class_exists( 'TIE_LOGIN_WIDGET' )){
 	}
 
 }
-?>

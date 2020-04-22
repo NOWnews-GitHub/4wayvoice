@@ -52,7 +52,6 @@ if( ! class_exists( 'TIELABS_SENSEI' )){
 			echo '</div>';
 			get_sidebar();
 		}
-
 	}
 
 

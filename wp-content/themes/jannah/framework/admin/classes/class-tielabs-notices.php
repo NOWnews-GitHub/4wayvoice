@@ -15,7 +15,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		public static $is_hooked_popup = false;
 
 
-
 		/**
 		 * Runs on class initialization. Adds filters and actions.
 		 */
@@ -29,35 +28,36 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * Enqueue the pointers styles and scripts
 		 */
 		function load_notices(){
 
+			add_action( 'admin_notices', array( $this, 'live_message' ), 105 );
+
 			// Check if current page is the theme options page
 			$current_page = ! empty( get_current_screen()->tiebase ) ? get_current_screen()->tiebase : '';
 
-			if ( $current_page != 'toplevel_page_tie-theme-options' ){
-				return;
+			if ( $current_page == 'toplevel_page_tie-theme-options' ){
+
+				// Need Help pointer
+				if( ! self::is_dismissed( 'tie_need_help_'. TIELABS_THEME_SLUG ) ){
+
+					add_action( 'admin_print_footer_scripts', array( $this, 'need_help_script' ) );
+					wp_enqueue_style ( 'wp-pointer' );
+					wp_enqueue_script( 'wp-pointer' );
+				}
+
+				add_action( 'admin_notices', array( $this, 'happy_new_year' ),    105 );
+				add_action( 'admin_notices', array( $this, 'new_update' ),        105 );
+				add_action( 'admin_notices', array( $this, 'rate_theme' ),        105 );
+				add_action( 'admin_notices', array( $this, 'theme_translation' ), 105 );
+				add_action( 'admin_notices', array( $this, 'new_milestone' ),     105 );
+				add_action( 'admin_notices', array( $this, 'happy_anniversary' ), 105 );
 			}
 
-			// Need Help pointer
-			if( ! self::is_dismissed( 'tie_need_help_'. TIELABS_THEME_SLUG ) ){
-				add_action( 'admin_print_footer_scripts', array( $this, 'need_help_script' ) );
-				wp_enqueue_style ( 'wp-pointer' );
-				wp_enqueue_script( 'wp-pointer' );
-			}
-
-			add_action( 'admin_notices', array( $this, 'happy_new_year' ),    105 );
-			add_action( 'admin_notices', array( $this, 'happy_anniversary' ), 105 );
-			add_action( 'admin_notices', array( $this, 'new_update' ),        105 );
-			add_action( 'admin_notices', array( $this, 'new_milestone' ),     105 );
-			add_action( 'admin_notices', array( $this, 'rate_theme' ),        105 );
-			add_action( 'admin_notices', array( $this, 'theme_translation' ), 105 );
-			add_action( 'admin_notices', array( $this, 'live_message' ),      105 );
+			do_action( 'tie_admin_notices' );
 		}
-
 
 
 		/**
@@ -75,7 +75,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * Check if already there is a notice message
 		 */
@@ -91,7 +90,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * Check if already there is a pop notice message
 		 */
@@ -105,7 +103,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 
 			return false;
 		}
-
 
 
 		/**
@@ -137,7 +134,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 			</script>
 			<?php
 		}
-
 
 
 		/**
@@ -186,7 +182,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * Rate the Theme
 		 */
@@ -199,7 +194,7 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 			}
 
 			if( ! get_option( $notice_id ) ){
-				update_option( $notice_id, time() );
+				update_option( $notice_id, time(), false );
 			}
 			else{
 
@@ -226,7 +221,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 				));
 			}
 		}
-
 
 
 		/**
@@ -293,7 +287,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * New Theme Update
 		 */
@@ -332,7 +325,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 				));
 			}
 		}
-
 
 
 		/**
@@ -388,7 +380,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 				}
 			}
 
-
 			// Check if the Post Views is active
 			if( tie_get_option( 'tie_post_views' ) == 'theme' && ! $milestone ){
 
@@ -422,7 +413,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 					}
 				}
 			}
-
 
 			// Let's make this check every 2 weeks
 			set_transient( 'tie_milestone_check', 'true', 2 * WEEK_IN_SECONDS );
@@ -464,7 +454,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 				'button_class'=> 'green',
 			));
 		}
-
 
 
 		/**
@@ -512,7 +501,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 		}
 
 
-
 		/**
 		 * Live Message
 		 */
@@ -548,8 +536,6 @@ if( ! class_exists( 'TIELABS_NOTICES' ) ){
 				self::message( $data );
 			}
 		}
-
-
 
 
 		/**

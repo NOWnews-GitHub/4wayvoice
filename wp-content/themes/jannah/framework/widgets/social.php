@@ -52,8 +52,8 @@ if( ! class_exists( 'TIE_SOCIAL_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance = $old_instance;
 			$instance['title']   = strip_tags( $new_instance['title'] );
-			$instance['tran_bg'] = $new_instance['tran_bg'] ;
-			$instance['center']  = $new_instance['center'];
+			$instance['tran_bg'] = ! empty( $new_instance['tran_bg'] ) ? 'true' : 0;
+			$instance['center']  = ! empty( $new_instance['center'] )  ? 'true' : 0;
 
 			return $instance;
 		}
@@ -99,4 +99,3 @@ if( ! class_exists( 'TIE_SOCIAL_WIDGET' )){
 	}
 
 }
-?>

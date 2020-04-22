@@ -21,9 +21,9 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			$no_of_posts   = isset( $instance['no_of_posts'] ) ? $instance['no_of_posts'] : 5;
-			$custom_slider = isset( $instance['custom_slider'] ) ? $instance['custom_slider'] : '';
-			$posts_order   = isset( $instance['posts_order'] ) ? $instance['posts_order'] : 'latest';
+			$no_of_posts   = ! empty( $instance['no_of_posts'] )   ? $instance['no_of_posts']   : 5;
+			$custom_slider = ! empty( $instance['custom_slider'] ) ? $instance['custom_slider'] : '';
+			$posts_order   = ! empty( $instance['posts_order'] )   ? $instance['posts_order']   : 'latest';
 			$cats_id       = '';
 
 			if( ! empty( $instance['cats_id'] )){
@@ -74,10 +74,11 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 
 								if( $slider_query->have_posts() ):
 									while ( $slider_query->have_posts() ):  $slider_query->the_post();
+
                     if( tie_get_option( 'lazy_load' )){
                     	?>
                       <div class="slide">
-                        <img data-lazy="<?php echo tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) ?>" src="<?php echo TIELABS_TEMPLATE_URL; ?>/assets/images/tie-empty.png" alt="">
+                        <img data-lazy="<?php echo tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) ?>" src="<?php echo tie_lazyload_placeholder(); ?>" alt="">
                         <div class="slide-bg"></div>
                     		<?php
                     }
@@ -108,7 +109,7 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 
 									foreach( $slider as $slide ): ?>
 
-										<div style="background-image: url(<?php echo  tie_slider_img_src( $slide['id'] , 'tie-large' ) ?>)" class="slide">
+										<div style="background-image: url(<?php echo tie_slider_img_src( $slide['id'] , TIELABS_THEME_SLUG.'-image-large' ) ?>)" class="slide">
 											<div class="tie-slide-overlay-bg"></div>
 
 											<?php if( ! empty( $slide['link'] ) ): ?>
@@ -152,7 +153,7 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 			$instance['title']         = sanitize_text_field( $new_instance['title'] );
 			$instance['no_of_posts']   = $new_instance['no_of_posts'];
 			$instance['custom_slider'] = $new_instance['custom_slider'];
-			$instance['slider_only']   = $new_instance['slider_only'];
+			$instance['slider_only']   = ! empty( $new_instance['slider_only'] ) ? 'true' : false;
 			$instance['posts_order']   = $new_instance['posts_order'];
 			$instance['cats_id']       = implode( ',', $new_instance['cats_id'] );
 			return $instance;
@@ -165,11 +166,11 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 			$defaults = array( 'title' => esc_html__( 'Featured Posts', TIELABS_TEXTDOMAIN) ,'no_of_posts' => '5', 'cats_id' => '1' );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title         = isset( $instance['title'] ) ? esc_attr( $instance['title']) : '';
-			$no_of_posts   = isset( $instance['no_of_posts'] ) ? esc_attr( $instance['no_of_posts']) : 5;
-			$slider_only   = isset( $instance['slider_only'] ) ? esc_attr( $instance['slider_only']) : '';
+			$title         = isset( $instance['title'] )         ? esc_attr( $instance['title'])         : '';
+			$no_of_posts   = isset( $instance['no_of_posts'] )   ? esc_attr( $instance['no_of_posts'])   : 5;
+			$slider_only   = isset( $instance['slider_only'] )   ? esc_attr( $instance['slider_only'])   : '';
 			$custom_slider = isset( $instance['custom_slider'] ) ? esc_attr( $instance['custom_slider']) : '';
-			$posts_order   = isset( $instance['posts_order'] ) ? esc_attr( $instance['posts_order']) : '';
+			$posts_order   = isset( $instance['posts_order'] )   ? esc_attr( $instance['posts_order'])   : '';
 			$cats_id       = array();
 
 			if( ! empty( $instance['cats_id'] )){
@@ -178,10 +179,11 @@ if( ! class_exists( 'TIE_SLIDER_WIDGET' )){
 
 			//Post Order
 			$post_order = array(
-				'latest'   => esc_html__( 'Recent Posts', TIELABS_TEXTDOMAIN ),
-				'rand'     => esc_html__( 'Random Posts', TIELABS_TEXTDOMAIN ),
-				'modified' => esc_html__( 'Last Modified Posts', TIELABS_TEXTDOMAIN ),
+				'latest'   => esc_html__( 'Recent Posts',         TIELABS_TEXTDOMAIN ),
+				'rand'     => esc_html__( 'Random Posts',         TIELABS_TEXTDOMAIN ),
+				'modified' => esc_html__( 'Last Modified Posts',  TIELABS_TEXTDOMAIN ),
 				'popular'  => esc_html__( 'Most Commented posts', TIELABS_TEXTDOMAIN ),
+				'title'    => esc_html__( 'Alphabetically',       TIELABS_TEXTDOMAIN ),
 			);
 
 			if( tie_get_option( 'tie_post_views' ) ){

@@ -77,7 +77,7 @@ if( ! class_exists( 'ARQAM_LITE_COUNTERS' )){
 			}
 
 			// Update the transient and the option
-			set_transient( 'arq_counters', $this->arq_transient, 8 * HOUR_IN_SECONDS );
+			set_transient( 'arq_counters', $this->arq_transient, rand(5,20)*HOUR_IN_SECONDS );
 			update_option( 'arq_options', $this->arq_options );
 		}
 
@@ -101,7 +101,6 @@ if( ! class_exists( 'ARQAM_LITE_COUNTERS' )){
 			}
 
 			return number_format_i18n( $number );
-
 		}
 
 
@@ -152,7 +151,7 @@ if( ! class_exists( 'ARQAM_LITE_COUNTERS' )){
 
 					// Twitter
 					case 'twitter':
-						if (! empty($arq_options['social']['twitter']['id']) ){
+						if ( ! empty($arq_options['social']['twitter']['id']) ){
 							$include = true;
 							$text    = empty( $arq_options['social']['twitter']['text'] ) ? esc_html__('Followers', 'arqam-lite') : $arq_options['social']['twitter']['text'];
 							$count   = $this->format_number( $this->twitter_count() );
@@ -242,7 +241,7 @@ if( ! class_exists( 'ARQAM_LITE_COUNTERS' )){
 
 					// Instagram
 					case 'instagram':
-						if ( ! empty($arq_options['social']['instagram']['id']) ){
+						if ( ! empty($arq_options['social']['instagram']['id']) && ! empty($arq_options['social']['instagram']['api']) ){
 							$include = true;
 							$text    = empty( $arq_options['social']['instagram']['text'] ) ? esc_html__('Followers', 'arqam-lite') : $arq_options['social']['instagram']['text'];
 							$count   = $this->format_number( $this->instagram_count() );
@@ -608,35 +607,50 @@ if( ! class_exists( 'ARQAM_LITE_COUNTERS' )){
 		function instagram_count(){
 
 			// Get the cached data
-			if( $counter = $this-> get_cached_data( 'instagram' ) ){
+			if( $counter = $this->get_cached_data( 'instagram' ) ){
 				return $counter;
 			}
 
 			// Username
 			$username = $this->arq_options['social']['instagram']['id'];
 
-			// Make a new connection
-			$api_url = 'https://www.instagram.com/'. $username;
-			$request = wp_remote_get( $api_url, array( 'timeout' => 15 ) );
+			//Access Token
+			$api_key = $this->arq_options['social']['instagram']['api'];
 
-			// Error
-			if( empty( $request ) || is_wp_error( $request ) ){
-				return;
-			}
+			// Is the Username and the Api Key exist?
+			if( ! empty( $username ) && ! empty( $api_key ) ){
 
-			// Get the data from the HTNL
-			$data = wp_remote_retrieve_body( $request );
-			$pattern = '/window\._sharedData = (.*);<\/script>/';
-			preg_match( $pattern, $data, $matches );
+				// Make a new connection
+				$api_url = 'https://api.instagram.com/v1/users/self/?access_token='. $api_key;
 
-			// Is the json data available?
-			if ( ! empty( $matches[1] ) ){
+				// Args
+				$args = array(
+					'timeout'    => 10,
+					'user-agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36',
+					'headers'    => array(
+						'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+						'Accept-Encoding' => 'gzip, deflate, br',
+						'Accept-Language' => 'en-US,en;q=0.9,ar;q=0.8,fr;q=0.7,it;q=0.6,es;q=0.5,pt;q=0.4,tr;q=0.3',
+						'Dnt' => '1',
+						'Sec-Fetch-Mode' => 'navigate',
+						'Sec-Fetch-Site' => 'cross-site',
+						'Sec-Fetch-User' => '?1',
+						'Upgrade-Insecure-Requests' => '1',
+					),
+				);
 
-				// Check if there is an error with the JSON decoding
-				$instagram_data = json_decode( $matches[1], true );
+				$request = wp_remote_get( $api_url, $args );
 
-				if( ! empty( $instagram_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count'] ) ){
-					$counter = $instagram_data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_followed_by']['count'];
+				// Error
+				if( empty( $request ) || is_wp_error( $request ) ){
+					return;
+				}
+
+				$profile = wp_remote_retrieve_body( $request );
+				$profile = json_decode( $profile, true );
+
+				if( ! empty( $profile['data']['counts']['followed_by'] ) ){
+					$counter = $profile['data']['counts']['followed_by'];
 				}
 			}
 

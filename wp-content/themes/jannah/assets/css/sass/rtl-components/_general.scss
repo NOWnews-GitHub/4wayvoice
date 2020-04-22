@@ -21,6 +21,14 @@
     margin-left: 8px;
     margin-right: 0;
 
+    // Icons
+    &.fa-before{
+      &:before{
+        padding-left: 3px;
+        padding-right: 0;
+      }
+    }
+
     .mag-box &{
       white-space: nowrap; // safari fix
     }
@@ -161,7 +169,7 @@
 }
 
 
-// - Youtube Widget issue fix
+// - YouTube Widget issue fix
 div[style*="visibility: hidden;"][style*="left: -10000px;"]{
   left: auto !important;
   right: -10000px !important;
@@ -171,12 +179,6 @@ div[style*="visibility: hidden;"][style*="left: -10000px;"]{
 a.remove{
   left: 0;
   right: auto;
-
-  // side aside
-  .side-aside &{
-    left: auto;
-    right: 30px;
-  }
 
   // popup module [login & search]
   .tie-popup &{

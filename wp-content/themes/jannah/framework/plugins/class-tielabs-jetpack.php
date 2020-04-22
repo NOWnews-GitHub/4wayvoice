@@ -22,11 +22,13 @@ if( ! class_exists( 'TIELABS_JETPACK' )){
 		 */
 		function __construct(){
 
-
 			// Disable if the Jetpack plugin is not active
 			if ( ! TIELABS_JETPACK_IS_ACTIVE ){
 				return;
 			}
+
+			// Disable Jetpack upsell ads
+			add_filter( 'jetpack_just_in_time_msgs', '__return_false' );
 
 			// Check OpenGraph
 			add_filter( 'TieLabs/is_opengraph_active', array( $this, 'is_opengraph_active' ) );
@@ -38,22 +40,22 @@ if( ! class_exists( 'TIELABS_JETPACK' )){
 			}
 			*/
 
+			// Get Most Viewd Post for x days
+			add_filter( 'TieLabs/posts_widget_query', array( $this, 'widget_query' ), 10, 1 );
+
 			// Jetpack Views option is enabled
 			if( Jetpack::is_module_active( 'stats' ) ){
 
 				// Theme Meta Jetpack post views
-				if( tie_get_option( 'tie_post_views' ) != 'jetpack' ){
+				if( tie_get_option( 'tie_post_views' ) == 'jetpack' ){
 
-					# Add Stats to REST API Post response
+					// Add Stats to REST API Post response
 					if ( function_exists( 'register_rest_field' ) ) {
 						add_action( 'rest_api_init',  array( $this, 'rest_register_post_views' ) );
 					}
 
 					$this->count_key = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
 				}
-
-				// Get Most Viewd Post for x days
-				add_filter( 'TieLabs/posts_widget_query', array( $this, 'widget_query' ), 10, 1 );
 			}
 		}
 
@@ -118,7 +120,6 @@ if( ! class_exists( 'TIELABS_JETPACK' )){
 
 		/**
 		 * rest_register_post_views
-		 *
 		 */
 		public function rest_register_post_views() {
 
@@ -161,7 +162,9 @@ if( ! class_exists( 'TIELABS_JETPACK' )){
 		 */
 		public function rest_update_views( $view, $object, $field_name ) {
 
-			if ( empty( $view ) ) return false;
+			if ( empty( $view ) ){
+				return false;
+			}
 
 			return update_post_meta( $object->ID, $this->count_key, $view );
 		}
@@ -174,23 +177,48 @@ if( ! class_exists( 'TIELABS_JETPACK' )){
 
 			$views = 0;
 
+			/**
+			 * Default method
+			 */
+
 			// Return early if we use a too old version of Jetpack.
-			if ( ! function_exists( 'stats_get_from_restapi' ) ) {
-				return;
+			if ( ! function_exists( 'stats_get_csv' ) ) {
+				return $views;
 			}
 
-			# Build our sub-endpoint to get stats for a specific post.
-			$endpoint = sprintf( 'post/%d', $post_id );
+			$args = array( 'days' => -1, 'limit' => -1, 'post_id'=> $post_id );
+			$result = stats_get_csv( 'postviews', $args );
 
-			# Get the data
-			$stats = stats_get_from_restapi( array( 'fields' => 'views' ), $endpoint );
+			if( ! empty( $result[0]['views'] ) ){
+				$views = $result[0]['views'];
+			}
 
-			# Process that data
-			if ( ! empty( $stats ) && isset( $stats->views ) ) {
 
+			/**
+			 * Alternative method
+			 */
+			else{
+
+				// Return early if we use a too old version of Jetpack.
+				if ( ! function_exists( 'stats_get_from_restapi' ) ) {
+					return $views;
+				}
+
+				// Build our sub-endpoint to get stats for a specific post.
+				$endpoint = sprintf( 'post/%d', $post_id );
+
+				// Get the data
+				$stats = stats_get_from_restapi( array( 'fields' => 'views' ), $endpoint );
+
+				// Process that data
+				if ( ! empty( $stats ) && isset( $stats->views ) ) {
+					$views = $stats->views;
+				}
+			}
+
+			// Update the meta field
+			if( ! empty( $views ) ){
 				$count_key = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
-
-				$views = $stats->views;
 				update_post_meta( $post_id, $count_key, $views );
 			}
 

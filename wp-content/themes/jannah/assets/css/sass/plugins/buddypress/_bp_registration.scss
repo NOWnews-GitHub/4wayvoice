@@ -30,7 +30,7 @@
 			margin: $marg-med 0;
 
 			fieldset {
-				border-width: 0;
+				border: 0;
 				padding: 0;
 
 				legend {
@@ -44,14 +44,61 @@
 
 				fieldset {
 					margin: 0 0 $marg-sml;
-					border-width: 1px;
-					padding: 0.35em 0.625em 0.75em;
 				}
 			}
 		} // editfield
 
 		#signup-avatar img {
 			margin: 0 $marg-med $marg-sml 0;
+		}
+
+		.wp-pwd button {
+			line-height: 21px;
+			position: absolute;
+			top: 0;
+			right: 0;
+		}
+
+		.password-input-wrapper{
+			position: relative;
+		}
+
+		#pass1,
+		#pass1-text,
+		#pass-strength-result {
+
+		}
+
+		#pass1 {
+			display: inline-block;
+			margin-bottom: inherit;
+		}
+
+		#pass1-text,
+		.pw-weak {
+			display: none;
+		}
+
+		.show-password {
+
+			#pass1-text {
+				display: inline-block;
+				margin-bottom: inherit;
+			}
+
+			#pass1 {
+				display: none;
+			}
+		}
+
+		.description.indicator-hint {
+			line-height: 1.5;
+			@include font-size(14);
+		}
+
+		#submit:disabled {
+			color: $light-text;
+			opacity: 0.4;
 		}
 
 		.password-entry,
@@ -61,6 +108,20 @@
 	} // close .signup-form
 
 } // close .register-page
+
+body.buddypress.register.js {
+
+	.user-pass2-wrap {
+		display: none;
+	}
+}
+
+body.buddypress.register.no-js {
+
+	.wp-hide-pw {
+		display: none;
+	}
+}
 
 // Flex layout containers for registration sections
 
@@ -104,12 +165,13 @@
 		.register-page {
 
 			.default-profile {
+				min-width: 14em;
 				flex: 1;
 				padding-right: $pad-med;
 			}
 
 			.extended-profile {
-				flex: 2;
+				flex: 1;
 				padding-left: $pad-med;
 			}
 

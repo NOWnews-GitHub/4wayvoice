@@ -7,9 +7,6 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-locate_template( 'framework/admin/classes/class-tielabs-admin-helper.php', true, true );
-
-
 /*-----------------------------------------------------------------------------------
 	WordPress uses the menu parent name in the sub menu pages class names example:
 	{menu-slug}_page_{sub-menu-slug} and use it in the main page hook name example:
@@ -33,10 +30,6 @@ function tie_chnage_theme_parent_menu( $name ){
 
 	return $name;
 }
-
-
-
-
 
 
 /**
@@ -131,6 +124,10 @@ function tie_build_theme_options_tabs(){
 			'icon'  => 'admin-site',
 			'title' => esc_html__( 'Web Notifications', TIELABS_TEXTDOMAIN )),
 
+		'api-keys' => array(
+			'icon'  => 'rest-api',
+			'title' => esc_html__( 'API Keys', TIELABS_TEXTDOMAIN )),
+
 		'advanced' => array(
 			'icon'  => 'admin-tools',
 			'title' => esc_html__( 'Advanced', TIELABS_TEXTDOMAIN )),
@@ -148,7 +145,7 @@ function tie_build_theme_options_tabs(){
 	if ( TIELABS_BBPRESS_IS_ACTIVE ){
 
 		$settings_tabs['bbpress'] = array(
-			'icon'  => 'bbpress',
+			'icon'  => 'buddicons-bbpress-logo',
 			'title' => esc_html__( 'bbPress', TIELABS_TEXTDOMAIN ),
 		);
 	}
@@ -156,7 +153,7 @@ function tie_build_theme_options_tabs(){
 	if ( TIELABS_BUDDYPRESS_IS_ACTIVE ){
 
 		$settings_tabs['buddypress'] = array(
-			'icon'  => 'buddypress',
+			'icon'  => 'buddicons-buddypress-logo',
 			'title' => esc_html__( 'BuddyPress', TIELABS_TEXTDOMAIN ),
 		);
 	}
@@ -168,7 +165,6 @@ function tie_build_theme_options_tabs(){
 
 	return $settings_tabs;
 }
-
 
 
 /**
@@ -251,7 +247,6 @@ function tie_modify_admin_bar( $wp_admin_bar ){
 			}
 		</style>
 	';
-
 }
 
 
@@ -260,18 +255,17 @@ function tie_modify_admin_bar( $wp_admin_bar ){
 */
 function tie_get_purchase_link( $utm_data = array() ){
 
+	// Let's track the source of purchase
 	return add_query_arg(
 		wp_parse_args( $utm_data, array(
-		'ref'          => 'tielabs',
 		'utm_source'   => 'theme-panel',
 		'utm_medium'   => 'link',
 		'utm_campaign' => TIELABS_THEME_SLUG,
-		'utm_content'  => ''
+		'utm_content'  => false
 		)),
-		'https://themeforest.net/item/tielabs/'. TIELABS_THEME_ID
+		'https://tielabs.com/buy/jannah'
 	);
 }
-
 
 
 /**
@@ -282,31 +276,24 @@ if( ! is_admin() ){
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Include the Requried files
 /*-----------------------------------------------------------------------------------*/
-locate_template( 'framework/admin/theme-options.php',          true, true );
-
-locate_template( 'framework/admin/classes/class-tielabs-builder-widgets.php',     true, true );
-locate_template( 'framework/admin/classes/class-tielabs-welcome-page.php',        true, true );
-locate_template( 'framework/admin/classes/class-tielabs-menu-limit-detector.php', true, true );
-locate_template( 'framework/admin/classes/class-tielabs-required-plugins.php',    true, true );
-locate_template( 'framework/admin/classes/class-tielabs-demo-importer.php',       true, true );
-locate_template( 'framework/admin/classes/class-tielabs-posts-switcher.php',      true, true );
-locate_template( 'framework/admin/classes/class-tielabs-system-status.php',       true, true );
-locate_template( 'framework/admin/classes/class-tielabs-theme-updater.php',       true, true );
-locate_template( 'framework/admin/classes/class-tielabs-settings.php',            true, true );
-locate_template( 'framework/admin/classes/class-tielabs-settings-category.php',   true, true );
-locate_template( 'framework/admin/classes/class-tielabs-settings-post.php',       true, true );
-locate_template( 'framework/admin/classes/class-tielabs-notices.php',             true, true );
-locate_template( 'framework/admin/classes/class-tielabs-verification.php',        true, true );
-
-locate_template( 'framework/admin/page-builder.php',           true, true );
-
-
+require TIELABS_TEMPLATE_PATH . '/framework/admin/theme-options.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-builder-widgets.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-welcome-page.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-menu-limit-detector.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-required-plugins.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-demo-importer.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-posts-switcher.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-system-status.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-theme-updater.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-settings.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-settings-category.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-settings-post.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-notices.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-verification.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/page-builder.php';
 
 
 
@@ -316,10 +303,15 @@ locate_template( 'framework/admin/page-builder.php',           true, true );
 add_action( 'admin_enqueue_scripts', 'tie_admin_enqueue_scripts' );
 function tie_admin_enqueue_scripts(){
 
+	if( is_customize_preview() ){
+		return;
+	}
+
 	// Enqueue dashboard scripts and styles
-	wp_enqueue_script( 'tie-admin-scripts', TIELABS_TEMPLATE_URL .'/framework/admin/assets/tie.js',         array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker' ), TIELABS_DB_VERSION, false );
-	wp_enqueue_style ( 'tie-admin-style',   TIELABS_TEMPLATE_URL.'/framework/admin/assets/style.css',       array(), TIELABS_DB_VERSION, 'all' );
-	wp_enqueue_style ( 'tie-fontawesome',   TIELABS_TEMPLATE_URL.'/assets/fonts/fontawesome/font-awesome.min.css', array(), TIELABS_DB_VERSION, 'all' );
+	$ver = time(); // Avoid browser cache for admins
+	wp_enqueue_script( 'tie-admin-scripts', TIELABS_TEMPLATE_URL.'/framework/admin/assets/tie.js', array( 'jquery', 'jquery-ui-sortable', 'jquery-ui-draggable', 'wp-color-picker' ), $ver, false );
+	wp_enqueue_style ( 'tie-admin-style',   TIELABS_TEMPLATE_URL.'/framework/admin/assets/style.css', array(), $ver, 'all' );
+	wp_enqueue_style ( 'tie-fontawesome',   TIELABS_TEMPLATE_URL.'/assets/fonts/fontawesome/font-awesome.min.css', array(), $ver, 'all' );
   wp_enqueue_style ( 'wp-color-picker' );
 
 	$localize = array(
@@ -337,9 +329,6 @@ function tie_admin_enqueue_scripts(){
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Code Editor
 /*-----------------------------------------------------------------------------------*/
@@ -353,7 +342,8 @@ function tie_admin_code_editor(){
 
 
 	// Posts and Pages elements
-	if( get_post_type() == 'post' || get_post_type() == 'page' ){
+	$settings_post_types = apply_filters( 'TieLabs/settings_post_types', array( 'post', 'page' ) );
+	if( is_array( $settings_post_types ) && in_array( get_post_type(), $settings_post_types ) ){
 
 		$elements = array(
 			'tie_custom_css' => 'text/css',
@@ -389,8 +379,13 @@ function tie_admin_code_editor(){
 	elseif( TIELABS_ADMIN_HELPER::is_theme_options_page() ){
 
 		$elements = array(
+
+			//
 			'header_code' => 'text/html',
+			'body_code'   => 'text/html',
 			'footer_code' => 'text/html',
+
+			// ADS
 			'banner_top_adsense'    => 'text/html',
 			'banner_above_adsense'  => 'text/html',
 			'banner_bottom_adsense' => 'text/html',
@@ -399,19 +394,38 @@ function tie_admin_code_editor(){
 			'banner_below_header_adsense'  => 'text/html',
 			'banner_above_content_adsense' => 'text/html',
 			'banner_below_content_adsense' => 'text/html',
-			'between_posts_1_adsense' => 'text/html',
-			'between_posts_2_adsense' => 'text/html',
+			'between_posts_1_adsense'      => 'text/html',
+			'between_posts_2_adsense'      => 'text/html',
+
+			// Inline Article Ads
+			'article_inline_ad_1_adsense' => 'text/html',
+			'article_inline_ad_2_adsense' => 'text/html',
+
+			// Category Ads
+			'banner_category_below_slider_adsense'     => 'text/html',
+			'banner_category_above_title_adsense'      => 'text/html',
+			'banner_category_below_title_adsense'      => 'text/html',
+			'banner_category_below_posts_adsense'      => 'text/html',
+			'banner_category_below_pagination_adsense' => 'text/html',
+
+			// Ads Shortcodes
 			'ads1_shortcode' => 'text/html',
 			'ads2_shortcode' => 'text/html',
 			'ads3_shortcode' => 'text/html',
 			'ads4_shortcode' => 'text/html',
 			'ads5_shortcode' => 'text/html',
-			'amp_ad_above'   => 'text/html',
-			'amp_ad_below'   => 'text/html',
 
-			'css' => 'text/css',
+			// AMP
+			'amp_ad_above'        => 'text/html',
+			'amp_ad_below'        => 'text/html',
+			'amp_ad_below_header' => 'text/html',
+			'amp_ad_above_footer' => 'text/html',
+
+			// CSS
+			'css'         => 'text/css',
 			'css_tablets' => 'text/css',
 			'css_phones'  => 'text/css',
+			'css_amp'     => 'text/css',
 		);
 	}
 
@@ -453,9 +467,6 @@ function tie_admin_code_editor(){
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Install the default theme settings
 /*-----------------------------------------------------------------------------------*/
@@ -474,7 +485,7 @@ function tie_install_theme(){
 		update_option( 'tie_ver_'. TIELABS_THEME_ID, TIELABS_DB_VERSION );
 
 		// Store the data of installing the theme temporarily
-		update_option( 'tie_install_date_'. TIELABS_THEME_ID, time() );
+		update_option( 'tie_install_date_'. TIELABS_THEME_ID, time(), false );
 	}
 
 
@@ -488,9 +499,6 @@ function tie_install_theme(){
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Default theme settings
 /*-----------------------------------------------------------------------------------*/
@@ -501,7 +509,7 @@ function tie_default_theme_settings(){
 
 			'site_width'                        => '1200px',
 
-			# General Settings
+			// General Settings
 			'time_format'                       => 'modern',
 			'time_type'                         => 'published',
 			'breadcrumbs'                       => 'true',
@@ -510,12 +518,12 @@ function tie_default_theme_settings(){
 			'structure_data'                    => 'true',
 			'schema_type'                       => 'Article',
 
-			# Layout
+			// Layout
 			'theme_layout'                      => 'full',
-			'boxes_style'                       => 1,
+			'boxes_style'                       => 2,
 			'loader-icon'                       => 1,
 
-			# Header
+			// Header
 			'header_layout'                     => '3',
 			'main_nav'                          => 'true',
 			'main_nav_dark'                     => 'true',
@@ -540,10 +548,10 @@ function tie_default_theme_settings(){
 			'top-nav-components_random'         => 'true',
 			'top-nav-components_cart'           => 'true',
 
-			# Logo
+			// Logo
 			'logo_setting'                      => 'logo',
 
-			# Footer
+			// Footer
 			'footer_widgets_area_1'             => 'true',
 			'footer_widgets_layout_area_1'      => 'footer-3c',
 			'footer_widgets_area_2'             => 'true',
@@ -551,11 +559,12 @@ function tie_default_theme_settings(){
 			'copyright_area'                    => 'true',
 			'footer_top'                        => 'true',
 			'footer_social'                     => 'true',
-			'footer_one'                        => sprintf( esc_html__( '%1$s Copyright %2$s, All Rights Reserved &nbsp;|&nbsp; %3$s Theme by %4$s', TIELABS_TEXTDOMAIN ), '&copy;', '%year%', '<span style="color:red;" class="fa fa-heart"></span> <a href="'. apply_filters( 'TieLabs/External/theme_footer', '' ) .'" target="_blank">'. apply_filters( 'TieLabs/theme_name', 'TieLabs' ), 'TieLabs</a>'  ),
+			'footer_one'                        => sprintf( esc_html__( '%1$s Copyright %2$s, All Rights Reserved &nbsp;|&nbsp; %3$s Theme by %4$s', TIELABS_TEXTDOMAIN ), '&copy;', '%year%', '<span style="color:red;" class="fa fa-heart"></span> <a href="'. apply_filters( 'TieLabs/External/theme_footer', '' ) .'" target="_blank" rel="nofollow noopener">'. apply_filters( 'TieLabs/theme_name', 'TieLabs' ), 'TieLabs</a>'  ),
 
-			# Mobile
+			// Mobile
 			'mobile_header'                     => 'default',
 			'stick_mobile_nav'                  => 'true',
+			'sticky_mobile_behavior'            => 'default',
 			'mobile_menu_active'                => 'true',
 			'mobile_menu_layout'                => 'fullwidth',
 			'mobile_menu_search'                => 'true',
@@ -566,7 +575,7 @@ function tie_default_theme_settings(){
 			'share_whatsapp_mobile'             => 'true',
 			'share_telegram_mobile'             => 'true',
 
-			# Aechives
+			// Aechives
 			'trim_type'                         => 'words',
 
 			'blog_display'                      => 'excerpt',
@@ -588,12 +597,13 @@ function tie_default_theme_settings(){
 			'author_bio'                        => 'true',
 			'search_exclude_post_types'         => array( 'page' ),
 
-			# Single post layout
+			// Single post layout
 			'post_layout'                       => 1,
 			'post_featured'                     => 'true',
 			'sticky_featured_video'             => 'true',
 			'image_lightbox'                    => 'true',
 			'post_og_cards'                     => 'true',
+			'post_meta_escription'              => 'true',
 			'reading_indicator'                 => 'true',
 			'post_authorbio'                    => 'true',
 			'post_cats'                         => 'true',
@@ -622,7 +632,7 @@ function tie_default_theme_settings(){
 			'check_also_query'                  => 'category',
 			'check_also_order'                  => 'rand',
 
-			# Post Views
+			// Post Views
 			'tie_post_views'                    => 'theme',
 			'views_meta_field'                  => 'tie_views',
 			'views_colored'                     => 'true',
@@ -630,23 +640,19 @@ function tie_default_theme_settings(){
 			'views_hot_color'                   => 2000,
 			'views_veryhot_color'               => 5000,
 
-			# Share Posts
+			// Share Posts
 			'select_share'                      => 'true',
 
 			'share_style_top'                   => 'style_3',
 			'share_center_top'                  => 'true',
 			'share_twitter_top'                 => 'true',
 			'share_facebook_top'                => 'true',
-			'share_google_top'                  => 'true',
 			'share_linkedin_top'                => 'true',
-			'share_stumbleupon_top'             => 'true',
 
 			'share_post_bottom'                 => 'true',
 			'share_twitter'                     => 'true',
 			'share_facebook'                    => 'true',
-			'share_google'                      => 'true',
 			'share_linkedin'                    => 'true',
-			'share_stumbleupon'                 => 'true',
 			'share_pinterest'                   => 'true',
 			'share_reddit'                      => 'true',
 			'share_tumblr'                      => 'true',
@@ -654,31 +660,27 @@ function tie_default_theme_settings(){
 			'share_email'                       => 'true',
 			'share_print'                       => 'true',
 
-			# Sidebar
+			// Sidebar
 			'widgets_icon'                      => 'true',
 			'sidebar_pos'                       => 'right',
 			'sticky_sidebar'                    => 'true',
 
-			# LightBox
+			// LightBox
 			'lightbox_all'                      => 'true',
 			'lightbox_gallery'                  => 'true',
 			'lightbox_skin'                     => 'dark',
 			'lightbox_thumbs'                   => 'horizontal',
 			'lightbox_arrows'                   => 'true',
 
-			# Background
+			// Background
 			'background_pattern'                => 'body-bg1',
 			'background_dimmer_color'           => 'black',
 
-			# Styling
+			// Styling
 			'inline_css'                        => 'true',
 
-			# AMP
+			// AMP
 			'amp_active'                        => 'true',
-
-			# Advanced
-			'tie_post_views'                    => 'theme',
-			'views_meta_field'                  => 'tie_views',
 		)
 	);
 
@@ -689,14 +691,11 @@ function tie_default_theme_settings(){
 		$default_settings['tie_options']['woo_sidebar_pos']         = 'left';
 		$default_settings['tie_options']['woo_product_sidebar_pos'] = 'left';
 
-		$default_settings['tie_options']['typography_headings_font_source'] = 'fontfaceme';
-		$default_settings['tie_options']['typography_headings_google_font'] = 'faceme#bein-normal';
+		$default_settings['tie_options']['typography_headings_font_source'] = 'google';
+		$default_settings['tie_options']['typography_headings_google_font'] = 'Changa';
 
 		$default_settings['tie_options']['typography_menu_font_source'] = 'google';
 		$default_settings['tie_options']['typography_menu_google_font'] = 'early#Noto Sans Kufi Arabic';
-
-		$default_settings['tie_options']['typography_blockquote_font_source'] = 'google';
-		$default_settings['tie_options']['typography_blockquote_google_font'] = 'early#Noto Kufi Arabic';
 
 		$default_settings['tie_options']['typography_post_small_title_blocks']['weight'] = '500';
 		$default_settings['tie_options']['typography_single_post_title']['line_height']  = '1.3';
@@ -704,14 +703,11 @@ function tie_default_theme_settings(){
 	else{
 		$default_settings['tie_options']['typography_headings_font_source'] = 'google';
 		$default_settings['tie_options']['typography_headings_google_font'] = 'Poppins';
-		$default_settings['tie_options']['typography_headings_google_variants'] = array( 'regular', '500', '600', '700');
+		$default_settings['tie_options']['typography_headings_google_variants'] = array( '600' );
 	}
 
 	return $default_settings;
 }
-
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -756,9 +752,6 @@ function tie_user_profile_custom_options( $user ){ ?>
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Save user's custom fields
 /*-----------------------------------------------------------------------------------*/
@@ -779,9 +772,6 @@ function tie_save_user_profile_custom_options( $user_id ){
 		update_user_meta( $user_id, $network, $_POST[ $network ] );
 	}
 }
-
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -805,10 +795,10 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 
 	// Use the given $token and force update the TieLabs data from Envato
 	if( $token !== false ){
-
-		delete_transient( $cache_field );
 		$force_update = true;
 		$update_files = true;
+
+		delete_option( $token_error_key );
 	}
 
 	// Revoke the theme
@@ -825,31 +815,30 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 		$token = get_option( $token_key );
 	}
 
-
 	// Get the Cached data
-	if( empty( $cached_data ) && ! empty( $token ) ){
+	if( empty( $cached_data ) && ! empty( $token ) && ! get_option( $token_error_key ) ){
+
+		$body = array(
+			'tie_token'      => $token,
+			'item_id'        => TIELABS_THEME_ID,
+			'force_update'   => $force_update,
+			'update_files'   => $update_files,
+			'revoke_theme'   => $revoke,
+			'blog_url'       => esc_url( home_url( '/' ) ),
+			'php_version'    => phpversion(),
+			'wp_version'     => get_bloginfo( 'version' ),
+			'theme_version'  => TIELABS_DB_VERSION,
+			'demo_installed' => get_option( 'tie_installed_demo_'. TIELABS_THEME_ID ),
+			'is_switched'    => get_option( 'tie_switch_to_'. TIELABS_THEME_ID ),
+			'local'          => get_locale(),
+		);
 
 		// Prepare the remote post
 		$response = wp_remote_post( $request_url, array(
 			'headers' => array(
 				'User-Agent' => 'Stripe Connect',
 			),
-			'body' => array(
-				'tie_token'      => $token,
-				'item_id'        => TIELABS_THEME_ID,
-				'force_update'   => $force_update,
-				'update_files'   => $update_files,
-				'revoke_theme'   => $revoke,
-				'blog_url'       => esc_url( home_url( '/' ) ),
-				'php_version'    => phpversion(),
-				'wp_version'     => get_bloginfo( 'version' ),
-				'theme_version'  => TIELABS_DB_VERSION,
-				'demo_installed' => get_option( 'tie_installed_demo_'. TIELABS_THEME_ID ),
-				'is_switched'    => get_option( 'tie_switch_to_'. TIELABS_THEME_ID ),
-				'block_head'     => tie_get_option( 'blocks_style', 1 ),
-				'magazine_style' => tie_get_option( 'boxes_style',  1 ),
-				'local'          => get_locale(),
-			),
+			'body' => apply_filters( 'TieLabs/api_connect_body', $body ),
 			'sslverify' => false,
 			//'timeout'   => 15,
 		));
@@ -858,9 +847,9 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 		// Check if it is a valid responce
 		if ( is_wp_error( $response ) ){
 
-			$error_string = $response->get_error_message();
+			tie_debug_log( $response->get_error_message(), true );
 
-			update_option( $token_error_key, $error_string );
+			update_option( $token_error_key, $response->get_error_message(), false );
 		}
 		else{
 			$cached_data = wp_remote_retrieve_body( $response );
@@ -871,7 +860,7 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 				delete_option( $token_error_key );
 
 				set_transient( $cache_field, $cached_data, 24 * HOUR_IN_SECONDS );
-				update_option( $token_key, $token );
+				update_option( $token_key, $token, false );
 
 				delete_transient( $plugins_field ); // to re-fresh the Plugins stored cache
 
@@ -885,7 +874,7 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 			else{
 
 				if( isset( $cached_data['status'] ) && $cached_data['status'] == 0 ){
-					update_option( $token_error_key, $cached_data['error'] );
+					update_option( $token_error_key, $cached_data['error'], false );
 
 					delete_option( $token_key );
 					delete_transient( $cache_field );
@@ -898,22 +887,21 @@ function tie_get_latest_theme_data( $key = '', $token = false, $force_update = f
 	// Debug
 	//var_dump( $cached_data );
 
-	# return the data
+	// return the data
 	if( empty( $cached_data ) ){
 		return false;
 	}
 
-	if( ! empty( $key ) && ! empty( $cached_data[ $key ] ) ){
-		return $cached_data[ $key ];
+	if( ! empty( $key ) ){
+		if( ! empty( $cached_data[ $key ] ) ){
+			return $cached_data[ $key ];
+		}
+
+		return false;
 	}
 
 	return $cached_data;
-
-
 }
-
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -930,14 +918,6 @@ function tie_is_theme_rated(){
 
 	return true;
 }
-
-
-
-
-
-
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -960,9 +940,6 @@ function tie_switch_theme_update_mods() {
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Prune the WP Super Cache.
 /*-----------------------------------------------------------------------------------*/
@@ -976,9 +953,6 @@ function tie_clear_super_cache() {
 		prune_super_cache( $cache_path, true );
 	}
 }
-
-
-
 
 
 /*-----------------------------------------------------------------------------------*/
@@ -1002,9 +976,6 @@ function tie_theme_pages_screen_data() {
 }
 
 
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Welcome Page ARGS
 /*-----------------------------------------------------------------------------------*/
@@ -1019,15 +990,6 @@ function tie_welcome_args( $args ){
 }
 
 
-
-
-
-
-
-
-
-
-
 /*-----------------------------------------------------------------------------------*/
 # Welcome Page contents
 /*-----------------------------------------------------------------------------------*/
@@ -1037,59 +999,56 @@ function tie_welcome_splash_content(){
 
 	<h2><?php printf( esc_html__( 'Need help? We\'re here %s', TIELABS_TEXTDOMAIN ), '&#x1F60A' ); ?></h2>
 
-	<div class="changelog">
-
-		<div class="under-the-hood">
-			<div class="col">
-				<p><?php printf( wp_kses_post( 'The Theme comes with 6 months of free support for every license you purchase. Support can be <a target="_blank" href="%1s">extended through subscriptions via ThemeForest</a>. All support is handled through our <a target="_blank" href="%2s">support center</a>. Below are all the resources we offer in our support center.', TIELABS_TEXTDOMAIN ), apply_filters( 'TieLabs/External/renew_support_article', '' ), apply_filters( 'TieLabs/External/support_center', '' ) ); ?></p>
-			</div>
+	<div class="under-the-hood">
+		<div class="col column">
+			<p><?php printf( wp_kses_post( 'The Theme comes with 6 months of free support for every license you purchase. Support can be <a target="_blank" href="%1s">extended through subscriptions via ThemeForest</a>. All support is handled through our <a target="_blank" href="%2s">support center</a>. Below are all the resources we offer in our support center.', TIELABS_TEXTDOMAIN ), apply_filters( 'TieLabs/External/renew_support_article', '' ), apply_filters( 'TieLabs/External/support_center', '' ) ); ?></p>
 		</div>
+	</div>
 
-		<div class="under-the-hood three-col">
-			<div class="col">
-				<h3><span class="dashicons dashicons-sos"></span> <?php esc_html_e( 'Submit a Ticket', TIELABS_TEXTDOMAIN ); ?></h3>
-				<p><?php esc_html_e( 'Need one-to-one assistance? Get in touch with our Support team.', TIELABS_TEXTDOMAIN ); ?></p>
+	<div class="has-3-columns is-fullwidth">
+		<div class="col column">
+			<h3><span class="dashicons dashicons-sos"></span> <?php esc_html_e( 'Submit a Ticket', TIELABS_TEXTDOMAIN ); ?></h3>
+			<p><?php esc_html_e( 'Need one-to-one assistance? Get in touch with our Support team.', TIELABS_TEXTDOMAIN ); ?></p>
 
-				<?php
+			<?php
 
-					if( get_option( 'tie_token_'.TIELABS_THEME_ID ) ){
+				if( get_option( 'tie_token_'.TIELABS_THEME_ID ) ){
 
-						$support_info = tie_get_support_period_info();
+					$support_info = tie_get_support_period_info();
 
-						if( ! empty( $support_info['status'] ) && $support_info['status'] == 'expired' ){
-							echo '<p style="font-weight:bold; color: red;">'. esc_html__( 'Your Support Period Has Expired', TIELABS_TEXTDOMAIN ) .'</p>';
-						}
-						else{
-							?>
-								<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/open_ticket', '' ); ?>"><?php esc_html_e( 'Submit a Ticket', TIELABS_TEXTDOMAIN ); ?></a>
-							<?php
-						}
+					if( ! empty( $support_info['status'] ) && $support_info['status'] == 'expired' ){
+						echo '<p style="font-weight:bold; color: red;">'. esc_html__( 'Your Support Period Has Expired', TIELABS_TEXTDOMAIN ) .'</p>';
 					}
 					else{
-
-						echo '<p style="font-weight:bold; color: red;">'. esc_html__( 'You need to validated your license to access the support system.', TIELABS_TEXTDOMAIN ) .'</p>';
+						?>
+							<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/open_ticket', '' ); ?>"><?php esc_html_e( 'Submit a Ticket', TIELABS_TEXTDOMAIN ); ?></a>
+						<?php
 					}
+				}
+				else{
 
-				?>
-			</div>
+					echo '<p style="font-weight:bold; color: red;">'. esc_html__( 'You need to validated your license to access the support system.', TIELABS_TEXTDOMAIN ) .'</p>';
+				}
 
-			<div class="col">
-				<h3><span class="dashicons dashicons-book"></span> <?php esc_html_e( 'Knowledge Base', TIELABS_TEXTDOMAIN ); ?></h3>
-				<p><?php esc_html_e( 'This is the place to go to reference different aspects of the theme.', TIELABS_TEXTDOMAIN ); ?></p>
-				<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/knowledge_base', '' ); ?>"><?php esc_html_e( 'Browse the Knowledge Base', TIELABS_TEXTDOMAIN ); ?></a>
-			</div>
+			?>
+		</div>
 
-			<div class="col">
-				<h3><span class="dashicons dashicons-info"></span> <?php esc_html_e( 'Troubleshooting', TIELABS_TEXTDOMAIN ); ?></h3>
-				<p><?php esc_html_e( 'If something is not working as expected, Please try these common solutions.', TIELABS_TEXTDOMAIN ); ?></p>
-				<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/troubleshooting', '' ); ?>"><?php esc_html_e( 'Visit The Page', TIELABS_TEXTDOMAIN ); ?></a>
-			</div>
+		<div class="col column">
+			<h3><span class="dashicons dashicons-book"></span> <?php esc_html_e( 'Knowledge Base', TIELABS_TEXTDOMAIN ); ?></h3>
+			<p><?php esc_html_e( 'This is the place to go to reference different aspects of the theme.', TIELABS_TEXTDOMAIN ); ?></p>
+			<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/knowledge_base', '' ); ?>"><?php esc_html_e( 'Browse the Knowledge Base', TIELABS_TEXTDOMAIN ); ?></a>
+		</div>
+
+		<div class="col column">
+			<h3><span class="dashicons dashicons-info"></span> <?php esc_html_e( 'Troubleshooting', TIELABS_TEXTDOMAIN ); ?></h3>
+			<p><?php esc_html_e( 'If something is not working as expected, Please try these common solutions.', TIELABS_TEXTDOMAIN ); ?></p>
+			<a target="_blank" class="button button-primary button-hero" href="<?php echo apply_filters( 'TieLabs/External/troubleshooting', '' ); ?>"><?php esc_html_e( 'Visit The Page', TIELABS_TEXTDOMAIN ); ?></a>
 		</div>
 	</div>
 
 	<hr />
 
-	<ul id="follow-tielabs">
+	<ul id="follow-tielabs" class="column">
 		<li class="follow-tielabs-fb">
 			<div id="fb-root"></div>
 			<script>(function(d, s, id) {
@@ -1110,8 +1069,6 @@ function tie_welcome_splash_content(){
 
 	<?php
 }
-
-
 
 
 /**

@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - User Role Editor - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2016-08-24 12:57:36+0000\n"
+"PO-Revision-Date: 2020-03-22 19:06:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -11,782 +11,1034 @@ msgstr ""
 "Language: zh_TW\n"
 "Project-Id-Version: Plugins - User Role Editor - Stable (latest release)\n"
 
-#. Author of the plugin/theme
+#: includes/classes/capability.php:84
+msgid "Wrong Request"
+msgstr "錯誤的要求"
+
+#: includes/classes/editor.php:1026
+msgid "Wrong role ID"
+msgstr "錯誤的使用者角色 ID。"
+
+#: includes/classes/editor.php:998
+msgid "There are no roles for deletion"
+msgstr "沒有使用者角色可供刪除。"
+
+#: includes/classes/grant-roles.php:455
+msgid "Revoke"
+msgstr "撤銷"
+
+#: includes/classes/grant-roles.php:450 includes/classes/grant-roles.php:452
+msgid "Revoke role&hellip;"
+msgstr "撤銷使用者角色..."
+
+#: includes/classes/grant-roles.php:448
+msgid "Add"
+msgstr "新增"
+
+#: includes/classes/grant-roles.php:443 includes/classes/grant-roles.php:445
+msgid "Add role&hellip;"
+msgstr "新增使用者角色..."
+
+#: includes/classes/editor.php:1069
+msgid "Wrong request. Default role can not be empty"
+msgstr "錯誤的要求。預設使用者角色不能留空。"
+
+#: includes/classes/editor.php:1065
+msgid "This method is only for a single site of WordPress multisite installation."
+msgstr "這個方法僅適用於 WordPress 多站網路中的單一網站。"
+
+#: includes/classes/editor.php:972
+msgid "You can not delete role"
+msgstr "目前的登入身分沒有刪除使用者角色的權限。"
+
+#: includes/classes/editor.php:968
+msgid "Role does not exist"
+msgstr "使用者角色不存在。"
+
+#: includes/classes/screen-help.php:85
+msgid "Super administrator only may create, edit and delete users under WordPress multi-site by default. Turn this option on in order to remove this limitation."
+msgstr "依照預設，多站網路管理員僅能新增、編輯及刪除 WordPress 多站網路中的使用者。啟用這項設定後，便會解除這項限制。"
+
+#: includes/classes/screen-help.php:66
+msgid "select roles below to assign them to the new user automatically as an addition to the primary role. Note for multisite environment: take into account that other default roles should exist at the site, in order to be assigned to the new registered users."
+msgstr "選取要自動指派給新註冊使用者的使用者角色，作為主要使用者角色的擴充。多站網路注意事項: 指派使用者角色給新註冊使用者前，應考慮在個別網站中已存在其他預設使用者角色。"
+
+#: includes/classes/screen-help.php:48
+msgid "Show at the \"Users\" page a quant of users without role. Module allows to assign all of them an empty role \"No rights\", in order to look on the users list with role \"No rights\" at the separate tab then."
+msgstr "在 [使用者] 頁面顯示未獲指派使用者角色的使用者數量。這個模組會將這類使用者指派為 [沒有權限] 的使用者角色，這樣便能在專屬分頁中顯示 [沒有權限] 使用者角色的使用者清單。"
+
+#: includes/classes/screen-help.php:28
+msgid "If turned off - capabilities section of selected user is shown in readonly mode. Administrator can not assign capabilities to the user directly. He should do it using roles only."
+msgstr "如果停用這項設定，選取的使用者的權限區段會以唯讀模式顯示，這時網站管理員無法直接為使用者指派權限。這位選取的使用者僅使用他所隸屬的使用者角色的權限。"
+
+#: includes/classes/capability.php:54
+msgid "Error: this word is used by WordPress as a role ID"
+msgstr "錯誤: 這是 WordPress 用於使用者角色 ID 的字詞。"
+
+#: includes/classes/editor.php:192
+msgid "Wrong request!"
+msgstr "錯誤的要求！"
+
+#: includes/classes/screen-help.php:19
+msgid "automatically converts capability names from the technical form for internal use like \"edit_others_posts\" to more user friendly form, e.g. \"Edit others posts\"."
+msgstr "自動將權限名稱從內部使用的技術格式 (如 [edit_others_posts]) 轉換為更適合使用者的格式 (如 [編輯其他人的文章])。"
+
+#: includes/classes/screen-help.php:16
+msgid "turn this option on in order to make the \"Administrator\" role available at the User Role Editor roles selection drop-down list. It is hidden by default for security reasons."
+msgstr "啟用這項設定後，[網站管理員] 使用者角色便會出現在 User Role Editor 的使用者角色下拉式選單中。基於安全性考量，預設會隱藏這個使用者角色。"
+
+#: includes/classes/screen-help.php:22
+msgid "Capabilities like \"level_0\", \"level_1\" are deprecated and are not used by WordPress. They are left at the user roles for the compatibility purpose with old themes and plugins code. Turning on this option will show those deprecated capabilities."
+msgstr "WordPress 已將 [level_0] 及 [level_1] 這類權限淘汰不用。為了舊式佈景主題及外掛的程式碼相容性，這類已淘汰不用的權限仍保留於使用者角色中。啟用這項設定後，便會顯示這些已淘汰不用的權限。"
+
+#: includes/settings-template.php:107
+msgid "columns"
+msgstr "欄"
+
+#: includes/settings-template.php:101
+msgid "Show capabilities in"
+msgstr "權限顯示方式:"
+
+#: includes/settings-template.php:42
+msgid "Tools"
+msgstr "工具"
+
+#: includes/classes/view.php:339
+msgid "Columns:"
+msgstr "欄位數量:"
+
+#: includes/classes/view.php:336
+msgid "Granted Only"
+msgstr "僅顯示已授予的權限"
+
+#: includes/classes/view.php:320
+msgid "Granted"
+msgstr "已授予的權限數量"
+
+#: includes/classes/view.php:320
+msgid "Total"
+msgstr "權限數量總計"
+
+#: includes/classes/view.php:320
+msgid "Group"
+msgstr "權限群組"
+
+#: includes/classes/user-view.php:59
+msgid "Switch&nbsp;To"
+msgstr "切換至這個使用者"
+
+#: includes/classes/user-role-editor.php:790
+msgid "If any plugins (such as WooCommerce, S2Member and many others) have changed user roles and capabilities during installation, all those changes will be LOST!"
+msgstr "如果任何外掛 (例如 WooCommerce、S2Member 等) 在安裝過程中變更了這些使用者角色的設定，原先的變更都會恢復為預設值。"
+
+#: includes/classes/user-role-editor.php:789
+msgid " Resetting will restore default user roles and capabilities from WordPress core."
+msgstr "重設功能會對 WordPress 核心程式的預設使用者角色及對應權限進行還原。"
+
+#: includes/classes/user-role-editor.php:788
+msgid "DANGER!"
+msgstr "重要提示！"
+
+#: includes/classes/user-role-editor.php:739
+#: includes/classes/user-role-editor.php:786
+msgid "No"
+msgstr "否"
+
+#: includes/classes/user-role-editor.php:738
+#: includes/classes/user-role-editor.php:785
+msgid "Yes"
+msgstr "是 "
+
+#: includes/classes/user-role-editor.php:737
+#: includes/classes/user-role-editor.php:784
+msgid "Confirm"
+msgstr "確認"
+
+#: includes/classes/user-role-editor.php:289
+msgid "To:"
+msgstr "成為:"
+
+#: includes/classes/tools.php:36
+msgid "Reset Roles to its original state"
+msgstr "重設使用者角色至其原始原始狀態"
+
+#: includes/classes/tools.php:31
+msgid "If checked, then apply action to ALL sites. Main site only is affected in other case."
+msgstr "啟用這項設定後，便會將操作套用至全部網站；除非是其他狀況，才會僅有主要網站受到影響。"
+
+#: includes/classes/tools.php:23
+msgid "For more information on how to undo undesired changes and restore plugins capabilities in case you lost them by mistake go to: "
+msgstr "如需進一步瞭解如何復原不想繼續使用的變更及還原因錯誤操作而失去的外掛權限，請造訪 "
+
+#: includes/classes/tools.php:22
+msgid "If any plugins (such as WooCommerce, S2Member and many others) have changed user roles and capabilities during installation, those changes will be LOST!"
+msgstr "如果任何外掛 (例如 WooCommerce、S2Member 等) 在安裝過程中變更了這些使用者角色的設定，原先的變更都會恢復為預設值。"
+
+#: includes/classes/tools.php:21
+msgid "Resetting will setup default user roles and capabilities from WordPress core."
+msgstr "重設功能會對 WordPress 核心程式的預設使用者角色及對應權限進行設定。"
+
+#: includes/classes/tools.php:19
+msgid "WARNING!"
+msgstr "警告！"
+
+#: includes/classes/tools.php:60
+msgid "Tools: Reset: User Roles were initialized"
+msgstr "工具: 重設: 使用者角色已初始化。"
+
+#: includes/classes/screen-help.php:26
+msgid "Show confirmation dialog before save changes made to a current role."
+msgstr "在儲存對目前使用者角色的變更前，先顯示確認對話方塊。"
+
+#: includes/classes/screen-help.php:25 includes/settings-template.php:86
+msgid "Confirm role update"
+msgstr "確認使用者角色更新"
+
+#: includes/classes/role-additional-options.php:113
+msgid "Additional Options"
+msgstr "附加功能"
+
+#: includes/classes/role-additional-options.php:53
+msgid "Hide admin bar"
+msgstr "隱藏工具列"
+
+#: includes/classes/grant-roles.php:489
+msgid "Select role(s) which you wish to grant!"
+msgstr "選取要進行授予的使用者角色。"
+
+#: includes/classes/grant-roles.php:488
+msgid "Select users to which you wish to grant roles!"
+msgstr "請選取要授予使用者角色的使用者。"
+
+#: includes/classes/grant-roles.php:487
+msgid "Grant roles to selected users"
+msgstr "將使用者角色授予選取的使用者"
+
+#: includes/classes/view.php:289
+msgid "Working..."
+msgstr "正在執行..."
+
+#: includes/classes/grant-roles.php:441
+msgid "Grant Roles"
+msgstr "授予使用者角色"
+
+#: includes/classes/grant-roles.php:398
+msgid "Other Roles: "
+msgstr "其他使用者角色: "
+
+#: includes/classes/grant-roles.php:378
+msgid "Primary Role: "
+msgstr "主要使用者角色: "
+
+#: includes/classes/grant-roles.php:355
+msgid "Requested user does not exist"
+msgstr "要求的使用者不存在。"
+
+#: includes/classes/grant-roles.php:349
+msgid "Wrong request, valid user ID was missed"
+msgstr "錯誤的要求，找不到有效的使用者 ID。"
+
+#: includes/classes/grant-roles.php:332
+msgid "Roles were granted to users successfully"
+msgstr "將使用者角色授予使用者已成功完成。"
+
+#: includes/classes/grant-roles.php:323
+msgid "Invalid data at the other roles list"
+msgstr "在其他使用者角色清單中有無效的資料。"
+
+#: includes/classes/grant-roles.php:310
+msgid "Invalid primary role"
+msgstr "無效的使用者角色。"
+
+#: includes/classes/grant-roles.php:302
+msgid "Can not edit user or invalid data at the users list"
+msgstr "無法編輯使用者或在使用者清單中有無效的資料。"
+
+#: includes/classes/grant-roles.php:296 includes/classes/grant-roles.php:342
+msgid "Not enough permissions"
+msgstr "沒有足夠的權限。"
+
+#: includes/classes/capability.php:212
+msgid "capabilities were removed successfully"
+msgstr "權限已成功移除。"
+
+#: includes/classes/capability.php:197 includes/classes/capability.php:202
+msgid "There are no capabilities available for deletion!"
+msgstr "沒有權限可供刪除。"
+
+#: includes/classes/capability.php:47
+msgid "Error: this capability is used internally by WordPress"
+msgstr "錯誤: 這是 WordPress 內部使用的權限。"
+
+#: includes/classes/capabilities-groups-manager.php:123
+msgid "Deprecated"
+msgstr "已淘汰不用"
+
+#: includes/classes/capabilities-groups-manager.php:117
+msgid "Users"
+msgstr "使用者"
+
+#: includes/classes/capabilities-groups-manager.php:116
+msgid "Plugins"
+msgstr "外掛"
+
+#: includes/classes/capabilities-groups-manager.php:115
+msgid "Pages"
+msgstr "頁面"
+
+#: includes/classes/capabilities-groups-manager.php:114
+msgid "Posts"
+msgstr "文章"
+
+#: includes/classes/capabilities-groups-manager.php:113
+msgid "Themes"
+msgstr "佈景主題"
+
+#: includes/classes/capabilities-groups-manager.php:110
+msgid "All"
+msgstr "全部權限"
+
+#: includes/classes/capabilities-groups-manager.php:91
+#: includes/classes/capabilities-groups-manager.php:111
+msgid "Core"
+msgstr "核心程式"
+
+#: includes/classes/capabilities-groups-manager.php:90
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: includes/classes/capabilities-groups-manager.php:44
+msgid "Custom Post Types"
+msgstr "自訂內容類型"
+
+#. Author of the plugin
 msgid "Vladimir Garagulya"
 msgstr "Vladimir Garagulya"
 
-#. Description of the plugin/theme
+#. Description of the plugin
 msgid "Change/add/delete WordPress user roles and capabilities."
-msgstr "變更/新增/刪除 WordPress 會員角色和能力。"
+msgstr "這個外掛能變更、新增、刪除 WordPress 網站的使用者角色及對應權限。"
 
-#. #-#-#-#-#  tmp-user-role-editor.pot (User Role Editor 4.19.2)  #-#-#-#-#
-#. Plugin URI of the plugin/theme
-#. #-#-#-#-#  tmp-user-role-editor.pot (User Role Editor 4.19.2)  #-#-#-#-#
-#. Author URI of the plugin/theme
+#. Plugin URI of the plugin
+#. Author URI of the plugin
 msgid "https://www.role-editor.com"
 msgstr "https://www.role-editor.com"
 
-#: includes/ure-user-edit.php:92
+#: includes/classes/user-view.php:190
 msgid "Other Roles:"
-msgstr "其它角色："
+msgstr "其它使用者角色:"
 
-#: includes/ure-user-edit.php:82
+#: includes/classes/user-view.php:181
 msgid "bbPress Role:"
-msgstr "bbpress 角色："
+msgstr "bbPress 使用者角色:"
 
-#: includes/ure-user-edit.php:72
+#: includes/classes/user-view.php:175
 msgid "Primary Role:"
-msgstr "主要角色："
+msgstr "主要使用者角色:"
 
-#: includes/ure-user-edit.php:35
+#: includes/classes/user-view.php:137
 msgid "Change capabilities for user"
-msgstr "變更會員的能力"
+msgstr "變更使用者權限:"
 
-#: includes/ure-user-edit.php:32
+#: includes/classes/user-view.php:71
 msgid "Network Super Admin"
-msgstr "網絡超級管理員"
+msgstr "多站網路管理員"
 
-#: includes/ure-role-edit.php:83 includes/ure-user-edit.php:131
-msgid "Custom capabilities:"
-msgstr "自訂能力："
+#: includes/classes/capabilities-groups-manager.php:126
+msgid "Custom capabilities"
+msgstr "自訂權限"
 
-#: includes/ure-role-edit.php:65 includes/ure-user-edit.php:112
+#: includes/classes/view.php:333
 msgid "Quick filter:"
-msgstr "快速篩選："
+msgstr "快速篩選:"
 
-#: includes/ure-role-edit.php:63 includes/ure-user-edit.php:110
-msgid "Core capabilities:"
-msgstr "WordPress 核心能力："
-
-#: includes/ure-role-edit.php:56
+#: includes/classes/role-view.php:396 includes/classes/tools.php:30
 msgid "Apply to All Sites"
-msgstr "套用到所有網站"
+msgstr "套用至全部網站"
 
-#: includes/ure-role-edit.php:44
+#: includes/classes/role-view.php:383
 msgid "If checked, then apply action to ALL sites of this Network"
-msgstr "如果選取，並套用到所有網站（多站點網絡）"
+msgstr "啟用這項設定後，便會套用至多站網路中的全部網站"
 
-#: includes/ure-role-edit.php:30 includes/ure-user-edit.php:54
+#: includes/classes/role-view.php:369 includes/classes/user-view.php:154
 msgid "Show capabilities in human readable form"
-msgstr "在易讀格式下顯示能力"
+msgstr "以人類可讀的格式顯示權限"
 
-#: includes/ure-role-edit.php:17
+#: includes/classes/role-view.php:413
 msgid "Select Role and change its capabilities:"
-msgstr "選擇角色並修改能力："
+msgstr "選取使用者角色並變更對應權限:"
 
-#: includes/settings-template.php:177
+#: includes/settings-template.php:207
 msgid "Allow non super administrators to create, edit, and delete users"
-msgstr "允許非超級管理員可以建立、編輯和刪除會員"
+msgstr "開放非多站網路管理員新增、編輯及刪除使用者"
 
-#: includes/settings-template.php:151
+#: includes/settings-template.php:181
 msgid "Note for multisite environment: take into account that other default roles should exist at the site, in order to be assigned to the new registered users."
-msgstr "多站點環境的注意事項：考慮到其它預設角色應該存在網站中，以被分配給新註冊的會員。"
+msgstr "多站網路注意事項: 指派使用者角色給新註冊使用者前，應考慮在個別網站中已存在其他預設使用者角色。"
 
-#: includes/settings-template.php:145
+#: includes/settings-template.php:175
 msgid "Other default roles for new registered user: "
-msgstr "新註冊會員的其它預設角色："
+msgstr "其他可供指派給新註冊使用者的預設使用者角色: "
 
-#: includes/settings-template.php:138
+#: includes/settings-template.php:168
 msgid "Primary default role: "
-msgstr "主要預設角色："
+msgstr "主要預設使用者角色: "
 
-#: includes/settings-template.php:90 includes/settings-template.php:126
-#: includes/settings-template.php:158 includes/settings-template.php:190
+#: includes/settings-template.php:121 includes/settings-template.php:156
+#: includes/settings-template.php:188 includes/settings-template.php:220
 msgid "Save"
 msgstr "儲存"
 
-#: includes/settings-template.php:39
+#: includes/settings-template.php:46
 msgid "About"
-msgstr "關於"
+msgstr "關於這個外掛"
 
-#: includes/settings-template.php:17
+#: includes/settings-template.php:16
 msgid "User Role Editor - Options"
-msgstr "會員角色編輯器 - 選項"
+msgstr "User Role Editor - 選項"
 
-#: includes/class-user-role-editor.php:912
+#: includes/classes/user-role-editor.php:759
 msgid " Capability name (ID) must contain latin characters, digits, hyphens or underscore only!"
-msgstr "能力名稱（ID）只能包含英文字母，數字，連字符或底線！"
+msgstr "權限名稱 (ID) 必須包含英文字母、數字、連字號或底線。"
 
-#: includes/class-user-role-editor.php:911
+#: includes/classes/user-role-editor.php:758
 msgid " Capability name (ID) can not be empty!"
-msgstr "能力名稱（ID）不能留空！"
+msgstr "權限名稱 (ID) 不能留空。"
 
-#: includes/class-user-role-editor.php:910
+#: includes/classes/user-role-editor.php:757
 msgid "Warning! Be careful - removing critical capability could crash some plugin or other custom code"
-msgstr "警告！謹慎 - 删除關鍵的能力可能導致一些外掛或其它自訂程式碼失效"
+msgstr "警告！請審慎使用。移除重要權限會導致某些外掛或自訂程式碼失效。"
 
-#: includes/class-user-role-editor.php:908
+#: includes/classes/user-role-editor.php:755
 msgid "Set New Default Role"
-msgstr "設定新的預設角色"
+msgstr "設定新的預設使用者角色"
 
-#: includes/class-user-role-editor.php:907
+#: includes/classes/user-role-editor.php:754
 msgid "Default Role"
-msgstr "預設角色"
+msgstr "預設使用者角色"
 
-#: includes/class-user-role-editor.php:906
+#: includes/classes/user-role-editor.php:753
+#: includes/classes/user-role-editor.php:793
 msgid "Continue?"
-msgstr "繼續？"
+msgstr "是否繼續進行？"
 
-#: includes/class-user-role-editor.php:904
-msgid "For more information on how to undo changes and restore plugin capabilities go to"
-msgstr "更多關於如何取消變更和重置外掛能力的資訊"
+#: includes/classes/user-role-editor.php:791
+msgid "For more information on how to undo undesired changes and restore plugin capabilities go to"
+msgstr "如需進一步瞭解如何復原不想繼續使用的變更及還原外掛權限，請造訪"
 
-#: includes/class-user-role-editor.php:903
-msgid "If any plugins have changed capabilities in any way upon installation (such as S2Member, WooCommerce, and many more), those capabilities will be DELETED!"
-msgstr "如果其它任何外掛已經以任何方式變更了會員能力權限（如 s2member，WooCommerce 等等），這些能力將被刪除！"
-
-#: includes/class-user-role-editor.php:902
-msgid "DANGER! Resetting will restore default settings from WordPress Core."
-msgstr "危險！重置將回復 WordPress 核心預設的設定。"
-
-#: includes/class-user-role-editor.php:901
+#: includes/classes/user-role-editor.php:787 includes/classes/tools.php:36
 msgid "Reset"
-msgstr "重置"
+msgstr "重設"
 
-#: includes/class-user-role-editor.php:900
-#: includes/class-user-role-editor.php:909
+#: includes/classes/user-role-editor.php:752
+#: includes/classes/user-role-editor.php:756
 msgid "Delete Capability"
-msgstr "刪除能力"
+msgstr "刪除權限"
 
-#: includes/class-user-role-editor.php:899
+#: includes/classes/user-role-editor.php:751
 msgid "Add Capability"
-msgstr "新增能力"
+msgstr "新增權限"
 
-#: includes/class-user-role-editor.php:898
+#: includes/classes/user-role-editor.php:750
 msgid "Cancel"
 msgstr "取消"
 
-#: includes/class-user-role-editor.php:897
+#: includes/classes/user-role-editor.php:749
 msgid "Delete Role"
-msgstr "删除角色"
+msgstr "删除使用者角色"
 
-#: includes/class-user-role-editor.php:895
+#: includes/classes/user-role-editor.php:747
 msgid "Add Role"
-msgstr "新增角色"
+msgstr "新增使用者角色"
 
-#: includes/class-user-role-editor.php:894
+#: includes/classes/user-role-editor.php:746
 msgid " WordPress does not support numeric Role name (ID). Add latin characters to it."
-msgstr "WordPress 不支援純數字角色名稱（ID）。請增加英文字母。"
+msgstr "WordPress 不支援純數字使用者角色名稱 (ID)。請在使用者角色名稱中加入英文字母。"
 
-#: includes/class-user-role-editor.php:893
+#: includes/classes/user-role-editor.php:745
 msgid " Role name (ID) must contain latin characters, digits, hyphens or underscore only!"
-msgstr "角色名稱（ID）只能包含英文字母，數字，連字符或底線！"
+msgstr "使用者角色名稱 (ID) 必須包含英文字母、數字、連字號或底線。"
 
-#: includes/class-user-role-editor.php:892
+#: includes/classes/user-role-editor.php:744
 msgid " Role name (ID) can not be empty!"
-msgstr "角色名稱（ID）不能留空！"
+msgstr "使用者角色名稱 (ID) 不能留空。"
 
-#: includes/class-user-role-editor.php:891
-#: includes/class-user-role-editor.php:896
+#: includes/classes/user-role-editor.php:743
+#: includes/classes/user-role-editor.php:748
 msgid "Rename Role"
-msgstr "重命名角色"
+msgstr "重新命名使用者角色"
 
-#: includes/class-user-role-editor.php:890
+#: includes/classes/user-role-editor.php:742
 msgid "Add New Role"
-msgstr "新增會員角色"
+msgstr "新增使用者角色"
 
-#: includes/class-user-role-editor.php:889
+#: includes/classes/user-role-editor.php:741
 msgid "Please confirm permissions update"
-msgstr "請確認權限更新"
+msgstr "請確認權限是否要進行更新？"
 
-#: includes/class-user-role-editor.php:888
+#: includes/classes/user-role-editor.php:740
 msgid "Update"
 msgstr "更新"
 
-#: includes/class-user-role-editor.php:887
-msgid "Reverse"
-msgstr "反選"
-
-#: includes/class-user-role-editor.php:886
-msgid "Unselect All"
-msgstr "取消全選"
-
-#: includes/class-user-role-editor.php:885
-msgid "Select All"
-msgstr "全選"
-
-#: includes/class-user-role-editor.php:756
+#: includes/classes/user-role-editor.php:617
 msgid "You do not have sufficient permissions to manage options for User Role Editor."
-msgstr "您沒有足夠權限來管理會員角色編輯器的選項。"
+msgstr "目前的登入身分沒有管理 User Role Editor 選項的權限。"
 
-#: includes/class-user-role-editor.php:731
+#: includes/classes/settings.php:120
 msgid "Default Roles are updated"
-msgstr "預設角色已更新"
+msgstr "預設使用者角色已更新。"
 
-#: includes/class-user-role-editor.php:685
-#: includes/class-user-role-editor.php:703
-#: includes/class-user-role-editor.php:747
+#: includes/classes/settings.php:70 includes/classes/settings.php:90
+#: includes/classes/settings.php:140
 msgid "User Role Editor options are updated"
-msgstr "會員角色編輯器已更新選項"
+msgstr "User Role Editor 選項已更新。"
 
-#: includes/class-user-role-editor.php:586 includes/settings-template.php:34
+#: includes/classes/capabilities-groups-manager.php:121
+#: includes/classes/user-role-editor.php:556 includes/settings-template.php:36
 msgid "Multisite"
-msgstr "多站點網絡"
+msgstr "多站網路"
 
-#: includes/class-user-role-editor.php:580 includes/settings-template.php:30
+#: includes/classes/user-role-editor.php:550 includes/settings-template.php:31
 msgid "Default Roles"
-msgstr "預設角色"
+msgstr "預設使用者角色"
 
-#: includes/class-user-role-editor.php:574 includes/settings-template.php:26
+#: includes/classes/user-role-editor.php:544 includes/settings-template.php:26
 msgid "Additional Modules"
 msgstr "附加模組"
 
-#: includes/class-user-role-editor.php:568 includes/settings-template.php:21
+#: includes/classes/capabilities-groups-manager.php:112
+#: includes/classes/user-role-editor.php:538 includes/settings-template.php:20
 msgid "General"
 msgstr "一般"
 
-#: includes/class-user-role-editor.php:535
+#: includes/classes/user-role-editor.php:489
+#: includes/classes/user-role-editor.php:502
 msgid "Settings"
 msgstr "設定"
 
-#: includes/class-user-role-editor.php:298
-#: includes/class-user-role-editor.php:300
+#: includes/classes/user-role-editor.php:363
+#: includes/classes/user-role-editor.php:365
 msgid "You do not have permission to edit this user."
-msgstr "你沒有權限編輯此會員。"
+msgstr "目前的登入身分沒有編輯這個使用者的權限。"
 
-#: includes/class-user-role-editor.php:235
+#: includes/classes/user-role-editor.php:291
 msgid "Provide new role"
-msgstr "提供新角色"
+msgstr "新增新使用者角色"
 
-#: includes/class-user-role-editor.php:234
+#: includes/classes/user-role-editor.php:290
 msgid "No rights"
-msgstr "不對"
+msgstr "沒有權限"
 
-#: includes/class-user-role-editor.php:233
+#: includes/classes/user-role-editor.php:288
 msgid "Change role for users without role"
-msgstr "變更會員的角色不起作用"
+msgstr "為未獲指派使用者角色的使用者變更使用者角色"
 
-#: includes/class-user-other-roles.php:215
+#: includes/classes/user-other-roles.php:265
 msgid "Additional Capabilities"
-msgstr "附加能力"
+msgstr "附加的權限"
 
-#: includes/class-user-other-roles.php:169
+#: includes/classes/user-other-roles.php:207
 msgid "Edit"
 msgstr "編輯"
 
-#: includes/class-user-other-roles.php:162
-#: includes/class-user-role-editor.php:438
+#: includes/classes/user-other-roles.php:200
+#: includes/classes/user-role-editor.php:391
 msgid "Capabilities"
-msgstr "能力"
+msgstr "權限"
 
-#: includes/class-user-other-roles.php:83
+#: includes/classes/user-other-roles.php:86
 msgid "Select additional roles for this user"
-msgstr "選擇附加角色給此會員"
+msgstr "為這個使用者選取附加的使用者角色"
 
-#: includes/class-user-other-roles.php:82
-#: includes/class-user-other-roles.php:183
-#: includes/class-user-other-roles.php:243
+#: includes/classes/user-other-roles.php:85
+#: includes/classes/user-other-roles.php:221
 msgid "Other Roles"
-msgstr "其它角色"
+msgstr "其它使用者角色"
 
-#: includes/class-ure-screen-help.php:82
-msgid "Allow non super-admininstrators to create, edit and delete users"
-msgstr "允許非超級管理員可以建立、編輯和刪除會員"
+#: includes/classes/screen-help.php:84
+msgid "Allow non super-administrators to create, edit and delete users"
+msgstr "開放非多站網路管理員新增、編輯及刪除使用者"
 
-#: includes/class-ure-screen-help.php:63
+#: includes/classes/screen-help.php:65
 msgid "Other default roles for new registered user"
-msgstr "新註冊會員的其它預設角色"
+msgstr "其他可供指派給新註冊使用者的預設使用者角色"
 
-#: includes/class-ure-screen-help.php:25 includes/settings-template.php:77
+#: includes/classes/screen-help.php:47 includes/settings-template.php:141
+msgid "Count users without role"
+msgstr "計算未獲指派使用者角色的使用者"
+
+#: includes/classes/screen-help.php:27 includes/settings-template.php:94
 msgid "Edit user capabilities"
-msgstr "編輯會員能力"
+msgstr "編輯使用者權限"
 
-#: includes/class-ure-screen-help.php:21 includes/settings-template.php:69
-#: includes/ure-role-edit.php:40 includes/ure-user-edit.php:64
+#: includes/classes/role-view.php:379 includes/classes/user-view.php:164
+#: includes/classes/screen-help.php:21 includes/settings-template.php:78
 msgid "Show deprecated capabilities"
-msgstr "顯示棄用的能力"
+msgstr "顯示已淘汰不用的權限"
 
-#: includes/class-ure-screen-help.php:18 includes/settings-template.php:61
+#: includes/classes/screen-help.php:18 includes/settings-template.php:70
 msgid "Show capabilities in the human readable form"
-msgstr "在易讀格式下顯示能力"
+msgstr "以人類可讀的格式顯示權限"
 
-#: includes/class-ure-screen-help.php:15 includes/settings-template.php:53
+#: includes/classes/screen-help.php:15 includes/settings-template.php:61
 msgid "Show Administrator role at User Role Editor"
-msgstr "在會員角色編輯器顯示管理員角色"
+msgstr "在 User Role Editor 顯示 [網站管理員] 使用者角色"
 
-#: includes/class-ure-screen-help.php:12 includes/class-ure-screen-help.php:41
-#: includes/class-ure-screen-help.php:60 includes/class-ure-screen-help.php:79
+#: includes/classes/screen-help.php:12 includes/classes/screen-help.php:43
+#: includes/classes/screen-help.php:62 includes/classes/screen-help.php:81
 msgid "User Role Editor Options page help"
-msgstr "會員角色編輯器選項幫助頁面"
+msgstr "User Role Editor 選項使用說明"
 
-#: includes/class-ure-lib.php:2751
+#: includes/classes/user-other-roles.php:183
 msgid "Denied: %s"
-msgstr "否決：%s"
+msgstr "已拒絕: %s"
 
-#: includes/class-ure-lib.php:2636
+#: includes/classes/user-view.php:96 includes/classes/grant-roles.php:384
 msgid "&mdash; No role for this site &mdash;"
-msgstr "&mdash; 此網站沒有角色 &mdash;"
+msgstr "&mdash; 不指派使用者角色 &mdash;"
 
-#: includes/class-ure-lib.php:2592
+#: includes/classes/role-view.php:75
 msgid "None"
 msgstr "無"
 
-#: includes/class-ure-lib.php:2579
+#: includes/classes/role-view.php:112
 msgid "Delete All Unused Roles"
-msgstr "删除所有未使用的會員角色"
+msgstr "刪除全部尚未使用的使用者角色"
 
-#: includes/class-ure-lib.php:2506
+#: includes/classes/lib.php:385
 msgid "FAQ"
-msgstr "常見問題解答"
+msgstr "常見問題集"
 
-#: includes/class-ure-lib.php:2505 includes/class-user-role-editor.php:546
+#: includes/classes/lib.php:384 includes/classes/user-role-editor.php:515
 msgid "Changelog"
-msgstr "更新紀錄"
+msgstr "變更記錄"
 
-#: includes/class-ure-lib.php:2504
+#: includes/classes/lib.php:383
 msgid "Plugin download"
-msgstr "外掛已下載"
+msgstr "外掛下載頁面"
 
-#: includes/class-ure-lib.php:2503
+#: includes/classes/lib.php:382
 msgid "Plugin webpage"
-msgstr "外掛網址"
+msgstr "外掛官方網站"
 
-#: includes/class-ure-lib.php:2502
+#: includes/classes/lib.php:381
 msgid "Author's website"
-msgstr "作者的網站"
+msgstr "開發者個人網站"
 
-#: includes/class-ure-lib.php:2501
+#: includes/classes/lib.php:380
 msgid "Version:"
-msgstr "版本："
+msgstr "版本:"
 
-#: includes/class-ure-lib.php:2433
+#: includes/classes/capability.php:208
 msgid "Capability %s was removed successfully"
-msgstr "能力 %s 已經成功移除"
+msgstr "權限 [%s] 已成功移除。"
 
-#: includes/class-ure-lib.php:2414
-msgid "Error! You do not have permission to delete this capability: %s!"
-msgstr "錯誤！你沒有權限刪除這個能力： %s ！"
-
-#: includes/class-ure-lib.php:2385
+#: includes/classes/capability.php:101
 msgid "Capability %s exists already"
-msgstr "能力 %s 已存在"
+msgstr "權限 [%s] 已存在。"
 
-#: includes/class-ure-lib.php:2383
-msgid "Capability %s is added successfully"
-msgstr "能力 %s 已成功新增"
+#: includes/classes/capability.php:99
+msgid "Capability %s was added successfully"
+msgstr "權限 [%s] 已成功新增。"
 
-#: includes/class-ure-lib.php:2370
+#: includes/classes/capability.php:38
 msgid "Error: Capability name must contain latin characters and digits only!"
-msgstr "錯誤：能力名稱只能包含英文字母和數字！"
+msgstr "錯誤: 權限名稱僅能包含英文字母及數字。"
 
-#: includes/class-ure-lib.php:2247
+#: includes/classes/editor.php:1360
 msgid "Export"
 msgstr "匯出"
 
-#: includes/class-ure-lib.php:2246
+#: includes/classes/editor.php:1359
 msgid "Delete themes"
-msgstr "删除主題"
+msgstr "删除佈景主題"
 
-#: includes/class-ure-lib.php:2245
+#: includes/classes/editor.php:1358
 msgid "Edit theme options"
-msgstr "編輯主題選項"
+msgstr "編輯佈景主題選項"
 
-#: includes/class-ure-lib.php:2244
+#: includes/classes/editor.php:1357
 msgid "Promote users"
-msgstr "升級會員"
+msgstr "變更使用者角色"
 
-#: includes/class-ure-lib.php:2243
+#: includes/classes/editor.php:1356
 msgid "Add users"
-msgstr "新增會員"
+msgstr "新增使用者"
 
-#: includes/class-ure-lib.php:2242
+#: includes/classes/editor.php:1355
 msgid "Remove users"
-msgstr "移除會員"
+msgstr "移除使用者"
 
-#: includes/class-ure-lib.php:2241
+#: includes/classes/editor.php:1354
 msgid "List users"
-msgstr "會員列表"
+msgstr "列出使用者"
 
-#: includes/class-ure-lib.php:2240
+#: includes/classes/editor.php:1353
 msgid "Update core"
-msgstr "更新核心"
+msgstr "更新核心程式"
 
-#: includes/class-ure-lib.php:2239
+#: includes/classes/editor.php:1352
 msgid "Install themes"
-msgstr "安裝主題"
+msgstr "安裝佈景主題"
 
-#: includes/class-ure-lib.php:2238
+#: includes/classes/editor.php:1351
 msgid "Update themes"
-msgstr "更新主題"
+msgstr "更新佈景主題"
 
-#: includes/class-ure-lib.php:2237
+#: includes/classes/editor.php:1350
 msgid "Install plugins"
 msgstr "安裝外掛"
 
-#: includes/class-ure-lib.php:2236
+#: includes/classes/editor.php:1349
 msgid "Delete plugins"
 msgstr "删除外掛"
 
-#: includes/class-ure-lib.php:2235
+#: includes/classes/editor.php:1348
 msgid "Update plugins"
 msgstr "更新外掛"
 
-#: includes/class-ure-lib.php:2234
+#: includes/classes/editor.php:1347
 msgid "Edit dashboard"
 msgstr "編輯控制台"
 
-#: includes/class-ure-lib.php:2233
+#: includes/classes/editor.php:1346
 msgid "Unfiltered upload"
-msgstr "不過濾上傳"
+msgstr "未篩選的上傳"
 
-#: includes/class-ure-lib.php:2232
+#: includes/classes/editor.php:1345
 msgid "Create users"
-msgstr "新建會員"
+msgstr "新增使用者"
 
-#: includes/class-ure-lib.php:2231
+#: includes/classes/editor.php:1344
 msgid "Delete users"
-msgstr "删除會員"
+msgstr "删除使用者"
 
-#: includes/class-ure-lib.php:2230
+#: includes/classes/editor.php:1343
 msgid "Read private pages"
-msgstr "閱讀私密頁面"
+msgstr "讀取私密頁面"
 
-#: includes/class-ure-lib.php:2229
+#: includes/classes/editor.php:1342
 msgid "Edit private pages"
 msgstr "編輯私密頁面"
 
-#: includes/class-ure-lib.php:2228
+#: includes/classes/editor.php:1341
 msgid "Delete private pages"
 msgstr "删除私密頁面"
 
-#: includes/class-ure-lib.php:2227
+#: includes/classes/editor.php:1340
 msgid "Read private posts"
-msgstr "閱讀私密文章"
+msgstr "讀取私密文章"
 
-#: includes/class-ure-lib.php:2226
+#: includes/classes/editor.php:1339
 msgid "Edit private posts"
 msgstr "編輯私密文章"
 
-#: includes/class-ure-lib.php:2225
+#: includes/classes/editor.php:1338
 msgid "Delete private posts"
-msgstr "删除私密文章"
+msgstr "刪除私密文章"
 
-#: includes/class-ure-lib.php:2224
+#: includes/classes/editor.php:1337
 msgid "Delete published posts"
-msgstr "删除已發表的文章"
+msgstr "刪除已發佈的文章"
 
-#: includes/class-ure-lib.php:2223
+#: includes/classes/editor.php:1336
 msgid "Delete others posts"
-msgstr "删除他人的文章"
+msgstr "刪除其他人的文章"
 
-#: includes/class-ure-lib.php:2222
+#: includes/classes/editor.php:1335
 msgid "Delete posts"
-msgstr "删除自己的文章"
+msgstr "刪除文章"
 
-#: includes/class-ure-lib.php:2221
+#: includes/classes/editor.php:1334
 msgid "Delete published pages"
-msgstr "删除已發表的頁面"
+msgstr "删除已發佈的頁面"
 
-#: includes/class-ure-lib.php:2220
+#: includes/classes/editor.php:1333
 msgid "Delete others pages"
-msgstr "刪除他人的頁面"
+msgstr "刪除其他人的頁面"
 
-#: includes/class-ure-lib.php:2219
+#: includes/classes/editor.php:1332
 msgid "Delete pages"
 msgstr "删除頁面"
 
-#: includes/class-ure-lib.php:2218
+#: includes/classes/editor.php:1331
 msgid "Publish pages"
-msgstr "發表頁面"
+msgstr "發佈頁面"
 
-#: includes/class-ure-lib.php:2217
+#: includes/classes/editor.php:1330
 msgid "Edit published pages"
-msgstr "編輯已發表的頁面"
+msgstr "編輯已發佈的頁面"
 
-#: includes/class-ure-lib.php:2216
+#: includes/classes/editor.php:1329
 msgid "Edit others pages"
-msgstr "編輯他人的頁面"
+msgstr "編輯其他人的頁面"
 
-#: includes/class-ure-lib.php:2215
+#: includes/classes/editor.php:1328
 msgid "Level 0"
-msgstr "Level 0"
+msgstr "等級 0"
 
-#: includes/class-ure-lib.php:2214
+#: includes/classes/editor.php:1327
 msgid "Level 1"
-msgstr "Level 1"
+msgstr "等級 1"
 
-#: includes/class-ure-lib.php:2213
+#: includes/classes/editor.php:1326
 msgid "Level 2"
-msgstr "Level 2"
+msgstr "等級 2"
 
-#: includes/class-ure-lib.php:2212
+#: includes/classes/editor.php:1325
 msgid "Level 3"
-msgstr "Level 3"
+msgstr "等級 3"
 
-#: includes/class-ure-lib.php:2211
+#: includes/classes/editor.php:1324
 msgid "Level 4"
-msgstr "Level 4"
+msgstr "等級 4"
 
-#: includes/class-ure-lib.php:2210
+#: includes/classes/editor.php:1323
 msgid "Level 5"
-msgstr "Level 5"
+msgstr "等級 5"
 
-#: includes/class-ure-lib.php:2209
+#: includes/classes/editor.php:1322
 msgid "Level 6"
-msgstr "Level 6"
+msgstr "等級 6"
 
-#: includes/class-ure-lib.php:2208
+#: includes/classes/editor.php:1321
 msgid "Level 7"
-msgstr "Level 7"
+msgstr "等級 7"
 
-#: includes/class-ure-lib.php:2207
+#: includes/classes/editor.php:1320
 msgid "Level 8"
-msgstr "Level 8"
+msgstr "等級 8"
 
-#: includes/class-ure-lib.php:2206
+#: includes/classes/editor.php:1319
 msgid "Level 9"
-msgstr "Level 9"
+msgstr "等級 9"
 
-#: includes/class-ure-lib.php:2205
+#: includes/classes/editor.php:1318
 msgid "Level 10"
-msgstr "Level 10"
+msgstr "等級 10"
 
-#: includes/class-ure-lib.php:2204
+#: includes/classes/editor.php:1317
 msgid "Read"
-msgstr "閱讀"
+msgstr "讀取"
 
-#: includes/class-ure-lib.php:2203
+#: includes/classes/editor.php:1316
 msgid "Edit pages"
-msgstr "編輯自己的頁面"
+msgstr "編輯頁面"
 
-#: includes/class-ure-lib.php:2202
+#: includes/classes/editor.php:1315
 msgid "Publish posts"
-msgstr "發表文章"
+msgstr "發佈文章"
 
-#: includes/class-ure-lib.php:2201
+#: includes/classes/editor.php:1314
 msgid "Edit published posts"
-msgstr "編輯已發表的文章"
+msgstr "編輯已發佈的文章"
 
-#: includes/class-ure-lib.php:2200
+#: includes/classes/editor.php:1313
 msgid "Edit others posts"
-msgstr "編輯他人的文章"
+msgstr "編輯其他人的文章"
 
-#: includes/class-ure-lib.php:2199
+#: includes/classes/editor.php:1312
 msgid "Edit posts"
-msgstr "編輯自己的文章"
+msgstr "編輯文章"
 
-#: includes/class-ure-lib.php:2198
+#: includes/classes/editor.php:1311
 msgid "Unfiltered html"
-msgstr "不過濾 html"
+msgstr "未篩選的 HTML"
 
-#: includes/class-ure-lib.php:2197
+#: includes/classes/editor.php:1310
 msgid "Import"
 msgstr "匯入"
 
-#: includes/class-ure-lib.php:2196
+#: includes/classes/editor.php:1309
 msgid "Upload files"
 msgstr "上傳檔案"
 
-#: includes/class-ure-lib.php:2195
+#: includes/classes/editor.php:1308
 msgid "Manage links"
-msgstr "管理友情連結"
+msgstr "管理連結"
 
-#: includes/class-ure-lib.php:2194
+#: includes/classes/editor.php:1307
 msgid "Manage categories"
-msgstr "管理文章分類"
+msgstr "管理分類"
 
-#: includes/class-ure-lib.php:2193
+#: includes/classes/editor.php:1306
 msgid "Moderate comments"
-msgstr "審核留言"
+msgstr "審閱留言"
 
-#: includes/class-ure-lib.php:2192
+#: includes/classes/editor.php:1305
 msgid "Manage options"
-msgstr "管理設定選項"
+msgstr "管理選項設定"
 
-#: includes/class-ure-lib.php:2191
+#: includes/classes/editor.php:1304
 msgid "Edit files"
 msgstr "編輯檔案"
 
-#: includes/class-ure-lib.php:2190
+#: includes/classes/editor.php:1303
 msgid "Edit users"
-msgstr "編輯會員"
+msgstr "編輯使用者"
 
-#: includes/class-ure-lib.php:2189
+#: includes/classes/editor.php:1302
 msgid "Edit plugins"
 msgstr "編輯外掛"
 
-#: includes/class-ure-lib.php:2188
+#: includes/classes/editor.php:1301
 msgid "Activate plugins"
 msgstr "啟用外掛"
 
-#: includes/class-ure-lib.php:2187
+#: includes/classes/editor.php:1300
 msgid "Edit themes"
-msgstr "編輯主題"
+msgstr "編輯佈景主題"
 
-#: includes/class-ure-lib.php:2186
+#: includes/classes/editor.php:1299
 msgid "Switch themes"
-msgstr "切換主題"
+msgstr "切換佈景主題"
 
-#: includes/class-ure-lib.php:2184
+#: includes/classes/editor.php:1297
 msgid "Subscriber"
 msgstr "訂閱者"
 
-#: includes/class-ure-lib.php:2183
+#: includes/classes/editor.php:1296
 msgid "Contributor"
 msgstr "投稿者"
 
-#: includes/class-ure-lib.php:2182
+#: includes/classes/editor.php:1295
 msgid "Author"
 msgstr "作者"
 
-#: includes/class-ure-lib.php:2181
+#: includes/classes/editor.php:1294
 msgid "Editor"
 msgstr "編輯"
 
-#: includes/class-ure-lib.php:2165
+#: includes/classes/editor.php:1088
 msgid "This role does not exist - "
-msgstr "此角色不存在 - "
+msgstr "這個使用者角色不存在 - "
 
-#: includes/class-ure-lib.php:2163
+#: includes/classes/editor.php:1086
 msgid "Can not set Administrator role as a default one"
-msgstr "不能設定為預設的管理員角色"
+msgstr "不能將 [網站管理員] 使用者角色設定為預設的使用者角色。"
 
-#: includes/class-ure-lib.php:2160
+#: includes/classes/editor.php:1081
 msgid "Default role for new users is set to %s successfully"
-msgstr "預設角色已成功配置給新會員 %s "
+msgstr "新使用者的預設使用者角色已成功設定為 [%s]。"
 
-#: includes/class-ure-lib.php:2157
+#: includes/classes/editor.php:1083
 msgid "Error encountered during default role change operation"
-msgstr "預設角色角色變換操作過程中遇到錯誤"
+msgstr "變更預設使用者角色時發生錯誤。"
 
-#: includes/class-ure-lib.php:2129
+#: includes/classes/editor.php:1037
 msgid "Role %s is deleted successfully"
-msgstr "角色 %s 已成功刪除"
+msgstr "使用者角色 [%s] 已成功刪除。"
 
-#: includes/class-ure-lib.php:2127
+#: includes/classes/editor.php:1035
 msgid "Unused roles are deleted successfully"
-msgstr "未使用的角色已成功刪除"
+msgstr "尚未使用的使用者角色已成功刪除。"
 
-#: includes/class-ure-lib.php:2125
-msgid "Error encountered during role delete operation"
-msgstr "角色刪除操作過程中遇到錯誤"
-
-#: includes/class-ure-lib.php:2052
+#: includes/classes/editor.php:903
 msgid "Role %s is renamed to %s successfully"
-msgstr "角色 %s 已成功重命名為 %s"
+msgstr "使用者角色 [%s] 已成功重新命名為 [%s]。"
 
-#: includes/class-ure-lib.php:2044
+#: includes/classes/editor.php:890
 msgid "Role %s does not exists"
-msgstr "角色 %s 不存在"
+msgstr "使用者角色 [%s] 不存在。"
 
-#: includes/class-ure-lib.php:2037
+#: includes/classes/editor.php:883
 msgid "Error: Empty role display name is not allowed."
-msgstr "錯誤：不允許清空角色的顯示名稱。"
+msgstr "錯誤: 不可使用空白使用者角色顯示名稱。"
 
-#: includes/class-ure-lib.php:2019
+#: includes/classes/editor.php:775
 msgid "Error: Role ID is empty!"
-msgstr "錯誤：角色 ID 空白！"
+msgstr "錯誤: 使用者角色 ID 留空！"
 
-#: includes/class-ure-lib.php:1995
+#: includes/classes/editor.php:850
 msgid "Role %s is created successfully"
-msgstr "角色 %s 已成功建立"
+msgstr "使用者角色 [%s] 已成功新增。"
 
-#: includes/class-ure-lib.php:1993
+#: includes/classes/editor.php:843
 msgid "Error is encountered during new role create operation"
-msgstr "建立新角色的操作過程中出錯"
+msgstr "新增新使用者角色的操作過程中發生錯誤。"
 
-#: includes/class-ure-lib.php:1978
+#: includes/classes/editor.php:824
 msgid "Role %s exists already"
-msgstr "角色 %s 已存在"
+msgstr "使用者角色 [%s] 已存在。"
 
-#: includes/class-ure-lib.php:1963 includes/class-ure-lib.php:2030
+#: includes/classes/editor.php:790
 msgid "Error: WordPress does not support numeric Role name (ID). Add latin characters to it."
-msgstr "錯誤：Wordpress 不支援純數字角色名稱（ID）。請增加英文字母。"
+msgstr "錯誤: WordPress 不支援純數字使用者角色名稱 (ID)。請使用英文字母。"
 
-#: includes/class-ure-lib.php:1959 includes/class-ure-lib.php:2026
+#: includes/classes/editor.php:784
 msgid "Error: Role ID must contain latin characters, digits, hyphens or underscore only!"
-msgstr "錯誤：角色（ID）只能包含英文字母、數字、連字符或底線！"
+msgstr "錯誤: 使用者角色 ID 必須包含英文字母、數字、連字號或底線。"
 
-#: includes/class-ure-lib.php:1913
-msgid "Error is occur. Please check the log file."
-msgstr "初錯了，請檢查更新紀錄的檔案。"
-
-#: includes/class-ure-lib.php:1697 includes/class-ure-lib.php:1950
-#: includes/class-ure-lib.php:2066 includes/class-ure-lib.php:2114
-#: includes/class-ure-lib.php:2362 includes/class-ure-lib.php:2407
-#: includes/class-user-role-editor.php:828
+#: includes/classes/user-role-editor.php:650 includes/classes/capability.php:79
+#: includes/classes/capability.php:190 includes/classes/editor.php:742
+#: includes/classes/editor.php:811 includes/classes/editor.php:871
+#: includes/classes/editor.php:1017 includes/classes/editor.php:1059
 msgid "Insufficient permissions to work with User Role Editor"
-msgstr "沒有足夠的權限使用會員角色編輯器"
+msgstr "目前的登入身分沒有使用 User Role Editor 的權限。"
 
-#: includes/class-ure-lib.php:1442
-msgid "Help"
-msgstr "幫助"
-
-#: includes/class-ure-lib.php:1441
-msgid "user capability"
-msgstr "會員能力"
-
-#: includes/class-ure-lib.php:1440
-msgid "read about"
-msgstr "閱讀關於"
-
-#: includes/class-ure-lib.php:558
+#: includes/classes/editor.php:1133
 msgid "User Roles are restored to WordPress default values. "
-msgstr "會員角色已重設為 Wordpress 預設值。"
+msgstr "使用者角色已還原為 WordPress 預設值。"
 
-#: includes/class-ure-lib.php:500
-msgid "Error occured during user update"
-msgstr "角色更新時出錯"
+#: includes/classes/editor.php:691
+msgid "Error occurred during user update"
+msgstr "更新使用者時發生錯誤。"
 
-#: includes/class-ure-lib.php:495
+#: includes/classes/editor.php:689
 msgid "User capabilities are updated successfully"
-msgstr "會員能力已成功更新"
+msgstr "使用者權限已成功更新。"
 
-#: includes/class-ure-lib.php:488
-msgid "Error occured during role(s) update"
-msgstr "角色更新時出錯"
+#: includes/classes/editor.php:685
+msgid "Error occurred during role(s) update"
+msgstr "更新使用者角色時發生錯誤。"
 
-#: includes/class-ure-lib.php:482
+#: includes/classes/editor.php:682
 msgid "Roles are updated for all network"
-msgstr "角色已經對全網絡更新（多站點）"
+msgstr "全部多站網路的使用者角色已更新。"
 
-#: includes/class-ure-lib.php:480
+#: includes/classes/editor.php:680
 msgid "Role is updated successfully"
-msgstr "角色已成功更新"
+msgstr "使用者角色已成功更新。"
 
-#: includes/class-ure-lib.php:437
+#: includes/classes/editor.php:195
 msgid "does not exist"
 msgstr "不存在"
 
-#: includes/class-ure-lib.php:436
+#: includes/classes/editor.php:194
 msgid "Role"
-msgstr "角色"
+msgstr "使用者角色"
 
-#: includes/class-ure-lib.php:436
+#: includes/classes/editor.php:192 includes/classes/editor.php:194
 msgid "Error: "
-msgstr "錯誤："
+msgstr "錯誤: "
 
-#. #-#-#-#-#  tmp-user-role-editor.pot (User Role Editor 4.19.2)  #-#-#-#-#
-#. Plugin Name of the plugin/theme
-#: includes/class-ure-lib.php:339 includes/class-user-role-editor.php:596
-#: includes/class-user-role-editor.php:625
+#. Plugin Name of the plugin
+#: includes/classes/capabilities-groups-manager.php:75
+#: includes/classes/user-role-editor.php:566
+#: includes/classes/user-role-editor.php:597 includes/classes/editor.php:1226
 msgid "User Role Editor"
-msgstr "會員角色編輯器"
+msgstr "User Role Editor"
 
-#: includes/class-ure-lib.php:322
+#: includes/classes/role-view.php:257
 msgid "Capability name (ID): "
-msgstr "能力名稱（ID）："
+msgstr "權限名稱 (ID): "
 
-#: includes/class-ure-lib.php:315
-msgid "Delete:"
-msgstr "删除："
-
-#: includes/class-ure-lib.php:300
+#: includes/classes/role-view.php:232
 msgid "Select Role:"
-msgstr "選擇角色："
+msgstr "選取使用者角色:"
 
-#: includes/class-ure-lib.php:284
+#: includes/classes/role-view.php:216
 msgid "Make copy of: "
-msgstr "複製："
+msgstr "使用者角色複製來源: "
 
-#: includes/class-ure-lib.php:282 includes/class-ure-lib.php:293
+#: includes/classes/role-view.php:214 includes/classes/role-view.php:225
 msgid "Display Role Name: "
-msgstr "顯示角色名稱："
+msgstr "使用者角色顯示名稱: "
 
-#: includes/class-ure-lib.php:280 includes/class-ure-lib.php:291
+#: includes/classes/role-view.php:212 includes/classes/role-view.php:223
 msgid "Role name (ID): "
-msgstr "角色名稱（ID）："
+msgstr "使用者角色名稱 (ID): "
 
-#: includes/class-ure-lib.php:247
+#: includes/classes/editor.php:1265
 msgid "Error: wrong request"
-msgstr "錯誤：錯誤的請求"
+msgstr "錯誤: 錯誤的要求。"

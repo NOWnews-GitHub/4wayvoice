@@ -5,11 +5,14 @@
 /*-----------------------------------------------------------------------------------*/
 add_action( 'admin_enqueue_scripts', 'taq_admin_register' );
 function taq_admin_register() {
-	wp_register_script( 'taqyeem-admin-checkbox',    plugins_url('admin/js/checkbox.min.js' , __FILE__) , array( 'jquery' ) , false , false );
-	wp_register_script( 'taqyeem-admin-main',        plugins_url('admin/js/tie.js' , __FILE__), array( 'jquery', 'jquery-ui-core', 'jquery-ui-slider', 'jquery-ui-widget', 'jquery-ui-mouse', 'jquery-ui-sortable' ) , false , false );
-	wp_register_script( 'taqyeem-admin-colorpicker', plugins_url('admin/js/colorpicker.js' , __FILE__), array( 'jquery' ) , false , false );
 
-	wp_register_style( 'taqyeem-admin-style', plugins_url('admin/style.css' , __FILE__), array(), false , 'all' );
+	$ver = time();
+
+	wp_register_script( 'taqyeem-admin-checkbox',    plugins_url('admin/js/checkbox.min.js' , __FILE__) , array( 'jquery' ), $ver, false );
+	wp_register_script( 'taqyeem-admin-main',        plugins_url('admin/js/tie.js' , __FILE__), array( 'jquery', 'jquery-ui-core', 'jquery-ui-slider', 'jquery-ui-widget', 'jquery-ui-mouse', 'jquery-ui-sortable' ), $ver, false );
+	wp_register_script( 'taqyeem-admin-colorpicker', plugins_url('admin/js/colorpicker.js' , __FILE__), array( 'jquery' ), $ver, false );
+
+	wp_register_style( 'taqyeem-admin-style', plugins_url('admin/style.css' , __FILE__), array(), $ver, 'all' );
 
 	if ( isset( $_GET['page'] ) && $_GET['page'] == 'taqyeem' ) {
 		wp_enqueue_script( 'taqyeem-admin-checkbox' );
@@ -18,6 +21,18 @@ function taq_admin_register() {
 	wp_enqueue_script( 'taqyeem-admin-colorpicker');
 	wp_enqueue_script( 'taqyeem-admin-main' );
 	wp_enqueue_style( 'taqyeem-admin-style' );
+
+
+	// Update Settings after update the plugin
+	if( get_option( 'taq_active' ) < '2.3' ){
+
+		$taqyeem_options = get_option( 'taqyeem_options' );
+		$taqyeem_options['structured_data'] = 'true';
+
+		update_option( 'taqyeem_options', $taqyeem_options );
+		update_option( 'taq_active' , TIE_Plugin_ver );
+	}
+
 	?>
 	<script type='text/javascript'>
 	/* <![CDATA[ */
@@ -87,7 +102,7 @@ function taqyeem_save_ajax() {
 	$data = $_POST;
 	$refresh = 1;
 
-	if( $data['taqyeem_import'] ){
+	if( ! empty( $data['taqyeem_import'] ) ){
 		$data = unserialize(base64_decode( $data['taqyeem_import'] ));
 		array_walk_recursive( $data , 'taqyeem_clean_options');
 		update_option( 'taqyeem_options' ,  $data   );
@@ -274,7 +289,15 @@ function taqyeem_option($value){
 		break;
 
 		case 'typography':
-			$current_value = taqyeem_get_option($value['id']);
+
+			$current_value = wp_parse_args( taqyeem_get_option($value['id']), array(
+				'color'  => '',
+				'font'   => '',
+				'size'   => '',
+				'weight' => '',
+				'style' => '',
+			));
+
 		?>
 				<div style="clear:both;"></div>
 				<div style="clear:both; padding:10px 14px; margin:0 -15px;">
@@ -282,9 +305,9 @@ function taqyeem_option($value){
 					<input style="width:80px;;"  name="taqyeem_options[<?php echo $value['id']; ?>][color]" id="<?php  echo $value['id']; ?>color" type="text" value="<?php echo $current_value['color'] ; ?>" />
 
 					<select name="taqyeem_options[<?php echo $value['id']; ?>][size]" id="<?php echo $value['id']; ?>[size]" style="width:55px;">
-						<option value="" <?php if (!$current_value['size'] ) { echo ' selected="selected"' ; } ?>></option>
+						<option value="" <?php if ( empty( $current_value['size'] ) ) { echo ' selected="selected"' ; } ?>></option>
 					<?php for( $i=1 ; $i<101 ; $i++){ ?>
-						<option value="<?php echo $i ?>" <?php if (( $current_value['size']  == $i ) ) { echo ' selected="selected"' ; } ?>><?php echo $i ?></option>
+						<option value="<?php echo $i ?>" <?php if ( ! empty($current_value['size']) && $current_value['size'] == $i ) { echo ' selected="selected"' ; } ?>><?php echo $i ?></option>
 					<?php } ?>
 					</select>
 
@@ -295,7 +318,7 @@ function taqyeem_option($value){
 					</select>
 
 					<select name="taqyeem_options[<?php echo $value['id']; ?>][weight]" id="<?php echo $value['id']; ?>[weight]" style="width:96px;">
-						<option value="" <?php if ( !$current_value['weight'] ) { echo ' selected="selected"' ; } ?>></option>
+						<option value="" <?php if ( ! $current_value['weight'] ) { echo ' selected="selected"' ; } ?>></option>
 						<option value="normal" <?php if ( $current_value['weight']  == 'normal' ) { echo ' selected="selected"' ; } ?>>Normal</option>
 						<option value="bold" <?php if ( $current_value['weight']  == 'bold') { echo ' selected="selected"' ; } ?>>Bold</option>
 						<option value="lighter" <?php if ( $current_value['weight'] == 'lighter') { echo ' selected="selected"' ; } ?>>Lighter</option>
@@ -468,7 +491,44 @@ function taqyeem_options() {
 													"thumbs"=>"<img src='".  plugins_url('admin/images/thumbs.png' , __FILE__) ."' alt='' />")));
 				?>
 			</div>
+
+
+			<div class="taqyeem-item">
+				<h3><?php _e('Structured Data','taq'); ?></h3>
+				<?php
+					taqyeem_option(
+						array(
+							'name' => __('Enable Structured Data','taq'),
+							'id'   => 'structured_data',
+							'type' => 'checkbox',
+						));
+
+					taqyeem_option(
+						array(
+							'name'    => __('Default Structured Data','taq'),
+							'id'      => 'default_structured_data',
+							'type'    => 'select',
+							'options' => array(
+								'product'        => __( 'Product',        'taq'),
+								'book'           => __( 'Book',           'taq'),
+								'movie'          => __( 'Movie',          'taq'),
+								'game'           => __( 'Game',           'taq'),
+								'event'          => __( 'Event',          'taq'),
+								'course'         => __( 'Course',         'taq'),
+								'organization'   => __( 'Organization',   'taq'),
+								'musicrecording' => __( 'MusicRecording', 'taq'),
+								'musicplaylist'  => __( 'MusicPlaylist',  'taq'),
+								'episode'        => __( 'Episode',        'taq'),
+								'restaurant'     => __( 'Restaurant',     'taq'),
+							)
+						));
+				?>
+			</div>
+
+
 		</div>
+
+
 
 		<?php if( apply_filters( 'taqyeem_custom_styles', true ) ){ ?>
 
@@ -671,4 +731,3 @@ function taqyeem_options() {
 
 <?php
 }
-?>

@@ -24,13 +24,12 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 
 			$widget_title  = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			# Weather Settings
-			$location      = isset( $instance['location'] )      ? $instance['location']      : false;
-			$custom_name   = isset( $instance['custom_name'] )   ? $instance['custom_name']   : false;
-			$api_key       = isset( $instance['api_key'] )       ? $instance['api_key']       : false;
-			$units         = isset( $instance['units'] )         ? $instance['units']         : false;
-			$forecast_days = isset( $instance['forecast_days'] ) ? $instance['forecast_days'] : false;
-			$animated      = isset( $instance['animated'] )      ? $instance['animated']      : false;
+			// Weather Settings
+			$location      = ! empty( $instance['location'] )      ? $instance['location']      : false;
+			$custom_name   = ! empty( $instance['custom_name'] )   ? $instance['custom_name']   : false;
+			$units         = ! empty( $instance['units'] )         ? $instance['units']         : false;
+			$forecast_days = ! empty( $instance['forecast_days'] ) ? $instance['forecast_days'] : false;
+			$animated      = ! empty( $instance['animated'] )      ? $instance['animated']      : false;
 
 			# Colors
 			$bg_color   = ! empty( $instance['bg_color'] )   ? $instance['bg_color']   : '';
@@ -44,7 +43,6 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 
 			$atts = array(
 				'location'      => $location,
-				'api_key'       => $api_key,
 				'units'         => $units,
 				'forecast_days' => $forecast_days,
 				'custom_name'   => $custom_name,
@@ -64,7 +62,7 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 				if ( ! empty( $font_color ) ){
 					$out .= "
 						$widget_id,
-						$widget_id .widget-title h4{
+						$widget_id .widget-title .the-subtitle{
 							color: $font_color;
 						}
 					";
@@ -92,13 +90,12 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 			$instance                  = $old_instance;
 			$instance['location']      = strip_tags($new_instance['location']);
 			$instance['custom_name']   = strip_tags($new_instance['custom_name']);
-			$instance['api_key']       = strip_tags($new_instance['api_key']);
 			$instance['title']         = strip_tags($new_instance['title']);
 			$instance['units']         = strip_tags($new_instance['units']);
 			$instance['forecast_days'] = strip_tags($new_instance['forecast_days']);
 			$instance['font_color']    = strip_tags($new_instance['font_color']);
 			$instance['bg_color']      = strip_tags($new_instance['bg_color']);
-			$instance['animated']      = strip_tags($new_instance['animated']);
+			$instance['animated']      = ! empty( $new_instance['animated'] ) ? 'true' : 0;
 
 			# Delete the Cached data
 			if( ! empty( $instance['location'] ) ){
@@ -116,7 +113,6 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 
 			$location      = isset( $instance['location'] )      ? esc_attr( $instance['location'])       : '';
 			$custom_name   = isset( $instance['custom_name'] )   ? esc_attr( $instance['custom_name'])    : '';
-			$api_key       = isset( $instance['api_key'] )       ? esc_attr( $instance['api_key'])        : '';
 			$title         = isset( $instance['title'] )         ? esc_attr( $instance['title'])          : '';
 			$forecast_days = isset( $instance['forecast_days'] ) ? esc_attr( $instance['forecast_days'] ) : 5;
 			$font_color    = isset( $instance['font_color'] )    ? esc_attr( $instance['font_color'])     : '';
@@ -128,6 +124,10 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 			$colors_class = ( $id[4] == '__i__' ) ? 'ajax-added' : '';
 
 			$theme_color = tie_get_option( 'global_color', '#000000' );
+
+			if( ! tie_get_option( 'api_openweather' ) ){
+				echo '<p class="tie-message-hint">'. esc_html__( 'You need to set the Weather API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ) .'</p>';
+			}
 		?>
 
 		<p>
@@ -150,12 +150,7 @@ if( ! class_exists( 'TIE_WEATHER_WIDGET' )){
 			<input class="widefat" style="margin-top: 4px;" id="<?php echo esc_attr( $this->get_field_id('custom_name') ); ?>" name="<?php echo esc_attr( $this->get_field_name('custom_name') ); ?>" type="text" value="<?php echo esc_attr( $custom_name ); ?>" />
 		</p>
 
-		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id('api_key') ); ?>">
-				<?php esc_html_e('API Key', TIELABS_TEXTDOMAIN); ?> - <a href="<?php echo esc_url( 'http://openweathermap.org/appid#get' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e('How to get your API Key?', TIELABS_TEXTDOMAIN); ?></a><br />
-			</label>
-			<input class="widefat" style="margin-top: 4px;" id="<?php echo esc_attr( $this->get_field_id('api_key') ); ?>" name="<?php echo esc_attr( $this->get_field_name('api_key') ); ?>" type="text" value="<?php echo esc_attr( $api_key ); ?>" />
-		</p>
+
 
 		<p>
 			<label for="<?php echo esc_attr( $this->get_field_id('units') ); ?>"><?php esc_html_e('Units', TIELABS_TEXTDOMAIN); ?></label>  &nbsp;

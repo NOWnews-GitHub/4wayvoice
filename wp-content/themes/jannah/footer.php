@@ -19,7 +19,6 @@ TIELABS_HELPER::get_template_part( 'templates/footer' );
 
 	</div><!-- #tie-container /-->
 </div><!-- .background-overlay /-->
-
-<?php wp_footer();?>
+<?php wp_footer(); ?>
 </body>
 </html>

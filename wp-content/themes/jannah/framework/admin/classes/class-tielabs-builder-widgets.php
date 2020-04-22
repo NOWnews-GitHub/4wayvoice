@@ -13,8 +13,6 @@
 
  	class TIELABS_BUILDER_WIDGETS{
 
-
-
  		/**
  		 * __construct
  		 *
@@ -22,29 +20,27 @@
  		 */
  		function __construct(){
 
-		  # Hooks
-		  add_action( 'admin_print_scripts',      array( $this, '_print_scripts'          ));
+		  // Actions
+		  add_action( 'admin_print_scripts',      array( $this, 'print_scripts'           ));
 		  add_action( 'widgets_admin_page',       array( $this, '_show_sections_sidebars' ));
 			add_action( 'deleted_post',             array( $this, '_delete_widget_options'  ));
 			add_action( 'save_post',                array( $this, '_save_widget_options'    ));
 			add_action( 'wp_print_scripts',         array( $this, '_save_widgets_resources' ));
-			add_action( 'admin_footer-post.php',    array( $this, '_page_footer' ), 99 );
+			add_action( 'admin_footer-post.php',    array( $this, 'page_footer' ), 99 );
 
-		  # AJAX Hooks
+		  // AJAX Hooks
 		  add_action( 'wp_ajax_pw-widgets-order', array( $this, '_ajax_widgets_order' ));
 		  add_action( 'wp_ajax_pw-save-widget',   array( $this, '_ajax_save_widget'   ));
-
  		}
 
 
-
  		/**
- 		 * _print_scripts
+ 		 * print_scripts
  		 *
  		 * Print the widgets JS for the page builder
- 		 *
  		 */
-		function _print_scripts(){
+		function print_scripts(){
+
 	 		$screen = get_current_screen();
 
 	 		if( ! empty( $screen->base ) && $screen->base == 'post' && $screen->id == 'page' ){
@@ -58,19 +54,16 @@
             'jquery-ui-draggable',
             'jquery-ui-droppable'
           ),
-          TIELABS_DB_VERSION,
+          time(),
           false
         );
 
-        //wp_enqueue_script('admin-widgets');
-
-
-	 			# The Widgets resources
+	 			// The Widgets resources
         $widgets_resources = get_option( 'tie_widgets_resources' );
 
 				if( $widgets_resources && is_array( $widgets_resources ) ){
 
-					# Scripts
+					// Scripts
 					global $wp_scripts;
 
 					if( ! empty( $widgets_resources['scripts'] ) && is_array( $widgets_resources['scripts'] )){
@@ -91,7 +84,7 @@
 						}
 					}
 
-					# Styles
+					// Styles
 					global $wp_styles;
 
 					if( ! empty( $widgets_resources['styles'] ) && is_array( $widgets_resources['styles'] )){
@@ -108,23 +101,19 @@
 		}
 
 
-
  		/**
- 		 * _page_footer
+ 		 * page_footer
  		 *
  		 * JS in the page Footer
- 		 *
  		 */
-		function _page_footer(){
+		function page_footer(){
 
 			$screen = get_current_screen();
 
 			if( ! empty( $screen->base ) && $screen->base == 'post' && $screen->id == 'page' ){
-
 				do_action( 'admin_footer-widgets.php' );
 			}
 		}
-
 
 
 		/**
@@ -149,12 +138,10 @@
 		}
 
 
-
 		/**
  		 * _ajax_widgets_order
  		 *
  		 * Save the order of the widgets
- 		 *
  		 */
 		function _ajax_widgets_order() {
 			check_ajax_referer( 'save-sidebar-widgets', 'savewidgets' );
@@ -199,7 +186,6 @@
 
 			die('-1');
 		}
-
 
 
 		/**
@@ -313,12 +299,10 @@
 		}
 
 
-
 		/**
 		 * _set_sidebars_widgets
 		 *
 		 * Update the Widget settings
-		 *
 		 */
 		function _set_sidebars_widgets( $_sidebars_widgets = array(), $post_id ){
 
@@ -337,14 +321,12 @@
       // Update the global Widgets options
       wp_set_sidebars_widgets( $sidebars_widgets );
 
-
       // Save the sections ID to remove these sidebars when removing the post.
       // And register these custom sidebars.
       $custom_widgets = get_option( 'tie_sidebars_widgets', array() );
       $custom_widgets[ $post_id ] = $_sidebars_widgets;
-      update_option( 'tie_sidebars_widgets', $custom_widgets, 'no' );
+      update_option( 'tie_sidebars_widgets', $custom_widgets, false );
 		}
-
 
 
 		/**
@@ -357,7 +339,6 @@
       $sidebars_widgets = get_option( 'sidebars_widgets' );
 
       if( ! empty( $custom_widgets[ $post_id ] ) && is_array( $custom_widgets[ $post_id ] )){
-
         foreach ( $custom_widgets[ $post_id ] as $section => $widgets ){
           unset( $sidebars_widgets[ $section ] );
         }
@@ -370,10 +351,8 @@
 		}
 
 
-
 		/**
 		 * _save_widget_options
-		 *
 		 */
 		function _save_widget_options( $post_id ){
 
@@ -392,7 +371,7 @@
         }
       }
 
-      // Post Sidebars ------
+      // Post Sidebars
       $custom_widgets = get_option( 'tie_sidebars_widgets', array() );
       if( ! empty( $custom_widgets[ $post_id ] ) && is_array( $custom_widgets[ $post_id ] )){
         foreach ( $custom_widgets[ $post_id ] as $section => $widgets ){
@@ -423,10 +402,8 @@
 		}
 
 
-
 		/**
 		 * _show_sections_sidebars
-		 *
 		 */
 		function _show_sections_sidebars(){
       echo "
@@ -440,11 +417,10 @@
     }
 
 
-
 		/**
 		 * _save_widgets_resources
 		 * We need to get the all Js files of the Widgets page and load them in the Pages
-		 *  Edit Page to prevent any Js issues may caused by the custom Plugin widgets.
+		 * Edit Page to prevent any Js issues may caused by the custom Plugin widgets.
      * We need a better Idea :)
 		 */
 		function _save_widgets_resources() {
@@ -489,10 +465,8 @@
 		}
 
 
-
 		/**
-		 *
-		 *
+		 * get_widgets
 		 */
 		public static function get_widgets( $sections = array() ) {
 			global $wp_registered_widgets, $sidebars_widgets;
@@ -502,12 +476,10 @@
 				$sidebars_widgets = wp_get_widget_defaults();
 			}
 
-
 			// include widgets function
 			if ( ! function_exists('wp_list_widgets') ){
 				require_once(ABSPATH . '/wp-admin/includes/widgets.php');
 			}
-
 			?>
 
 			<form style="display: none;" action="" method="post"></form>
@@ -539,7 +511,6 @@
 		              $section_number++;
 		            }
 		          }
-
 		        ?>
 		      </div>
 
@@ -602,10 +573,9 @@
 			</div>
 			<?php
 		}
-
  	}
 
 
- 	# Instantiate the class
+ 	// Instantiate the class
  	new TIELABS_BUILDER_WIDGETS();
  }

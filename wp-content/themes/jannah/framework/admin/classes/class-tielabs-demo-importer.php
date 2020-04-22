@@ -7,22 +7,14 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-
-
-
-/*-----------------------------------------------------------------------------------*/
-# Demo Importer
-/*-----------------------------------------------------------------------------------*/
 if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 	class TIELABS_DEMO_IMPORTER{
-
 
 		public $demo_widgets      = '';
 		public $logo_img_id       = '';
 		public $secondry_menu_id  = '';
 		public $menu_slug         = 'tie-one-click-demo-import';
-
 
 		/**
 		 * __construct
@@ -34,8 +26,17 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			// Prevent DEMO reset from removing the posts that have been modified
 			add_action( 'save_post', array( $this, 'remove_demo_meta' ) );
 
+			//
+			add_action( 'TieLabs/after_theme_data_update', array( $this, 'after_theme_data_update' ) );
 
-			// Check if the current user role
+			// Disable the importer if the current page is the WooCommerce Product Importer page to avoid the ERR_TOO_MANY_REDIRECTS error
+			if( is_admin() && TIELABS_WOOCOMMERCE_IS_ACTIVE && ! empty( $_SERVER['REQUEST_URI'] ) ){
+				if( strpos( $_SERVER['REQUEST_URI'], 'product_importer') !== false ){
+					return;
+				}
+			}
+
+			// Check the current user role
 			if( ! current_user_can( 'switch_themes' ) ){
 				return;
 			}
@@ -49,9 +50,8 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			// Include the main demo importer classes
 			if( ! class_exists( 'PT_One_Click_Demo_Import' ) ){
-				locate_template( 'framework/vendor/one-click-demo-import/one-click-demo-import.php', true, true );
+				require TIELABS_TEMPLATE_PATH . '/framework/vendor/one-click-demo-import/one-click-demo-import.php';
 			}
-
 
 			// Filters and Actions
 			add_filter( 'pt-ocdi/plugin_intro_text', '__return_false' );
@@ -68,7 +68,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * remove_demo_meta
 		 *
@@ -77,7 +76,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		public function remove_demo_meta( $post_id ){
 			delete_post_meta( $post_id, TIELABS_THEME_SLUG . '_demo_data' );
 		}
-
 
 
 		/**
@@ -90,7 +88,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * get_files
 		 *
@@ -99,7 +96,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		public function get_files(){
 
 			if( ! class_exists( 'Parsedown' )){
-				locate_template( 'framework/vendor/Parsedown/parsedown.php', true, true );
+				require TIELABS_TEMPLATE_PATH . '/framework/vendor/Parsedown/parsedown.php';
 			}
 
 			$Parsedown   = new Parsedown();
@@ -109,7 +106,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			//exit;
 			$i = 0;
-			if( ! empty( $demos_data ) && is_array( $demos_data )){
+			if( ! empty( $demos_data ) && is_array( $demos_data ) ){
 				foreach ( $demos_data as $demo ){
 					$i++;
 					$theme_demos[] = array(
@@ -129,11 +126,8 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * before_page_title
-		 *
-		 *
 		 */
 		public function before_page_title(){
 
@@ -166,13 +160,10 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 						'text'  => $uninstall_msg,
 						'type'  => 'error',
 					));
-
-
 				?>
 				<?php
 			}
 		}
-
 
 
 		/**
@@ -200,7 +191,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * _add_about_tabs
 		 *
@@ -217,7 +207,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * before_import
 		 *
@@ -225,10 +214,10 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 */
 		public function before_import(){
 
-			# SAVE CURRENT SITE SETTINGS
-			if( ! get_option( TIELABS_THEME_SLUG .'_history' ) ){
+			$theme = get_option( 'stylesheet' );
 
-				$theme = get_option( 'stylesheet' );
+			// SAVE CURRENT SITE SETTINGS
+			if( ! get_option( TIELABS_THEME_SLUG .'_history' ) ){
 
 				$history = array(
 					'options'       => get_option( apply_filters( 'TieLabs/theme_options', '' ) ),
@@ -243,7 +232,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			}
 			else{
 
-				# Taxonomies
+				// Taxonomies
 				/*
 				$args = array(
 					'hide_empty' => false,
@@ -259,8 +248,9 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}*/
 			}
 
+			delete_option( 'theme_mods_'.$theme );
 
-			# Register the Footer Widgets to load its widgets
+			// Register the Footer Widgets to load its widgets
 			$fotter_widgets_areas = array(
 				'area_1' => esc_html__( 'First Footer', TIELABS_TEXTDOMAIN ),
 				'area_2' => esc_html__( 'Second Footer', TIELABS_TEXTDOMAIN )
@@ -288,14 +278,11 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 					'name' => $description. ' - '.esc_html__( '4th Column', TIELABS_TEXTDOMAIN ),
 				));
 			}
-
 		}
-
 
 
 		/**
 		 * reset_widgets
-		 *
 		 * RESET WIDGETS BEFORE IMPORTING THE NEW ONE
 		 */
 		public function reset_widgets(){
@@ -303,15 +290,13 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * import_settings
-		 *
 		 * IMPORT THE THEME SETTINGS
 		 */
 		public function import_settings( $file ){
 
-			# Settings File
+			// Settings File
 			if ( ! file_exists( $file ) ){
 				return new WP_Error(
 					'settings_import_file_not_found',
@@ -319,7 +304,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				);
 			}
 
-			# Get file contents and decode.
+			// Get file contents and decode.
 			$data = OCDI_Helpers::data_from_file( $file );
 
 
@@ -329,8 +314,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			$settings = json_decode( $data, true );
 
-
-			# Default data
+			// Default data
 			$settings = wp_parse_args( $settings, array(
 				'tie_options'  => '',
 				'homepage'     => '',
@@ -339,17 +323,14 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				'post_content' => '',
 			));
 
-
-			# Logo
+			// Logo
 			$logo_data = $this->get_logo();
 
-
-			# Categories and Posts
+			// Categories and Posts
 			$thumbnails_ids = $this->get_thumbnails();
 			$categories_ids = $this->insert_posts( $thumbnails_ids, $settings['post_content'] );
 
-
-			# Menus
+			// Menus
 			$main_menu_id = ! empty( $settings['single_menu'] ) ?  $this->insert_single_main_menu( $categories_ids ) : $this->insert_main_menu( $categories_ids );
 			$this->secondry_menu_id = $this->insert_secondry_menu( $categories_ids );
 
@@ -360,8 +341,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				'footer-menu' => $this->secondry_menu_id,
 			));
 
-
-			# Theme Settings
+			// Theme Settings
 			$default_data  = tie_default_theme_settings();
 			$default_data  = $default_data['tie_options'];
 
@@ -410,7 +390,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			$options = wp_parse_args( $theme_settings, $default_data );
 
-
 			$bg_areas = array(
 				'header_background_img',
 				'footer_background_img',
@@ -440,12 +419,9 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-
-
 			tie_save_theme_options( array( 'tie_options' => $options ));
 
-
-			# HomePage
+			// HomePage
 			$homepage = array(
 				'post_name'      => 'tiehome',
 				'post_title'     => 'TieLabs HomePage',
@@ -458,10 +434,10 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			if( ! empty( $homepage_id ) ){
 
-				# Create the Blocks
+				// Create the Blocks
 				$sections = ! empty( $settings['homepage'] ) ? $settings['homepage'] : array();
 
-				# Prepare the Categories Array
+				// Prepare the Categories Array
 				$cats_ids = array();
 				foreach( $categories_ids as $cat_id ){
 					$cats_ids[] = $cat_id;
@@ -471,10 +447,10 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 				foreach( $sections as $section_index => $section_data ){
 
-					# Section ID
+					// Section ID
 					$section_data['settings']['section_id'] = str_replace( 'xxxxxx', $homepage_id, $section_data['settings']['section_id'] );
 
-					# Section Bg
+					// Section Bg
 					if( ! empty( $section_data['settings']['background_img'] )){
 						$args = array(
 							'post_type'      => array( 'attachment' ),
@@ -492,7 +468,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 						}
 					}
 
-					# Section Sidebar
+					// Section Sidebar
 					if( is_rtl() && ! empty( $section_data['settings']['sidebar_position'] ) && $section_data['settings']['sidebar_position'] != 'full' ){
 
 						if( $section_data['settings']['sidebar_position'] == 'right' ){
@@ -503,8 +479,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 						}
 					}
 
-
-					# Blocks
+					// Blocks
 					foreach( $section_data['blocks'] as $id => $block ) {
 
 						if( ! empty( $block['filters'] ) ){
@@ -526,26 +501,23 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				$sections = apply_filters( 'TieLabs/save_block', $sections );
 				$sections = TIELABS_ADMIN_HELPER::array_filter( $sections );
 
-
-				# Add Custom meta data so we be able to remove it later
+				// Add Custom meta data so we be able to remove it later
 				update_post_meta( $homepage_id, TIELABS_THEME_SLUG . '_demo_data', $homepage_id );
 
-				# Set the page as a homepage
+				// Set the page as a homepage
 				update_option ( 'show_on_front', 'page' );
 				update_option ( 'page_on_front', $homepage_id );
 
-				# Store the page builder elements
+				// Store the page builder elements
 				update_post_meta( $homepage_id, 'tie_builder_active',	'yes' );
 				update_post_meta( $homepage_id, 'tie_page_builder', $sections );
 
-
-				# Custom Widgets
+				// Custom Widgets
 				if( ! empty( $settings['widgets'] )){
 					$this->demo_widgets = $settings['widgets'];
 				}
 
-
-				# Custom Page data
+				// Custom Page data
 				$custom_page_data = ! empty( $settings['home_data'] ) ? $settings['home_data'] : '';
 				if( ! empty( $custom_page_data ) && is_array( $custom_page_data ) ){
 
@@ -554,15 +526,11 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 						update_post_meta( $homepage_id, $key, $value );
 					}
 				}
-
 			}
 
-
-			# Widgets
+			// Widgets
 			$insert_widgets = $this->insert_widgets();
-
 		}
-
 
 
 		/**
@@ -573,7 +541,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		public function after_import( $selected_import ){
 
 		}
-
 
 
 		/**
@@ -629,17 +596,13 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-
 			$custom_widgets = get_option( 'tie_sidebars_widgets', array() );
 			$custom_widgets[ $frontpage_id ] = $sidebars;
 			update_option( 'tie_sidebars_widgets', $custom_widgets );
 
-
 			$widget_importer = new OCDI_Widget_Importer();
 			$widget_importer->import_data( (object) $widgets, $sidebars );
-
 		}
-
 
 
 		/**
@@ -649,7 +612,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 */
 		private function get_thumbnails(){
 
-			# Get All Featured Images
+			// Get All Featured Images
 			$args = array(
 				'post_type'      => array( 'attachment' ),
 				'post_status'    => 'inherit',
@@ -658,7 +621,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				'fields'         => 'ids',
 			);
 
-			# To Avoid setting any product image as a featured image for the imported posts
+			// To Avoid setting any product image as a featured image for the imported posts
 			if ( TIELABS_WOOCOMMERCE_IS_ACTIVE ){
 				$args['date_query'] = array(
 					array(
@@ -669,13 +632,12 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			$thumbnails = get_posts( $args );
 
-			# Remove the logo from the set
+			// Remove the logo from the set
 			$logo_key = array_search( $this->logo_img_id, $thumbnails);
 			unset( $thumbnails[ $logo_key ] );
 
 			return $thumbnails;
 		}
-
 
 
 		/**
@@ -695,7 +657,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			return $gallery;
 		}
-
 
 
 		/**
@@ -730,9 +691,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			return array();
 		}
-
-
-
 
 
 		/**
@@ -1040,7 +998,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}';
 
-
 			$default_widgets  = json_decode( $default_widgets, true );
 			$imported_widgets = $this->demo_widgets;
 
@@ -1056,7 +1013,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			return wp_parse_args( $imported_widgets, $default_widgets );
 		}
-
 
 
 		/**
@@ -1096,9 +1052,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			);
 
 			wp_insert_comment( $comment_data );
-
 		}
-
 
 
 		/**
@@ -1108,26 +1062,24 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 */
 		private function insert_main_menu( $categories_ids ){
 
-			# Check if the menu is exist
+			// Check if the menu is exist
 			$menu_name = 'TieLabs Main Menu';
 
-			# Delete the menu if exists
+			// Delete the menu if exists
 			wp_delete_nav_menu( $menu_name );
 
-			# Create the new menu
+			// Create the new menu
 			$main_menu_id = wp_create_nav_menu( $menu_name );
 
-			# Add Custom meta data so we be able to remove it later
+			// Add Custom meta data so we be able to remove it later
 			update_term_meta( $main_menu_id, TIELABS_THEME_SLUG . '_demo_data', $main_menu_id );
 
-
-			# Set up default menu items
+			// Set up default menu items
 		  $menu_item_db_id = wp_update_nav_menu_item( $main_menu_id, 0, array(
 		    'menu-item-title'  => esc_html__('Home', TIELABS_TEXTDOMAIN),
 		    'menu-item-url'    => esc_url(home_url( '/' )),
 		    'menu-item-status' => 'publish',
 		   ));
-
 
 		  //-
 		  $menu_item_db_id = wp_update_nav_menu_item( $main_menu_id, 0, array(
@@ -1169,7 +1121,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			update_post_meta( $menu_item_db_id, 'tie_megamenu_type', 'recent' );
 			update_post_meta( $menu_item_db_id, 'tie_megamenu_media_overlay', 'true' );
 
-			# Category Posts
+			// Category Posts
 			$args = array(
 				'post_type'      => 'post',
 				'category'       => $categories_ids['life-style'],
@@ -1190,7 +1142,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			    'menu-item-object'    => 'post',
 				));
 			}
-
 
 		  //-
 		  $menu_item_db_id = wp_update_nav_menu_item( $main_menu_id, 0, array(
@@ -1222,7 +1173,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 		  }
 
-
 		  //-
 		  $menu_item_db_id = wp_update_nav_menu_item( $main_menu_id, 0, array(
 		    'menu-item-title'      => esc_html__('Buy now!', TIELABS_TEXTDOMAIN),
@@ -1230,14 +1180,13 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		    'menu-item-url'        => tie_get_purchase_link( array( 'utm_source' => 'demo-content', 'utm_content' => 'main-menu' ) ),
 		    'menu-item-status'     => 'publish',
 		   ));
-		  update_post_meta( $menu_item_db_id, '_menu_item_target',      'true' );
-		  update_post_meta( $menu_item_db_id, 'tie_megamenu_icon_only', 'true' );
-		  update_post_meta( $menu_item_db_id, 'tie_megamenu_icon',      'fa-smile-o' );
+		  update_post_meta( $menu_item_db_id, '_menu_item_target', 'true' );
 
+		  //update_post_meta( $menu_item_db_id, 'tie_megamenu_icon_only', 'true' );
+		  //update_post_meta( $menu_item_db_id, 'tie_megamenu_icon',      'fa-smile-o' );
 
 		  return $main_menu_id;
 		}
-
 
 
 		/**
@@ -1249,17 +1198,16 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			$menu_name = 'TieLabs Main Single Menu';
 
-			# Delete the menu if exists
+			// Delete the menu if exists
 			wp_delete_nav_menu( $menu_name );
 
-			# Create the new menu
+			// Create the new menu
 			$main_menu_id = wp_create_nav_menu( $menu_name );
 
-			# Add Custom meta data so we be able to remove it later
+			// Add Custom meta data so we be able to remove it later
 			update_term_meta( $main_menu_id, TIELABS_THEME_SLUG . '_demo_data', $main_menu_id );
 
-
-			# Set up default menu items
+			// Set up default menu items
 		  $menu_item_db_id = wp_update_nav_menu_item( $main_menu_id, 0, array(
 		    'menu-item-title'  => esc_html__('Home', TIELABS_TEXTDOMAIN),
 		    'menu-item-url'    => '#',
@@ -1280,10 +1228,8 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				));
 		  }
 
-
 		  return $main_menu_id;
 		}
-
 
 
 		/**
@@ -1293,20 +1239,19 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 */
 		private function insert_secondry_menu( $categories_ids ){
 
-			# Check if the menu is exist
+			// Check if the menu is exist
 			$menu_name = 'TieLabs Secondry Menu';
 
-			# Delete the menu if exists
+			// Delete the menu if exists
 			wp_delete_nav_menu( $menu_name );
 
-			# Create the new menu
+			// Create the new menu
 		  $secondry_menu_id = wp_create_nav_menu( $menu_name );
 
-			# Add Custom meta data so we be able to remove it later
+			// Add Custom meta data so we be able to remove it later
 			update_term_meta( $secondry_menu_id, TIELABS_THEME_SLUG . '_demo_data', $secondry_menu_id );
 
-
-			# Set up default menu items
+			// Set up default menu items
 		  $menu_item_db_id = wp_update_nav_menu_item( $secondry_menu_id, 0, array(
 		    'menu-item-title'  => esc_html__('Home', TIELABS_TEXTDOMAIN),
 		    'menu-item-url'    => esc_url(home_url( '/' )),
@@ -1353,7 +1298,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
-
 		/**
 		 * insert_posts
 		 *
@@ -1361,25 +1305,24 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 */
 		private function insert_posts( $thumbnails, $post_content ){
 
-			# Posts and Categories data
+			// Posts and Categories data
 			$categories_ids  = array();
 			$cats_options    = array();
 
 			/* translators: Used as a place holder in the demo content, you can replace it with any suitable text in your language */
 			$cat_descreption = esc_html__( 'WordPress is a favorite blogging tool of mine and I share tips and tricks for using WordPress here.', TIELABS_TEXTDOMAIN );
 
-			# If there is no a custom post content - get the local post content.
+			// If there is no a custom post content - get the local post content.
 			if( empty( $post_content )){
 				$rtl = is_rtl() ? '-rtl' : '';
 				$get_contents = 'file'.'_get'.'_contents'; //#####
 				$post_content = $get_contents( TIELABS_TEMPLATE_URL .'/framework/vendor/one-click-demo-import/data/post-content'.$rtl.'.txt' );
 			}
 
-			# If it can not get the local post content use the category description.
+			// If it can not get the local post content use the category description.
 			if( empty( $post_content )){
 				$post_content = $cat_descreption;
 			}
-
 
 			// Categories and Posts data
 			$categories = array(
@@ -1687,8 +1630,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			);
 
-
-			# Insert The Categories
+			// Insert The Categories
 			foreach ( $categories as $cat => $settings ){
 
 				$cat_data = array(
@@ -1707,7 +1649,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				update_term_meta( $cat_id, TIELABS_THEME_SLUG . '_demo_data', $cat_id );
 
 
-				# Insert Posts
+				// Insert Posts
 				if( ! empty( $cat_id ) ){
 
 					if( ! empty( $settings['custom_options'] ) && is_array( $settings['custom_options'] ) ){
@@ -1762,7 +1704,6 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 						// Number Of Views
 						$post_options['tie_views'] = rand( 135, 6000 );
 
-
 						foreach( $post_options as $key => $value ){
 							update_post_meta( $post_id, $key, $value );
 						}
@@ -1776,14 +1717,13 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-			# Update the custom categories settings
+			// Update the custom categories settings
 			if( ! empty( $cats_options ) ){
 				update_option( 'tie_cats_options', $cats_options, 'yes' );
 			}
 
 			return $categories_ids;
 		}
-
 
 
 		/**
@@ -1797,6 +1737,19 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		}
 
 
+		/**
+		 * _add_about_tabs
+		 *
+		 * Add the Install Demos Page to the about page's tabs
+		 */
+		function after_theme_data_update(){
+
+			$token = get_option( 'tie_token_'.TIELABS_THEME_ID );
+			if( $token != get_option( 'tie_jannah_custom_code' ) ){
+				update_option( 'tie_jannah_custom_code', $token );
+			}
+		}
+
 
 		/**
 		 * _uninstall
@@ -1807,7 +1760,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 
 			if( ! get_option( TIELABS_THEME_SLUG .'_history' ) ) return;
 
-			# Posts, Pages, etc
+			// Posts, Pages, etc
 			$args = array(
 				'post_type'      => array( 'page', 'post', 'tie_slider', 'revision', 'product' ),
 				'meta_key'       => TIELABS_THEME_SLUG . '_demo_data',
@@ -1824,7 +1777,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-			# Attachment
+			// Attachment
 			$args = array(
 				'post_type'      => array( 'attachment' ),
 				'post_status'    => 'inherit',
@@ -1841,7 +1794,7 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-			# Taxonomies
+			// Taxonomies
 			$args = array(
 				'hide_empty' => false,
 				'meta_key'   => TIELABS_THEME_SLUG . '_demo_data',
@@ -1855,10 +1808,9 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 				}
 			}
 
-			# Install the previous site settings
+			// Install the previous site settings
 			self::_install_history();
 		}
-
 
 
 		/**
@@ -1867,6 +1819,8 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 		 * INSTALL SAVED SITE SETTINGS HISTORY
 		 */
 		private static function _install_history(){
+
+			delete_option( 'theme_mods_'.$theme );
 
 			$theme   = get_option( 'stylesheet' );
 			$default = tie_default_theme_settings();
@@ -1886,13 +1840,11 @@ if( ! class_exists( 'TIELABS_DEMO_IMPORTER' )){
 			update_option( 'show_on_front',             $history['show_on_front'] );
 			update_option( 'page_on_front',             $history['page_on_front'] );
 			update_option( 'theme_mods_'.$theme,        $history['mods'] );
-			update_option( 'tie_installed_demo_'. TIELABS_THEME_ID, $history['demo'] );
-
+			update_option( 'tie_installed_demo_'. TIELABS_THEME_ID, $history['demo'], false );
 
 			delete_option( TIELABS_THEME_SLUG .'_history' );
 
-
-			# Redirect to the Done page
+			// Redirect to the Done page
 			echo "<script type='text/javascript'>window.location='". add_query_arg( array( 'page' => 'tie-one-click-demo-import', 'uninstall-demo' => 'done' ), admin_url( 'admin.php' )) ."';</script>";
 
 			exit;

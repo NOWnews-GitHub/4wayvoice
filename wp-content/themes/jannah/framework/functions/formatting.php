@@ -41,13 +41,13 @@ if( ! function_exists( 'tie_header_class' )){
 
 			$classes[] = 'top-nav-active';
 
-			# Top Nav Dark Skin
+			// Top Nav Dark Skin
 			$classes[] = tie_get_option( 'top_nav_dark' ) ? 'top-nav-dark' : 'top-nav-light';
 
-			# Boxed Layout
+			// Boxed Layout
 			$classes[] = tie_get_option( 'top_nav_layout' ) ? 'top-nav-boxed' : '';
 
-			# Check if the top nav is below the header
+			// Check if the top nav is below the header
 			$classes[] = tie_get_option( 'top_nav_position' ) ? 'top-nav-below' : 'top-nav-above';
 		}
 
@@ -86,9 +86,10 @@ if( ! function_exists( 'tie_get_box_class' )){
 		$classes = explode( ' ', $custom );
 
 		// Default Class
-		$classes[] = 'the-global-title';
+		$classes[]   = 'the-global-title';
+		$block_style = tie_get_option( 'blocks_style' );
 
-		if( tie_get_option( 'blocks_style' ) == 4 || tie_get_option( 'blocks_style' ) == 5 || tie_get_option( 'blocks_style' ) == 6 ){
+		if( $block_style == 4 || $block_style == 5 || $block_style == 6 ){
 			if( ! in_array( 'mag-box-title', $classes ) ){
 
 				$classes[] = 'has-block-head-4';
@@ -181,14 +182,15 @@ if( ! function_exists( 'tie_body_class' )){
 		}
 
 		// is-mobile or desktop
-		$classes[] = tie_is_handheld() ? 'is-mobile' : 'is-desktop';
+		$classes[] = tie_is_mobile() ? 'is-mobile' : 'is-desktop';
 
 		// Header Layout
 		$header_layout = tie_get_option( 'header_layout', 3 );
 		$classes[] = 'is-header-layout-'.$header_layout;
 
+
 		// Header Ad
-		if( tie_get_option( 'banner_top' ) ){
+		if( tie_get_option( 'banner_top' ) && ! ( is_page() && tie_get_postdata( 'tie_hide_header' ) ) ){
 			$classes[] = 'has-header-ad';
 		}
 
@@ -198,7 +200,7 @@ if( ! function_exists( 'tie_body_class' )){
 		}
 
 		// Page Builder Classes
-		if( is_page() && tie_get_postdata( 'tie_builder_active' ) ){
+		if( TIELABS_HELPER::has_builder() ){
 
 			$classes[] = 'has-builder';
 
@@ -225,9 +227,9 @@ if( ! function_exists( 'tie_body_class' )){
 			$classes[] = $sidebar_position;
 
 			// Posts and pages layout
-			if( is_singular('post') ){
+			if( TIELABS_HELPER::is_supported_post_type() ){
 
-				# Post Layout
+				// Post Layout
 				$post_layout = tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' );
 				$post_layout = ! empty( $post_layout ) ? $post_layout : 1;
 
@@ -255,7 +257,7 @@ if( ! function_exists( 'tie_body_class' )){
 				}
 
 			}
-			elseif( is_page() || ( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() ) ){
+			elseif( is_page() || ( TIELABS_BBPRESS_IS_ACTIVE && is_bbpress() ) || is_singular() ){
 				$classes[] = 'post-layout-1';
 			}
 
@@ -269,9 +271,9 @@ if( ! function_exists( 'tie_body_class' )){
 		if( is_page() ){
 
 			// Without Header
-			if( tie_get_postdata( 'tie_hide_header' )){
-				$classes[] = 'without-header';
+			if( tie_get_postdata( 'tie_hide_header' ) ){
 
+				$classes[] = 'without-header';
 				add_filter('TieLabs/is_header_active', '__return_false');
 			}
 
@@ -284,7 +286,7 @@ if( ! function_exists( 'tie_body_class' )){
 		}
 
 		// Mobile show more button
-		if( is_singular( 'post' ) && tie_get_option( 'mobile_post_show_more' )){
+		if( TIELABS_HELPER::is_supported_post_type() && tie_get_option( 'mobile_post_show_more' )){
 			$classes[] = 'post-has-toggle';
 		}
 
@@ -299,6 +301,7 @@ if( ! function_exists( 'tie_body_class' )){
 			'footer',
 			'copyright',
 			'breadcrumbs',
+			'read_more_buttons',
 			'share_post_top',
 			'share_post_bottom',
 			'post_newsletter',
@@ -415,13 +418,12 @@ if( ! function_exists( 'tie_get_sidebar_position' )){
 /**
  * Post Classes
  */
-if( ! function_exists( 'tie_get_post_class' )){
+if( ! function_exists( 'tie_get_post_class' ) ){
 
 	function tie_get_post_class( $classes = false, $post_id = null, $standard = false ){
 
 		$classes = ! empty( $classes ) ? explode( ' ', $classes ) : array();
 
-		// Remove the hentry
 		if( $standard ){
  			$classes = get_post_class( $classes );
 
@@ -438,6 +440,8 @@ if( ! function_exists( 'tie_get_post_class' )){
 		if( $post_format = tie_get_postdata( 'tie_post_head', false, $post_id ) ){
 			$classes[] = 'tie-'. $post_format;
 		}
+
+		$classes = apply_filters( 'TieLabs/post_classes', $classes );
 
 		// Return the classes
 		if( ! empty( $classes )){
@@ -464,8 +468,12 @@ if( ! function_exists( 'tie_post_class' )){
  */
 if( ! function_exists( 'tie_comment_form_before' )){
 
-	add_action( 'comment_form_before', 'tie_comment_form_before' );
+	add_action( 'comment_form_before', 'tie_comment_form_before', 5 );
 	function tie_comment_form_before(){
+
+		if( TIELABS_WOOCOMMERCE_IS_ACTIVE && is_woocommerce() ){
+			return;
+		}
 
 		echo '<div id="add-comment-block" class="container-wrapper">';
 	}
@@ -477,12 +485,14 @@ if( ! function_exists( 'tie_comment_form_before' )){
  */
 if( ! function_exists( 'tie_comment_form_after' )){
 
-	add_action( 'comment_form_after', 'tie_comment_form_after' );
+	add_action( 'comment_form_after', 'tie_comment_form_after', 100 );
 	function tie_comment_form_after(){
 
-		if ( TIELABS_JETPACK_IS_ACTIVE && in_array( 'comments', Jetpack::get_active_modules() ) ){
+		if ( TIELABS_WOOCOMMERCE_IS_ACTIVE && is_woocommerce() ){
 			return;
 		}
+
+		//|| ( TIELABS_JETPACK_IS_ACTIVE && Jetpack::is_active() && in_array( 'comments', Jetpack::get_active_modules() ) ) ){
 
 		echo '</div><!-- #add-comment-block /-->';
 	}
@@ -498,7 +508,7 @@ if( ! function_exists( 'tie_content_column_attr' )){
 
 		$columns_classes = 'tie-col-md-8 tie-col-xs-12';
 
-		if( ! tie_get_postdata( 'tie_builder_active' ) ){
+		if( ! TIELABS_HELPER::has_builder() ){
 
 			$sidebar_position = tie_get_sidebar_position();
 
@@ -526,7 +536,7 @@ if( ! function_exists( 'tie_before_main_content' )){
 	add_action( 'TieLabs/before_main_content', 'tie_before_main_content' );
 	function tie_before_main_content(){
 
-		if( ( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ) || ( is_page() && tie_get_postdata( 'tie_builder_active' ) && ! post_password_required() )){
+		if( ( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ) || ( TIELABS_HELPER::has_builder() && ! post_password_required() )){
 			return;
 		}
 
@@ -554,7 +564,7 @@ if( ! function_exists( 'tie_after_main_content' )){
 	add_action( 'TieLabs/after_main_content', 'tie_after_main_content' );
 	function tie_after_main_content(){
 
-		if( ( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ) || ( is_page() && tie_get_postdata( 'tie_builder_active' ) && ! post_password_required() )){
+		if( ( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ) || ( TIELABS_HELPER::has_builder() && ! post_password_required() )){
 			return;
 		}
 
@@ -569,5 +579,48 @@ if( ! function_exists( 'tie_html_after_main_content' )){
 				</div><!-- .main-content-row /-->
 			</div><!-- #content /-->
 		';
+	}
+}
+
+
+
+/**
+ * Post Media icon code
+ */
+if( ! function_exists( 'tie_post_format_icon' )){
+
+	function tie_post_format_icon( $force = false, $echo = true ){
+
+		$is_enabled = false;
+
+		if( tie_get_option( 'thumb_overlay' ) ){
+			$is_enabled = true;
+		}
+		elseif( $force ){
+			$post_format = tie_get_postdata( 'tie_post_head', 'standard' );
+
+			if( $post_format != 'standard' && $post_format != 'map' ){
+				$is_enabled = true;
+			}
+		}
+
+		// ----
+		if( ! $is_enabled ){
+			return;
+		}
+
+		$code = '
+			<div class="post-thumb-overlay-wrap">
+				<div class="post-thumb-overlay">
+					<span class="icon"></span>
+				</div>
+			</div>
+		';
+
+		if( ! $echo ){
+			return $code;
+		}
+
+		echo $code;
 	}
 }

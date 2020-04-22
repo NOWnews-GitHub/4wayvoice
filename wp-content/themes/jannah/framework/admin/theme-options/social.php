@@ -57,15 +57,6 @@ for( $i = 1; $i <= 5; $i++ ){
 
 	tie_build_theme_option(
 		array(
-			'name'        => esc_html__( 'Icon', TIELABS_TEXTDOMAIN ),
-			'id'          => 'custom_social_icon_'.$i,
-			'hint'        => '<a href="'. esc_url( 'http://fontawesome.io/icons/' ) .'" target="_blank">'. esc_html__( 'Use the full Font Awesome icon name', TIELABS_TEXTDOMAIN ) .'</a>',
-			'type'        => 'text',
-			'placeholder' => 'fa fa-icon',
-		));
-
-	tie_build_theme_option(
-		array(
 			'name'        => esc_html__( 'URL', TIELABS_TEXTDOMAIN ),
 			'id'          => 'custom_social_url_'.$i,
 			'placeholder' => 'https://',
@@ -77,5 +68,23 @@ for( $i = 1; $i <= 5; $i++ ){
 			'name' => esc_html__( 'Color', TIELABS_TEXTDOMAIN ),
 			'id'   => 'custom_social_color_'.$i,
 			'type' => 'color',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name'        => esc_html__( 'Icon', TIELABS_TEXTDOMAIN ),
+			'id'          => 'custom_social_icon_'.$i,
+			'hint'        => '<a href="'. esc_url( 'https://fontawesome.com/v4.7.0/icons/' ) .'" target="_blank">'. esc_html__( 'Use the full Font Awesome icon name', TIELABS_TEXTDOMAIN ) .'</a>',
+			'type'        => 'text',
+			'placeholder' => 'fa fa-icon',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name'        => esc_html__( 'Image Icon', TIELABS_TEXTDOMAIN ),
+			'id'          => 'custom_social_icon_img_'.$i,
+			'pre_text'    => esc_html__( '- OR -', TIELABS_TEXTDOMAIN ),
+			'type'        => 'upload',
+			'placeholder' => 'https://',
 		));
 }

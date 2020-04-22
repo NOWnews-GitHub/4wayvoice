@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -28,7 +28,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 			?>
 
-			<h3 class="entry-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title() ?></a></h3>
+			<h2 class="entry-title"><a href="<?php the_permalink(); ?>"><?php the_title() ?></a></h2>
 
 			<?php
 				# Get the Post Meta info
@@ -53,8 +53,10 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 	<?php if( $block['excerpt'] ): ?>
 		<div class="entry-content">
+
 			<p><?php tie_the_excerpt( $block['excerpt_length'] ); ?></p>
-			<a class="more-link button" href="<?php the_permalink() ?>"><?php esc_html_e( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) ?></a>
+
+			<?php tie_the_more_button(); ?>
 		</div><!-- .entry-content /-->
 	<?php endif; ?>
 

@@ -4,7 +4,7 @@
 	Plugin URI: http://tielabs.com
 	Description: Lite Version of the Arqam Plugin - WordPress Social Counter Plugin
 	Author: TieLabs
-	Version: 1.0.4
+	Version: 1.0.6
 	Author URI: http://tielabs.com
 */
 

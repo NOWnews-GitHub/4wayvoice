@@ -1,7 +1,8 @@
 ﻿var $doc     = jQuery(document),
 		$window  = jQuery(window);
 
-$window.load(function() {
+$window.on( 'load', function() {
+
 	jQuery('.widgets-chooser-sidebars').find('li').each(function(){
 		var $thisElem = jQuery(this),
 				thistext  = $thisElem.text();
@@ -19,7 +20,10 @@ $window.load(function() {
 		$pageTemplateAttr = '.editor-page-attributes__template select';
 	}
 
+	console.log( 'Page Template Attr: '+ $pageTemplateAttr );
+
 	var selected_item = jQuery( $pageTemplateAttr ).val();
+
 	if ( selected_item == 'template-masonry.php' ){
 		jQuery('#tie-page-template-categories').show();
 	}
@@ -149,7 +153,7 @@ $doc.ready(function() {
 		    thePostID    = jQuery( '#foxpush_post_id' ).val();
 
 
-		// Check the requried data ----------
+		// Check the requried data
 		if( ! theTitle || ! theMessage ){
 			alert( 'Complete all requried fields.' );
 			return false;
@@ -164,7 +168,7 @@ $doc.ready(function() {
 		}
 
 
-		// Run the Request ----------
+		// Run the Request
 		jQuery.ajax({
 			url : ajaxurl,
 			type: 'post',
@@ -208,7 +212,7 @@ $doc.ready(function() {
 		    $loadSpinner = $theParent.find('.spinner'),
         thePostID    = jQuery( '#foxpush_post_id' ).val();
 
-		// Run the Request ----------
+		// Run the Request
 		jQuery.ajax({
 			url : ajaxurl,
 			type: 'post',
@@ -320,7 +324,7 @@ $doc.ready(function() {
 	/* LIVE HEADER PREVIEW
 	------------------------------------------------------------------------------------------ */
 	if( $tieBody.hasClass('toplevel_page_tie-theme-options') ){
-		//Chnage the header layout ----------
+		//Chnage the header layout
 		var selected_val           = jQuery( "input[name='tie_options[header_layout]']:checked" ).val(),
 				headerLayoutOptions    = jQuery( '#main_nav-item, .main-nav-related-options, .main-nav-components-wrapper, #header-preview .header-main-menu-wrap' ),
 				headerLayout_1_Options = jQuery( '#main_nav-item, #main_nav_layout-item, #main_nav_position-item' ),
@@ -436,7 +440,7 @@ $doc.ready(function() {
 			jQuery( '.header-main-menu-wrap' ).toggleClass( 'main-nav-dark-skin' );
 		});
 
-		//Top and Main Nav settings ----------
+		//Top and Main Nav settings
 		$doc.on( 'click', '.header-settings-tabs a', function(){
 			var targetedTab = jQuery( this ).attr( 'href' );
 			jQuery( this ).parent().find( 'a' ).removeClass( 'active' );
@@ -641,7 +645,10 @@ $doc.ready(function() {
 
 				tie_builder_dragdrop();
 
-				jQuery( '.tie-builder-blocks-wrapper' ).sortable();
+				// Disable the Sortable and Draggable if the PopUp is open
+				jQuery( '#tie-builder-wrapper, .tie-builder-blocks-wrapper' ).sortable('disable');
+				jQuery( '.block-item' ).draggable('disable');
+				// ----
 
 				var addedBlock = jQuery( '#listItem_'+ uniqueID );
 
@@ -652,7 +659,7 @@ $doc.ready(function() {
 
 				$tieBody.addClass('has-overlay');
 
-				// Switch Button ----------
+				// Switch Button
 				var $blockSwitches = addedBlock.find( '.tie-js-switch' );
 				$blockSwitches.each(function(){
 
@@ -675,7 +682,6 @@ $doc.ready(function() {
 					}
 
 				});
-
 
 
 				$thisButton.show();
@@ -775,10 +781,14 @@ $doc.ready(function() {
 
 				tie_builder_dragdrop();
 
+				// Disable the Sortable and Draggable if the PopUp is open
+				jQuery( '#tie-builder-wrapper, .tie-builder-blocks-wrapper' ).sortable('disable');
+				jQuery( '.block-item' ).draggable('disable');
+				// ----
+
 				content.find('.tie-img-path').each(function(){
 					tie_image_uploader_trigger( jQuery(this) );
 				});
-
 
 				$tieBody.addClass('has-overlay');
 
@@ -863,13 +873,20 @@ $doc.ready(function() {
 
 			$tieBody.removeClass('has-overlay');
 			jQuery('.tie-popup-window').hide();
+
+			// Enable the Sortable and Draggable when the PopUp closed
+			if ( $tieBody.hasClass('builder-is-active') ){
+				jQuery( '#tie-builder-wrapper, .tie-builder-blocks-wrapper' ).sortable('enable');
+				jQuery( '.block-item' ).draggable('enable');
+			}
+			// ----
 		}
 	});
 
 	/* Edit Block Done Button */
 	$doc.on( 'click', '.builder-is-active #tie-page-overlay, #tie-page-overlay.is-notice-dismissible, .tietheme_page_tie-one-click-demo-import #tie-page-overlay, .tie-popup-window .close, .tie-edit-block-done', function(){
 
-		// Dismiss the notice ----------
+		// Dismiss the notice
 		if( jQuery( this ).hasClass( 'is-notice-dismissible' ) ){
 			var noticeID = jQuery( this ).data('id');
 
@@ -886,13 +903,21 @@ $doc.ready(function() {
 		}
 
 
-		// Force Refresh ----------
+		// Force Refresh
 		if( $tieBody.hasClass( 'force-refresh' ) ){
 			location.reload();
 		}
 
 		$tieBody.removeClass('has-overlay');
 		jQuery('.tie-popup-window').hide();
+
+		// Enable the Sortable and Draggable when the PopUp closed
+		if ( $tieBody.hasClass('builder-is-active') ){
+			jQuery( '#tie-builder-wrapper, .tie-builder-blocks-wrapper' ).sortable('enable');
+			jQuery( '.block-item' ).draggable('enable');
+		}
+		// ----
+
 		return false;
 	});
 
@@ -910,11 +935,17 @@ $doc.ready(function() {
 		jQuery( this ).parents( '.block-item' ).find( '.block-preview-title' ).text( NewTitleText );
 	});
 
-	/* Toggle open/Close */
+	/* Edit Block/Section */
 	$doc.on('click', '.edit-block-icon', function(){
 		var $thisElement = jQuery(this).closest('.parent-item');
 		$tieBody.addClass('has-overlay');
 		$thisElement.find('> .tie-builder-content-area').fadeIn('fast');
+
+		// Disable the Sortable and Draggable if the PopUp is open
+		jQuery( '#tie-builder-wrapper, .tie-builder-blocks-wrapper' ).sortable('disable');
+		jQuery( '.block-item' ).draggable('disable');
+		// ----
+
 		return false;
 	});
 
@@ -1065,30 +1096,30 @@ $doc.ready(function() {
 
 	jQuery('#tie_form').submit(function() {
 
-		// Check if the import field has a file ----------
+		// Check if the import field has a file
 		var importSettings = jQuery('#tie-import-file').val();
 		if( importSettings.length > 0 ){
 			return true;
 		}
 
-		// Disable all blank fields to reduce the size of the data ----------
+		// Disable all blank fields to reduce the size of the data
 		jQuery('form#tie_form input, form#tie_form textarea, form#tie_form select').each(function(){
 			if( ! jQuery(this).val() ){
 				jQuery(this).attr( 'disabled', true );
 			}
 		});
 
-		// Serialize the data array ----------
-		var data = jQuery(this).serialize();
+		// Serialize the data array
+		var data = jQuery(this).serialize().replace( /%3C/g, '%3Ctie-open-tag' ); //issue in saving any code with meta tag on some servers
 
-		// Re-actibate the disabled options  ----------
+		// Re-activate the disabled options
 		jQuery('form#tie_form input:disabled, form#tie_form textarea:disabled, form#tie_form select:disabled').attr( 'disabled', false );
 
-		// Add the Overlay layer and reset the saving spinner ----------
+		// Add the Overlay layer and reset the saving spinner
 		$tieBody.addClass('has-overlay');
 		$saveAlert.removeClass('is-success is-failed');
 
-		// Send the Saving Ajax request ----------
+		// Send the Saving Ajax request
 		jQuery.post(
 			ajaxurl,
 			data,
@@ -1388,7 +1419,7 @@ $doc.ready(function() {
 
 	/* SLIDERS - Category Options
 	------------------------------------------------------------------------------------------ */
-	// Show/hide slider and video playlist options ----------
+	// Show/hide slider and video playlist options
 
 	if( $tieBody.hasClass('taxonomy-category') ){
 
@@ -1831,6 +1862,7 @@ function tieHTMLspecialchars(text) {
 			'Alegreya+SC',
 			'Alegreya+Sans',
 			'Alegreya+Sans+SC',
+			'Aleo',
 			'Alex+Brush',
 			'Alfa+Slab+One',
 			'Alice',
@@ -1846,7 +1878,6 @@ function tieHTMLspecialchars(text) {
 			'Amarante',
 			'Amaranth',
 			'Amatic+SC',
-			'Amatica+SC',
 			'Amethysta',
 			'Amiko',
 			'Amiri',
@@ -1865,6 +1896,7 @@ function tieHTMLspecialchars(text) {
 			'Arbutus',
 			'Arbutus+Slab',
 			'Architects+Daughter',
+			'Archivo',
 			'Archivo+Black',
 			'Archivo+Narrow',
 			'Aref+Ruqaa',
@@ -1872,10 +1904,12 @@ function tieHTMLspecialchars(text) {
 			'Arimo',
 			'Arizonia',
 			'Armata',
+			'Arsenal',
 			'Artifika',
 			'Arvo',
 			'Arya',
 			'Asap',
+			'Asap+Condensed',
 			'Asar',
 			'Asset',
 			'Assistant',
@@ -1893,22 +1927,33 @@ function tieHTMLspecialchars(text) {
 			'Averia+Libre',
 			'Averia+Sans+Libre',
 			'Averia+Serif+Libre',
+			'B612',
+			'B612+Mono',
 			'Bad+Script',
+			'Bahiana',
+			'Bai+Jamjuree',
 			'Baloo',
 			'Baloo+Bhai',
+			'Baloo+Bhaijaan',
 			'Baloo+Bhaina',
 			'Baloo+Chettan',
 			'Baloo+Da',
 			'Baloo+Paaji',
 			'Baloo+Tamma',
+			'Baloo+Tammudu',
 			'Baloo+Thambi',
 			'Balthazar',
 			'Bangers',
+			'Barlow',
+			'Barlow+Condensed',
+			'Barlow+Semi+Condensed',
+			'Barrio',
 			'Basic',
 			'Battambang',
 			'Baumans',
 			'Bayon',
 			'Belgrano',
+			'Bellefair',
 			'Belleza',
 			'BenchNine',
 			'Bentham',
@@ -1922,6 +1967,8 @@ function tieHTMLspecialchars(text) {
 			'BioRhyme+Expanded',
 			'Biryani',
 			'Bitter',
+			'Black+And+White+Picture',
+			'Black+Han+Sans',
 			'Black+Ops+One',
 			'Bokor',
 			'Bonbon',
@@ -1966,9 +2013,12 @@ function tieHTMLspecialchars(text) {
 			'Caveat+Brush',
 			'Cedarville+Cursive',
 			'Ceviche+One',
+			'Chakra+Petch',
 			'Changa',
 			'Changa+One',
 			'Chango',
+			'Charm',
+			'Charmonman',
 			'Chathura',
 			'Chau+Philomene+One',
 			'Chela+One',
@@ -2015,6 +2065,7 @@ function tieHTMLspecialchars(text) {
 			'Croissant+One',
 			'Crushed',
 			'Cuprum',
+			'Cute+Font',
 			'Cutive',
 			'Cutive+Mono',
 			'Damion',
@@ -2034,29 +2085,33 @@ function tieHTMLspecialchars(text) {
 			'Didact+Gothic',
 			'Diplomata',
 			'Diplomata+SC',
+			'Do+Hyeon',
+			'Dokdo',
 			'Domine',
 			'Donegal+One',
 			'Doppio+One',
 			'Dorsa',
 			'Dosis',
 			'Dr+Sugiyama',
-			'Droid+Sans',
-			'Droid+Sans+Mono',
-			'Droid+Serif',
 			'Duru+Sans',
 			'Dynalight',
 			'EB+Garamond',
 			'Eagle+Lake',
+			'East+Sea+Dokdo',
 			'Eater',
 			'Economica',
 			'Eczar',
-			'Ek+Mukta',
 			'El+Messiri',
 			'Electrolize',
 			'Elsie',
 			'Elsie+Swash+Caps',
 			'Emblema+One',
 			'Emilys+Candy',
+			'Encode+Sans',
+			'Encode+Sans+Condensed',
+			'Encode+Sans+Expanded',
+			'Encode+Sans+Semi+Condensed',
+			'Encode+Sans+Semi+Expanded',
 			'Engagement',
 			'Englebert',
 			'Enriqueta',
@@ -2067,6 +2122,7 @@ function tieHTMLspecialchars(text) {
 			'Exo',
 			'Exo+2',
 			'Expletus+Sans',
+			'Fahkwang',
 			'Fanwood+Text',
 			'Farsan',
 			'Fascinate',
@@ -2074,6 +2130,7 @@ function tieHTMLspecialchars(text) {
 			'Faster+One',
 			'Fasthand',
 			'Fauna+One',
+			'Faustina',
 			'Federant',
 			'Federo',
 			'Felipa',
@@ -2081,6 +2138,8 @@ function tieHTMLspecialchars(text) {
 			'Finger+Paint',
 			'Fira+Mono',
 			'Fira+Sans',
+			'Fira+Sans+Condensed',
+			'Fira+Sans+Extra+Condensed',
 			'Fjalla+One',
 			'Fjord+One',
 			'Flamenco',
@@ -2101,10 +2160,12 @@ function tieHTMLspecialchars(text) {
 			'GFS+Didot',
 			'GFS+Neohellenic',
 			'Gabriela',
+			'Gaegu',
 			'Gafata',
 			'Galada',
 			'Galdeano',
 			'Galindo',
+			'Gamja+Flower',
 			'Gentium+Basic',
 			'Gentium+Book+Basic',
 			'Geo',
@@ -2120,6 +2181,7 @@ function tieHTMLspecialchars(text) {
 			'Goblin+One',
 			'Gochi+Hand',
 			'Gorditas',
+			'Gothic+A1',
 			'Goudy+Bookletter+1911',
 			'Graduate',
 			'Grand+Hotel',
@@ -2128,6 +2190,7 @@ function tieHTMLspecialchars(text) {
 			'Griffy',
 			'Gruppo',
 			'Gudea',
+			'Gugi',
 			'Gurajada',
 			'Habibi',
 			'Halant',
@@ -2142,6 +2205,7 @@ function tieHTMLspecialchars(text) {
 			'Heebo',
 			'Henny+Penny',
 			'Herr+Von+Muellerhoff',
+			'Hi+Melody',
 			'Hind',
 			'Hind+Guntur',
 			'Hind+Madurai',
@@ -2150,6 +2214,10 @@ function tieHTMLspecialchars(text) {
 			'Holtwood+One+SC',
 			'Homemade+Apple',
 			'Homenaje',
+			'IBM+Plex+Mono',
+			'IBM+Plex+Sans',
+			'IBM+Plex+Sans+Condensed',
+			'IBM+Plex+Serif',
 			'IM+Fell+DW+Pica',
 			'IM+Fell+DW+Pica+SC',
 			'IM+Fell+Double+Pica',
@@ -2183,6 +2251,7 @@ function tieHTMLspecialchars(text) {
 			'Josefin+Sans',
 			'Josefin+Slab',
 			'Joti+One',
+			'Jua',
 			'Judson',
 			'Julee',
 			'Julius+Sans+One',
@@ -2190,6 +2259,7 @@ function tieHTMLspecialchars(text) {
 			'Jura',
 			'Just+Another+Hand',
 			'Just+Me+Again+Down+Here',
+			'K2D',
 			'Kadwa',
 			'Kalam',
 			'Kameron',
@@ -2208,14 +2278,20 @@ function tieHTMLspecialchars(text) {
 			'Khand',
 			'Khmer',
 			'Khula',
+			'Kirang+Haerang',
 			'Kite+One',
 			'Knewave',
+			'KoHo',
+			'Kodchasan',
+			'Kosugi',
+			'Kosugi+Maru',
 			'Kotta+One',
 			'Koulen',
 			'Kranky',
 			'Kreon',
 			'Kristi',
 			'Krona+One',
+			'Krub',
 			'Kumar+One',
 			'Kumar+One+Outline',
 			'Kurale',
@@ -2232,6 +2308,12 @@ function tieHTMLspecialchars(text) {
 			'Lekton',
 			'Lemon',
 			'Lemonada',
+			'Libre+Barcode+128',
+			'Libre+Barcode+128+Text',
+			'Libre+Barcode+39',
+			'Libre+Barcode+39+Extended',
+			'Libre+Barcode+39+Extended+Text',
+			'Libre+Barcode+39+Text',
 			'Libre+Baskerville',
 			'Libre+Franklin',
 			'Life+Savers',
@@ -2252,19 +2334,25 @@ function tieHTMLspecialchars(text) {
 			'Luckiest+Guy',
 			'Lusitana',
 			'Lustria',
+			'M+PLUS+1p',
+			'M+PLUS+Rounded+1c',
 			'Macondo',
 			'Macondo+Swash+Caps',
 			'Mada',
 			'Magra',
 			'Maiden+Orange',
 			'Maitree',
+			'Major+Mono+Display',
 			'Mako',
+			'Mali',
 			'Mallanna',
 			'Mandali',
+			'Manuale',
 			'Marcellus',
 			'Marcellus+SC',
 			'Marck+Script',
 			'Margarine',
+			'Markazi+Text',
 			'Marko+One',
 			'Marmelad',
 			'Martel',
@@ -2292,6 +2380,7 @@ function tieHTMLspecialchars(text) {
 			'Milonga',
 			'Miltonian',
 			'Miltonian+Tattoo',
+			'Mina',
 			'Miniver',
 			'Miriam+Libre',
 			'Mirza',
@@ -2320,24 +2409,42 @@ function tieHTMLspecialchars(text) {
 			'Mr+De+Haviland',
 			'Mrs+Saint+Delafield',
 			'Mrs+Sheppards',
+			'Mukta',
+			'Mukta+Mahee',
+			'Mukta+Malar',
 			'Mukta+Vaani',
 			'Muli',
 			'Mystery+Quest',
 			'NTR',
+			'Nanum+Brush+Script',
+			'Nanum+Gothic',
+			'Nanum+Gothic+Coding',
+			'Nanum+Myeongjo',
+			'Nanum+Pen+Script',
 			'Neucha',
 			'Neuton',
 			'New+Rocker',
 			'News+Cycle',
 			'Niconne',
+			'Niramit',
 			'Nixie+One',
 			'Nobile',
 			'Nokora',
 			'Norican',
 			'Nosifer',
+			'Notable',
 			'Nothing+You+Could+Do',
 			'Noticia+Text',
 			'Noto+Sans',
+			'Noto+Sans+JP',
+			'Noto+Sans+KR',
+			'Noto+Sans+SC',
+			'Noto+Sans+TC',
 			'Noto+Serif',
+			'Noto+Serif+JP',
+			'Noto+Serif+KR',
+			'Noto+Serif+SC',
+			'Noto+Serif+TC',
 			'Nova+Cut',
 			'Nova+Flat',
 			'Nova+Mono',
@@ -2348,6 +2455,7 @@ function tieHTMLspecialchars(text) {
 			'Nova+Square',
 			'Numans',
 			'Nunito',
+			'Nunito+Sans',
 			'Odor+Mean+Chey',
 			'Offside',
 			'Old+Standard+TT',
@@ -2365,6 +2473,8 @@ function tieHTMLspecialchars(text) {
 			'Over+the+Rainbow',
 			'Overlock',
 			'Overlock+SC',
+			'Overpass',
+			'Overpass+Mono',
 			'Ovo',
 			'Oxygen',
 			'Oxygen+Mono',
@@ -2375,8 +2485,10 @@ function tieHTMLspecialchars(text) {
 			'PT+Serif',
 			'PT+Serif+Caption',
 			'Pacifico',
+			'Padauk',
 			'Palanquin',
 			'Palanquin+Dark',
+			'Pangolin',
 			'Paprika',
 			'Parisienne',
 			'Passero+One',
@@ -2408,6 +2520,7 @@ function tieHTMLspecialchars(text) {
 			'Poly',
 			'Pompiere',
 			'Pontano+Sans',
+			'Poor+Story',
 			'Poppins',
 			'Port+Lligat+Sans',
 			'Port+Lligat+Slab',
@@ -2471,7 +2584,6 @@ function tieHTMLspecialchars(text) {
 			'Rozha+One',
 			'Rubik',
 			'Rubik+Mono+One',
-			'Rubik+One',
 			'Ruda',
 			'Rufina',
 			'Ruge+Boogie',
@@ -2484,20 +2596,29 @@ function tieHTMLspecialchars(text) {
 			'Sacramento',
 			'Sahitya',
 			'Sail',
+			'Saira',
+			'Saira+Condensed',
+			'Saira+Extra+Condensed',
+			'Saira+Semi+Condensed',
 			'Salsa',
 			'Sanchez',
 			'Sancreek',
-			'Sansita+One',
+			'Sansita',
+			'Sarabun',
 			'Sarala',
 			'Sarina',
 			'Sarpanch',
 			'Satisfy',
+			'Sawarabi+Gothic',
+			'Sawarabi+Mincho',
 			'Scada',
 			'Scheherazade',
 			'Schoolbell',
 			'Scope+One',
 			'Seaweed+Script',
 			'Secular+One',
+			'Sedgwick+Ave',
+			'Sedgwick+Ave+Display',
 			'Sevillana',
 			'Seymour+One',
 			'Shadows+Into+Light',
@@ -2528,6 +2649,7 @@ function tieHTMLspecialchars(text) {
 			'Snowburst+One',
 			'Sofadi+One',
 			'Sofia',
+			'Song+Myung',
 			'Sonsie+One',
 			'Sorts+Mill+Goudy',
 			'Source+Code+Pro',
@@ -2535,12 +2657,16 @@ function tieHTMLspecialchars(text) {
 			'Source+Serif+Pro',
 			'Space+Mono',
 			'Special+Elite',
+			'Spectral',
+			'Spectral+SC',
 			'Spicy+Rice',
 			'Spinnaker',
 			'Spirax',
 			'Squada+One',
 			'Sree+Krushnadevaraya',
 			'Sriracha',
+			'Srisakdi',
+			'Staatliches',
 			'Stalemate',
 			'Stalinist+One',
 			'Stardos+Stencil',
@@ -2548,9 +2674,11 @@ function tieHTMLspecialchars(text) {
 			'Stint+Ultra+Expanded',
 			'Stoke',
 			'Strait',
+			'Stylish',
 			'Sue+Ellen+Francisco',
 			'Suez+One',
 			'Sumana',
+			'Sunflower',
 			'Sunshiney',
 			'Supermercado+One',
 			'Sura',
@@ -2559,6 +2687,7 @@ function tieHTMLspecialchars(text) {
 			'Suwannaphum',
 			'Swanky+and+Moo+Moo',
 			'Syncopate',
+			'Tajawal',
 			'Tangerine',
 			'Taprom',
 			'Tauri',
@@ -2568,6 +2697,7 @@ function tieHTMLspecialchars(text) {
 			'Tenali+Ramakrishna',
 			'Tenor+Sans',
 			'Text+Me+One',
+			'Thasadith',
 			'The+Girl+Next+Door',
 			'Tienne',
 			'Tillana',
@@ -2605,6 +2735,7 @@ function tieHTMLspecialchars(text) {
 			'Voces',
 			'Volkhov',
 			'Vollkorn',
+			'Vollkorn+SC',
 			'Voltaire',
 			'Waiting+for+the+Sunrise',
 			'Wallpoet',
@@ -2618,17 +2749,23 @@ function tieHTMLspecialchars(text) {
 			'Yantramanav',
 			'Yatra+One',
 			'Yellowtail',
+			'Yeon+Sung',
 			'Yeseva+One',
 			'Yesteryear',
 			'Yrsa',
+			'ZCOOL+KuaiLe',
+			'ZCOOL+QingKe+HuangYou',
+			'ZCOOL+XiaoWei',
 			'Zeyada',
+			'Zilla+Slab',
+			'Zilla+Slab+Highlight',
 		];
 
-	 //Early Access Google Web fonts ----------
+	 //Early Access Google Web fonts
 		var earlyaccessFonts = {
 			earlyaccess: [
 
-				//Arabic Fonts ----------
+				//Arabic Fonts
 				{ fontName: 'Cairo',        text: 'أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ'},
 				{ fontName: 'Amiri',        text: 'أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ'},
 				{ fontName: 'Lateef',       text: 'أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ'},
@@ -2655,7 +2792,7 @@ function tieHTMLspecialchars(text) {
 				{ fontName: 'early#Noto Nastaliq Urdu Draft', text: 'أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ' },
 				{ fontName: 'early#Noto Sans Kufi Arabic',    text: 'أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ' },
 
-				//Lao Fonts ----------
+				//Lao Fonts
 				{ fontName: 'early#Dhyana',         text: 'ຂອບໃຈຫຼາຍໆເດີ້' },
 				{ fontName: 'early#Lao Muang Don',  text: 'ຂອບໃຈຫຼາຍໆເດີ້' },
 				{ fontName: 'early#Lao Sans Pro',   text: 'ຂອບໃຈຫຼາຍໆເດີ້' },
@@ -2664,27 +2801,27 @@ function tieHTMLspecialchars(text) {
 				{ fontName: 'early#Phetsarath',     text: 'ຂອບໃຈຫຼາຍໆເດີ້' },
 				{ fontName: 'early#Souliyo',        text: 'ຂອບໃຈຫຼາຍໆເດີ້' },
 
-				//Tamil Fonts ----------
+				//Tamil Fonts
 				{ fontName: 'early#Droid Sans Tamil', text:'வாருங்கள்'},
 				{ fontName: 'early#Karla Tamil Inclined', text:'வாருங்கள்'},
 				{ fontName: 'early#Karla Tamil Upright', text:'வாருங்கள்'},
 				{ fontName: 'early#Lohit Tamil', text:'வாருங்கள்'},
 				{ fontName: 'early#Noto Sans Tamil', text:'வாருங்கள்'},
 
-				//Thai ----------
+				//Thai
 				{ fontName: 'early#Droid Sans Thai', text:'ยินดีต้อนรับ'},
 				{ fontName: 'early#Droid Serif Thai', text:'ยินดีต้อนรับ'},
 				{ fontName: 'early#Noto Sans Thai', text:'ยินดีต้อนรับ'},
 
-				//Bengali ----------
+				//Bengali
 				{ fontName: 'early#Noto Sans Bengali', text:'স্বাগতম'},
 				{ fontName: 'early#Lohit Bengali', text:'স্বাগতম'},
 
-				//Devanagari ----------
+				//Devanagari
 				{ fontName: 'early#Noto Sans Devanagari', text:'नमस्कार'},
 				{ fontName: 'early#Lohit Devanagari', text:'नमस्कार'},
 
-				//Korean ----------
+				//Korean
 				{ fontName: 'early#Hanna', text:'환영합니다'},
 				{ fontName: 'early#Jeju Gothic', text:'환영합니다'},
 				{ fontName: 'early#Jeju Hallasan', text:'환영합니다'},
@@ -2697,18 +2834,18 @@ function tieHTMLspecialchars(text) {
 				{ fontName: 'early#Nanum Gothic Coding', text:'환영합니다'},
 				{ fontName: 'early#Noto Sans KR', text:'환영합니다'},
 
-				//Balinese ----------
+				//Balinese
 				{ fontName: 'early#Noto Sans Balinese', text:'환영합니다'},
 
-				//Georgian ----------
+				//Georgian
 				{ fontName: 'early#Noto Serif Georgian', text:'გამარჯობა'},
 				{ fontName: 'early#Noto Sans Georgian', text:'გამარჯობა'},
 
-				//Georgian ----------
+				//Georgian
 				{ fontName: 'early#Noto Serif Georgian', text:'გამარჯობა'},
 				{ fontName: 'early#Noto Sans Georgian', text:'გამარჯობა'},
 
-				//Chinese ----------
+				//Chinese
 				{ fontName: 'early#Noto Sans SC', text:'谢谢'}, //Simplified
 				{ fontName: 'early#Noto Sans TC', text:'謝謝'}, //Traditional
 				{ fontName: 'early#cwTeXFangSong', text:'謝謝'}, //Traditional
@@ -3758,13 +3895,17 @@ function tieHTMLspecialchars(text) {
 		$popup = $('<div class="icon-picker-container"> \
 			<div class="icon-picker-control" /> \
 			<ul class="icon-picker-list" /> \
-		</div>')
-			.css({
+		</div>');
+
+		/*
+			$popup.css({
 				'top': $button.offset().top,
 				'left': $button.offset().left
 			});
+		*/
 
 			build_list($popup, $button, 0);
+
 			var $control = $popup.find('.icon-picker-control');
 			$control.html('<a data-direction="back" href="#"><span class="dashicons dashicons-arrow-left-alt2"></span></a> ' +
 					'<input type="text" class="" placeholder="' + tieLang.search + '" />' +
@@ -3775,24 +3916,24 @@ function tieHTMLspecialchars(text) {
 				e.preventDefault();
 				if ($(this).data('direction') === 'back') {
 					//move last 25 elements to front
-					$($('li:gt(' + (icons.length - 43) + ')', $list).get().reverse()).each(function() {
+					$($('li:gt(' + (icons.length - 49) + ')', $list).get().reverse()).each(function() {
 						$(this).prependTo($list);
 					});
 				} else {
 					//move first 25 elements to the end
-					$('li:lt(42)', $list).each(function() {
+					$('li:lt(48)', $list).each(function() {
 						$(this).appendTo($list);
 					});
 				}
 			});
 
-			$popup.appendTo('body').show();
+			$popup.appendTo( $button.parent() ).show();
 
 			$('input', $control).on('keyup', function(e) {
 				var search = $(this).val();
 				if (search === '') {
 					//show all again
-					$('li:lt(42)', $list).show();
+					$('li:lt(48)', $list).show();
 				} else {
 					$('li', $list).each(function() {
 						if ($(this).data('icon').toString().toLowerCase().indexOf(search.toLowerCase()) !== -1) {

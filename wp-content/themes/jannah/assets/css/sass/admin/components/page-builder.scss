@@ -14,7 +14,6 @@
 			display: none !important;
 		}
 
-
 		#tie-page-builder,
 		#tie_do_not_dublicate_option,
 		#tie_header_extend_bg_option{
@@ -116,6 +115,7 @@ a.del-item {
 	padding: 15px;
 	color: #ffffff;
 	background: rgba(0,0,0,0.1);
+	box-sizing: initial; // Fix Gutenburg Styling bug in the post edit page
 
 	&:hover {
 		background: red !important;
@@ -301,7 +301,7 @@ a.del-item {
 	overflow: auto;
 	padding: 10px;
 	box-sizing: border-box;
-	z-index: 9991;
+	z-index: 9995;
 }
 
 #tie-builder-wrapper .block-item .tie-popup-block,
@@ -565,6 +565,7 @@ a.toggle-section{
 
 .block-e3lan-container .block-default-options,
 .block-e3lan-container .block-title-item-options,
+.block-e3lan-container .block-title-icon-options,
 .block-e3lan-container .block-url-item-options,
 .block-e3lan-container .block-color-item-options,
 .block-e3lan-container .block-preview-title,
@@ -598,6 +599,7 @@ a.toggle-section{
 .block-content-container .block-thumb_first-item-options,
 
 .block-tabs-container .block-title-item-options,
+.block-tabs-container .block-title-icon-options,
 .block-tabs-container .block-url-item-options,
 .block-tabs-container .block-categories-item-options,
 .block-tabs-container .block-tags-item-options,
@@ -633,6 +635,7 @@ a.toggle-section{
 .block-timeline-container .block-order-item-options,
 
 .block-video-list-container .block-default-options,
+.block-video-list-container .block-title-icon-options,
 .block-video-list-container .block-url-item-options,
 .block-video-list-container .block-content-only-item-options,
 
@@ -678,6 +681,7 @@ a.toggle-section{
 .block-row-container .block-thumb_small-item-options,
 
 .block-slider-container .block-title-item-options,
+.block-slider-container .block-title-icon-options,
 .block-slider-container .block-url-item-options,
 .block-slider-container .block-pagination-item-options,
 .block-slider-container .block-filters-item-options,
@@ -852,7 +856,7 @@ span.block-e3lan-title{
 	&.tie-section-tabs {
 		background: $brand-color-secondry;
   	font-size: inherit;
-		margin: 0 -10px;
+		margin: 0;
 		padding: 0 20px;
 
 		a{

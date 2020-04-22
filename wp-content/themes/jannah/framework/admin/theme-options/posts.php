@@ -122,6 +122,18 @@
 			'type' => 'checkbox',
 		));
 
+
+	if( ! class_exists( 'WPSEO_Frontend' ) ){
+
+		tie_build_theme_option(
+			array(
+				'name'   => esc_html__( 'Meta Description Tag', TIELABS_TEXTDOMAIN ),
+				'id'     => 'post_meta_escription',
+				'type'   => 'checkbox',
+			));
+	}
+
+
 	if( ! TIELABS_OPENGRAPH::is_active() ){
 
 		tie_build_theme_option(
@@ -146,8 +158,6 @@
 			'id'   => 'reading_indicator',
 			'type' => 'checkbox',
 		));
-
-
 
 	tie_build_theme_option(
 		array(
@@ -362,10 +372,11 @@
 
 		//Post Order
 		$post_order = array(
-			'latest'   => esc_html__( 'Recent Posts', TIELABS_TEXTDOMAIN ),
-			'rand'     => esc_html__( 'Random Posts', TIELABS_TEXTDOMAIN ),
-			'modified' => esc_html__( 'Last Modified Posts', TIELABS_TEXTDOMAIN ),
+			'latest'   => esc_html__( 'Recent Posts',         TIELABS_TEXTDOMAIN ),
+			'rand'     => esc_html__( 'Random Posts',         TIELABS_TEXTDOMAIN ),
+			'modified' => esc_html__( 'Last Modified Posts',  TIELABS_TEXTDOMAIN ),
 			'popular'  => esc_html__( 'Most Commented posts', TIELABS_TEXTDOMAIN ),
+			'title'    => esc_html__( 'Alphabetically',       TIELABS_TEXTDOMAIN ),
 		);
 
 		if( tie_get_option( 'tie_post_views' ) ){
@@ -438,10 +449,11 @@
 
 		//Post Order
 		$post_order = array(
-			'latest'   => esc_html__( 'Recent Posts', TIELABS_TEXTDOMAIN ),
-			'rand'     => esc_html__( 'Random Posts', TIELABS_TEXTDOMAIN ),
-			'modified' => esc_html__( 'Last Modified Posts', TIELABS_TEXTDOMAIN ),
+			'latest'   => esc_html__( 'Recent Posts',         TIELABS_TEXTDOMAIN ),
+			'rand'     => esc_html__( 'Random Posts',         TIELABS_TEXTDOMAIN ),
+			'modified' => esc_html__( 'Last Modified Posts',  TIELABS_TEXTDOMAIN ),
 			'popular'  => esc_html__( 'Most Commented posts', TIELABS_TEXTDOMAIN ),
+			'title'    => esc_html__( 'Alphabetically',       TIELABS_TEXTDOMAIN ),
 		);
 
 		if( tie_get_option( 'tie_post_views' ) ){

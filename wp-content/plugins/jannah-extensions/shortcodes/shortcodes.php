@@ -124,7 +124,6 @@ function jannah_extensions_shortcodes_scripts() {
 		'shortcode_facebook'     => esc_html__( 'Facebook Like Button',   'jannah-extensions' ),
 		'shortcode_tweet'        => esc_html__( 'Tweet Button',           'jannah-extensions' ),
 		'shortcode_stumble'			 => esc_html__( 'Stumble Button',         'jannah-extensions' ),
-		'shortcode_google'		   => esc_html__( 'Google+ Button',         'jannah-extensions' ),
 		'shortcode_pinterest'		 => esc_html__( 'Pinterest Button',       'jannah-extensions' ),
 		'shortcode_follow'			 => esc_html__( 'Twitter Follow Button',  'jannah-extensions' ),
 		'shortcode_username'		 => esc_html__( 'Twitter Username',       'jannah-extensions' ),
@@ -521,7 +520,10 @@ function jannah_extensions_sc_button( $atts, $content = null ) {
 
 	$nofollow = ( $nofollow == 'true' ) ? ' rel="nofollow"' : '';
 	$target = ( $target == 'true' ) ? ' target="_blank"' : '';
-	$icon   = '<span class="fa '. $icon .'" aria-hidden="true"></span> ';
+
+	if( ! empty( $icon ) ){
+		$icon = '<span class="fa '. $icon .'" aria-hidden="true"></span> ';
+	}
 
 	return '<a href="'. esc_url( $link ) .'"'. $target . $nofollow .' class="shortc-button '. $size .' '. $color .' '. $align .'">'. $icon . do_shortcode( $content ). '</a>';
 }
@@ -570,17 +572,18 @@ function jannah_extensions_sc_feed( $atts, $content = null ) {
 
 	$rss = fetch_feed( $url );
 
-	if ( ! is_wp_error( $rss ) ){
-		$maxitems  = $rss->get_item_quantity( $number );
-		$rss_items = $rss->get_items( 0, $maxitems );
+	if ( is_wp_error( $rss ) ){
+		return;
 	}
+
+	$maxitems  = $rss->get_item_quantity( $number );
+	$rss_items = $rss->get_items( 0, $maxitems );
 
 	$out = '<ul>';
 
-	if ( $maxitems == 0 ) {
+	if ( ( isset( $maxitems ) && $maxitems == 0 ) || empty( $maxitems ) ) {
 		$out .= '<li>'. esc_html__( 'No items.', 'jannah-extensions' ) .'</li>';
 	}
-
 	else{
 		foreach ( $rss_items as $item ){
 			$out .= '<li><a target="_blank" href="'. esc_url( $item->get_permalink() ) .'" title="'.  esc_html__( 'Posted', 'jannah-extensions' ) .' '. $item->get_date( 'j F Y | g:i a' ).'">'. esc_html( $item->get_title() ) .'</a></li>';
@@ -866,27 +869,6 @@ function jannah_extensions_sc_pinterest( $atts, $content = null ) {
 
 
 /*-----------------------------------------------------------------------------------*/
-# [Google] Shortcode
-/*-----------------------------------------------------------------------------------*/
-add_shortcode( 'Google', 'jannah_extensions_sc_google' );
-function jannah_extensions_sc_google( $atts, $content = null ) {
-	return '
-		<g:plusone size="tall"></g:plusone>
-		<script>
-  		(function() {
-    		var po   = document.createElement( "script" );
-    		po.type  = "text/javascript";
-    		po.async = true;
-    		po.src   = "https://apis.google.com/js/plusone.js";
-    		var s    = document.getElementsByTagName( "script" )[0];
-    		s.parentNode.insertBefore(po, s);
-  		})();
-		</script>
-	';
-}
-
-
-/*-----------------------------------------------------------------------------------*/
 # [tie_slideshow] Shortcode
 /*-----------------------------------------------------------------------------------*/
 add_shortcode( 'tie_slideshow', 'jannah_extensions_sc_post_slideshow' );
@@ -941,7 +923,7 @@ function jannah_extensions_sc_tabs( $atts, $content = null ) {
 
 	extract( $atts );
 
-	$class_type = ( $type == 'vertical' ) ? 'tabs-vertical' : 'tabs-horizontal flex-tabs';
+	$class_type = ( $type == 'vertical' ) ? 'tabs-vertical' : 'tabs-horizontal flex-tabs is-flex-tabs-shortcodes';
 
 	return '
 		<div class="tabs-shortcode tabs-wrapper container-wrapper '. $class_type .'">'.

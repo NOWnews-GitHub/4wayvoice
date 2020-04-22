@@ -39,7 +39,7 @@
 	}
 
 	.extra-text{
-		padding-right: 220px;
+		padding-right: 270px;
 		padding-left: 0;
 	}
 
@@ -183,7 +183,7 @@
 		#custom_sidebar_error-item,
 		#highlights_custom_error-item,
 		.tie-background-options{
-			margin-right: 220px;
+			margin-right: 270px;
 			margin-left: 0;
 		}
 	}
@@ -423,12 +423,11 @@
 	// Widgets
 
 	.tie-styles-list-widget {
-		label {
+		.tie-widget-options {
 			float: right;
 
-			&:nth-child(odd) {
-				margin-left: 4%;
-				margin-right: 0;
+			&:nth-child(2n+2) {
+				clear: left;
 			}
 		}
 	}
@@ -476,9 +475,9 @@
 
 
 	/* Help Scout Beacon */
-	#hs-beacon{
+#beacon-container .Beacon{
 
-		iframe {
+	.BeaconFabButtonFrame {
 			left: auto !important;
 	    right: 185px !important;
 
@@ -506,10 +505,10 @@
 	background-color: #ffffff;
 	font-size: 20px;
 	font-weight: bold;
-	height: 60px;
-	line-height: 60px;
+	height: 80px;
+	line-height: 80px;
 	background-image: url(images/rtl.png);
 	background-repeat: no-repeat;
-	background-size: 600px;
-	background-position: center left;
+	background-size: 400px;
+	background-position: -30px center;
 }

@@ -21,7 +21,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 		$no_thumb = 'no-small-thumbs';
 
-		# Show the avatar if it is active only
+		// Show the avatar if it is active only
 		if( get_option( 'show_avatars' ) ){
 			$no_thumb = '';
 			?>
@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 	?>
 
 	<div class="comment-body post-widget-body <?php echo esc_attr( $no_thumb ) ?>">
-		<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title();?></a></h3>
+		<h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php the_title();?></a></h3>
 
 		<?php tie_the_post_meta( array( 'comments' => false, 'views' => false ) ); ?>
 	</div>

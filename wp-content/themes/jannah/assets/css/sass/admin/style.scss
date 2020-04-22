@@ -2,12 +2,13 @@
 // MIXINS & GLOBAL VARIALS ALL OVER THE THEME & CSS3 MIXINS--------------------
 @import "../utils/variables";
 @import "../utils/mixins";
-@import "utils/admin-variables"; // overwirte the defaults
+@import "utils/admin-variables";
 
 /**
  * General Elements
  * -----------------------------------------------------------------------------
  */
+
 @import "components/general";
 
 

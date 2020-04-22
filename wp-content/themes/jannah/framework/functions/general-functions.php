@@ -13,7 +13,15 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if( ! function_exists( 'tie_get_option' )){
 
 	function tie_get_option( $name, $default = false ){
-		$get_options = get_option( apply_filters( 'TieLabs/theme_options', '' ) );
+
+		// Cache the theme settings
+		if( ! empty( $GLOBALS['tie_options'] ) ){
+			$get_options = $GLOBALS['tie_options'];
+		}
+		else{
+			$get_options = get_option( apply_filters( 'TieLabs/theme_options', '' ) );
+			$GLOBALS['tie_options'] = $get_options;
+		}
 
 		if( ! empty( $get_options[ $name ] )){
 			return $get_options[ $name ];
@@ -39,7 +47,7 @@ if( ! function_exists( 'tie_get_postdata' )){
 			$post_id = get_the_ID();
 		}
 
-		if( $value = get_post_meta( $post_id, $key, $single = true )){
+		if( $value = get_post_meta( $post_id, $key, $single = true ) ){
 			return $value;
 		}
 		elseif( $default ){
@@ -90,13 +98,8 @@ if( ! function_exists( 'tie_get_object_option' )){
 			$post_key = ! empty( $post_key ) ? $post_key : $key;
 		}
 
-		// Get Category options
-		if( is_category() ){
-			$option = tie_get_category_option( $cat_key );
-		}
-
 		// BuddyPress
-		elseif( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ){
+		if( TIELABS_BUDDYPRESS_IS_ACTIVE && is_buddypress() ){
 
 			$option = TIELABS_BUDDYPRESS::get_page_data( $post_key );
 			$option = ( $option == 'default') ? '' : $option; //Compatability Sahifa
@@ -123,6 +126,11 @@ if( ! function_exists( 'tie_get_object_option' )){
 				$category_id = tie_get_primary_category_id();
 				$option      = tie_get_category_option( $cat_key, $category_id );
 			}
+		}
+
+		// Get Category options
+		elseif( is_category() ){
+			$option = tie_get_category_option( $cat_key );
 		}
 
 		// Get the global value
@@ -309,9 +317,13 @@ if( ! function_exists( 'tie_logo' )){
 			}
 		}
 
-		// H1 for the site title
+		// H1 for the site title in Homepage
 		if( is_home() || is_front_page() ){
 			$logo_output .= apply_filters( 'TieLabs/Logo/h1', '<h1 class="h1-off">'. $logo_title .'</h1>', $logo_title );
+		}
+		// H1 for internal pages built via the page builder
+		elseif( TIELABS_HELPER::has_builder() ){
+			$logo_output .= apply_filters( 'TieLabs/Logo/h1', '<h1 class="h1-off">'. get_the_title() .'</h1>', get_the_title() );
 		}
 
 		?>
@@ -450,7 +462,7 @@ if( ! function_exists( 'tie_query' )){
 			$args['tag__in'] = array();
 
 			foreach ( $tags as $tag ){
-				$post_tag =TIELABS_WP_HELPER::get_term_by( 'name', trim( $tag ), 'post_tag' );
+				$post_tag = TIELABS_WP_HELPER::get_term_by( 'name', trim( $tag ), 'post_tag' );
 
 				if( ! empty( $post_tag )){
 					$args['tag__in'][] = $post_tag->term_id;
@@ -507,31 +519,25 @@ if( ! function_exists( 'tie_query' )){
 
 		// Exclude Posts
 		if( ! empty( $block['exclude_posts'] ) ){
-			$args['post__not_in'] = explode ( ',', $block['exclude_posts'] );
+			$args['post__not_in'] = explode( ',', $block['exclude_posts'] );
 		}
 
 		// Posts Order
 		if( ! empty( $block['order'] ) ){
 
-			// Random Posts
-			if( $block['order'] == 'rand' ){
-				$args['orderby'] = 'rand';
-			}
-
-			// Most Viewd posts
-			elseif( $block['order'] == 'views' && tie_get_option( 'tie_post_views' ) ){
+			if( $block['order'] == 'views' && tie_get_option( 'tie_post_views' ) ){ // Most Viewd posts
 				$args['orderby']  = 'meta_value_num';
 				$args['meta_key'] = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
 			}
-
-			// Popular Posts by comments
-			elseif( $block['order'] == 'popular' ){
+			elseif( $block['order'] == 'popular' ){ // Popular Posts by comments
 				$args['orderby'] = 'comment_count';
 			}
-
-			// Recent modified Posts
-			elseif( $block['order'] == 'modified' ){
-				$args['orderby'] = 'modified';
+			elseif( $block['order'] == 'title' ){
+				$args['orderby'] = 'title';
+				$args['order']   = 'ASC';
+			}
+			else{
+				$args['orderby'] = $block['order'];
 			}
 		}
 
@@ -572,8 +578,8 @@ if( ! function_exists( 'tie_query' )){
 		}
 
 		// Do not duplicate posts
-		if( ! empty( $GLOBALS['tie_do_not_duplicate_builder'] ) && is_array( $GLOBALS['tie_do_not_duplicate_builder'] )){
-			$args['post__not_in'] = $GLOBALS['tie_do_not_duplicate_builder'];
+		if( ! empty( $GLOBALS['tie_do_not_duplicate'] ) && is_array( $GLOBALS['tie_do_not_duplicate'] )){
+			$args['post__not_in'] = $GLOBALS['tie_do_not_duplicate'];
 		}
 
 		// Allow making changes on the Query
@@ -611,7 +617,7 @@ if( ! function_exists( 'tie_query' )){
 function tie_run_the_query( $args = array() ){
 
 	// Check if the theme cache is enabled
-	if ( ! tie_get_option( 'cache' )){
+	if ( ! tie_get_option( 'jso_cache' )){
 		return new WP_Query( $args );
 	}
 
@@ -641,19 +647,37 @@ if( ! function_exists( 'tie_block_title' )){
 
 	function tie_block_title( $block = false ){
 
-		if( empty( $block['title'] )) return; ?>
+		if( empty( $block['title'] ) && empty( $block['icon'] ) ){
+			return;
+		}
+
+		?>
 
 		<div <?php tie_box_class( 'mag-box-title' ) ?>>
 			<h3>
 				<?php
 
+					// Title
+					$title  = '';
+
+					if( $block['icon'] ){
+						$title .= '<span class="fa '. $block['icon'] .'"></span>';
+					}
+
+					if( $block['title'] ){
+						if( ! empty( $title ) ){
+							$title .= ' ';
+						}
+						$title .= $block['title'];
+					}
+
 					if( ! empty( $block['url'] )){
-						echo '<a href="'. esc_url( $block['url'] ) .'" title="'.$block['title'].'">';
-						echo $block['title'];
+						echo '<a href="'. esc_url( $block['url'] ) .'">';
+						echo $title;
 						echo '</a>';
 					}
 					else{
-						echo $block['title'];
+						echo $title;
 					}
 				?>
 			</h3>
@@ -665,7 +689,7 @@ if( ! function_exists( 'tie_block_title' )){
 			if( ! empty( $block['filters'] ) && $block['pagi'] != 'numeric' ){
 
 				$block_options .= '
-				<ul class="mag-box-filter-links">
+				<ul class="mag-box-filter-links is-flex-tabs">
 					<li><a href="#" class="block-ajax-term active" >'. esc_html__( 'All', TIELABS_TEXTDOMAIN ) .'</a></li>';
 
 					// Filter by tags
@@ -675,7 +699,7 @@ if( ! function_exists( 'tie_block_title' )){
 						$tags = array_unique( explode( ',', $tags ) );
 
 						foreach ( $tags as $tag ){
-							$post_tag =TIELABS_WP_HELPER::get_term_by( 'name', $tag, 'post_tag' );
+							$post_tag = TIELABS_WP_HELPER::get_term_by( 'name', $tag, 'post_tag' );
 
 							if( ! empty( $post_tag ) && ! empty( $post_tag->count ) && ( $block['offset'] < $post_tag->count )){
 								$block_options .= '<li><a href="#" data-id="'.$post_tag->name.'" class="block-ajax-term" >'. $post_tag->name .'</a></li>';
@@ -705,8 +729,18 @@ if( ! function_exists( 'tie_block_title' )){
 			if( ! empty( $block['pagi'] ) && $block['pagi'] == 'next-prev' ){
 				$block_options .= '
 					<ul class="slider-arrow-nav">
-						<li><a class="block-pagination prev-posts pagination-disabled" href="#"><span class="fa fa-angle-left" aria-hidden="true"></span></a></li>
-						<li><a class="block-pagination next-posts" href="#"><span class="fa fa-angle-right" aria-hidden="true"></span></a></li>
+						<li>
+							<a class="block-pagination prev-posts pagination-disabled" href="#">
+								<span class="fa fa-angle-left" aria-hidden="true"></span>
+								<span class="screen-reader-text">'. esc_html__( 'Previous page', TIELABS_TEXTDOMAIN ) .'</span>
+							</a>
+						</li>
+						<li>
+							<a class="block-pagination next-posts" href="#">
+								<span class="fa fa-angle-right" aria-hidden="true"></span>
+								<span class="screen-reader-text">'. esc_html__( 'Next page', TIELABS_TEXTDOMAIN ) .'</span>
+							</a>
+						</li>
 					</ul>
 				';
 			}
@@ -737,31 +771,30 @@ if( ! function_exists( 'tie_block_title' )){
  */
 if( ! function_exists( 'tie_author_box' )){
 
-	function tie_author_box( $name = false, $user_id = false ){
+	function tie_author_box( $author = false ){
 
-		if( empty( $user_id ) ){
-			$user_id = get_query_var( 'author' );
+		// Current object
+		if( empty( $author ) ){
+			$author = get_queried_object();
 		}
 
-		$description = get_the_author_meta( 'description', $user_id );
+		// Profile URL
+		$profile = tie_get_author_profile_url( $author );
 
-		/* Don't show the box if the user doesn't have a bio description---
-			if( empty( $description ) ){
-				return;
-			}
-		*/
+		// Author name
+		$display_name = tie_get_the_author( $author );
 
 		?>
 
-		<div class="about-author container-wrapper">
+		<div class="about-author container-wrapper about-author-<?php echo $author->ID ?>">
 
 			<?php
 
 				// Show the avatar if it is active only
 				if( get_option( 'show_avatars' ) ){ ?>
 					<div class="author-avatar">
-						<a href="<?php echo tie_get_author_profile_url( $user_id ); ?>">
-							<?php echo get_avatar( get_the_author_meta( 'user_email', $user_id ), apply_filters( 'TieLabs/Author_Box/avatar_size', 180 ) ); ?>
+						<a href="<?php echo $profile; ?>">
+							<?php echo get_avatar( $author->user_email, apply_filters( 'TieLabs/Author_Box/avatar_size', 180 ), '', sprintf( esc_html__( 'Photo of %s', TIELABS_TEXTDOMAIN ), esc_html( $display_name ) ) ); ?>
 						</a>
 					</div><!-- .author-avatar /-->
 					<?php
@@ -770,10 +803,10 @@ if( ! function_exists( 'tie_author_box' )){
 			?>
 
 			<div class="author-info">
-				<h3 class="author-name"><a href="<?php echo tie_get_author_profile_url( $user_id ); ?>"><?php echo esc_html( $name ) ?></a></h3>
+				<h3 class="author-name"><a href="<?php echo $profile; ?>"><?php echo esc_html( $display_name ) ?></a></h3>
 
 				<div class="author-bio">
-					<?php echo wp_kses_post( $description ); ?>
+					<?php the_author_meta( 'description', $author->ID ); ?>
 				</div><!-- .author-bio /-->
 
 				<?php
@@ -792,14 +825,14 @@ if( ! function_exists( 'tie_author_box' )){
 					echo '<ul class="social-icons">';
 
 					foreach ( $author_social as $network => $button ){
-						if( get_the_author_meta( $network , $user_id )){
+						if( get_the_author_meta( $network , $author->ID )){
 							$icon = empty( $button['icon'] ) ? $network : $button['icon'];
 
 							echo '
 								<li class="social-icons-item">
-									<a href="'. esc_url( get_the_author_meta( $network, $user_id ) ) .'" rel="external noopener" target="_blank" class="social-link '. $network .'-social-icon">
-									<span class="fa fa-'. $icon .'" aria-hidden="true"></span>
-									<span class="screen-reader-text">'. $button['text'] .'</span>
+									<a href="'. esc_url( get_the_author_meta( $network, $author->ID ) ) .'" rel="external noopener nofollow" target="_blank" class="social-link '. $network .'-social-icon">
+										<span class="fa fa-'. $icon .'" aria-hidden="true"></span>
+										<span class="screen-reader-text">'. $button['text'] .'</span>
 									</a>
 								</li>
 							';
@@ -832,6 +865,7 @@ if( ! function_exists( 'tie_widget_posts' )){
 			'show_score'      => true,
 			'title_length'    => '',
 			'exclude_current' => false,
+			'media_icon'      => false,
 		));
 
 		// Exclude the Current Post
@@ -907,7 +941,9 @@ if( ! function_exists( 'tie_widget_posts' )){
 				elseif( ! empty( $args['style'] ) && $args['style'] == 'grid' ){
 					if ( has_post_thumbnail() ){ ?>
 						<div <?php tie_post_class( 'tie-col-xs-4' ); ?>>
-							<?php tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', false ); ?>
+							<?php
+								tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', false, false, true, $args['media_icon']  );
+							?>
 						</div>
 						<?php
 					}
@@ -949,7 +985,7 @@ if( ! function_exists( 'tie_recent_comments' )){
 					$no_thumb = ''; ?>
 					<div class="post-widget-thumbnail" style="width:<?php echo esc_attr( $avatar_size ) ?>px">
 						<a class="author-avatar" href="<?php echo get_permalink($comment->comment_post_ID ); ?>#comment-<?php echo esc_attr( $comment->comment_ID ); ?>">
-							<?php echo get_avatar( $comment, $avatar_size ); ?>
+							<?php echo get_avatar( $comment, $avatar_size, '', sprintf( esc_html__( 'Photo of %s', TIELABS_TEXTDOMAIN ), esc_html( $comment->comment_author ) ) ); ?>
 						</a>
 					</div>
 					<?php
@@ -976,133 +1012,8 @@ if( ! function_exists( 'tie_recent_comments' )){
  */
 if( ! function_exists( 'tie_login_form' )){
 
-	function tie_login_form( $login_only = false ){
-
-		$redirect     = apply_filters( 'TieLabs/Login/redirect', site_url() );
-		$current_user = wp_get_current_user();
-
-		if ( is_user_logged_in() && empty( $login_only ) ){
-
-			// Build the Array of custom links
-			$logged_in_links = array();
-
-			// Add the Dashboared Link
-			if( current_user_can( 'switch_themes' ) ){
-				$logged_in_links['dashboard'] = array(
-					'icon' => 'fa fa-cog',
-					'link' => admin_url(),
-					'text' => esc_html__( 'Dashboard', TIELABS_TEXTDOMAIN ),
-				);
-			}
-
-			// Profile Page
-			$logged_in_links['profile'] = array(
-				'icon' => 'fa fa-user',
-				'link' => get_edit_profile_url(),
-				'text' => esc_html__( 'Your Profile', TIELABS_TEXTDOMAIN ),
-			);
-
-			// Profile Page
-			$logged_in_links['logout'] = array(
-				'icon' => 'fa fa-sign-out',
-				'link' => wp_logout_url( $redirect ),
-				'text' => esc_html__( 'Log Out', TIELABS_TEXTDOMAIN ),
-			);
-
-			$logged_in_links = apply_filters( 'TieLabs/Login/links', $logged_in_links );
-
-			?>
-
-			<div class="is-logged-login">
-
-				<?php
-
-					do_action( 'TieLabs/Login/before_avatar' );
-
-					// Show the avatar if it is active only
-					if( get_option( 'show_avatars' ) ){ ?>
-						<span class="author-avatar">
-							<a href="<?php echo tie_get_author_profile_url( $current_user->ID ) ?>"><?php echo get_avatar( $current_user->ID, apply_filters( 'TieLabs/Login/avatar_size', '90' ) ); ?></a>
-						</span>
-						<?php
-					}
-
-					do_action( 'TieLabs/Login/after_avatar' );
-				?>
-
-				<h4 class="welcome-text">
-					<?php esc_html_e( 'Welcome', TIELABS_TEXTDOMAIN ) ?> <strong><?php echo esc_html( $current_user->display_name ) ?></strong>
-				</h4>
-
-				<?php
-
-					do_action( 'TieLabs/Login/before_links' );
-
-					if( ! empty( $logged_in_links ) && is_array( $logged_in_links ) ){
-
-						echo '<ul class="user-logged-links">';
-
-						foreach ( $logged_in_links as $link_id => $link_data ){
-							echo '<li><span class="'. $link_data['icon'] .'" aria-hidden="true"></span> <a href="'. esc_url( $link_data['link'] ) .'">'. $link_data['text'] .'</a></li>';
-						}
-
-						echo '</ul>';
-					}
-
-
-					do_action( 'TieLabs/Login/after_links' );
-				?>
-
-			</div>
-
-			<?php
-		}
-
-		else{
-
-			do_action( 'TieLabs/Login/before_form' ); ?>
-
-			<div class="login-form">
-
-				<form name="registerform" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ) ?>" method="post">
-					<input type="text" name="log" title="<?php esc_html_e( 'Username', TIELABS_TEXTDOMAIN ) ?>" placeholder="<?php esc_html_e( 'Username', TIELABS_TEXTDOMAIN ) ?>">
-					<div class="pass-container">
-						<input type="password" name="pwd" title="<?php esc_html_e( 'Password', TIELABS_TEXTDOMAIN ) ?>" placeholder="<?php esc_html_e( 'Password' ) ?>">
-						<a class="forget-text" href="<?php echo wp_lostpassword_url( $redirect ) ?>"><?php esc_html_e( 'Forget?', TIELABS_TEXTDOMAIN ) ?></a>
-					</div>
-
-					<input type="hidden" name="redirect_to" value="<?php echo esc_attr( $_SERVER['REQUEST_URI'] ); ?>"/>
-					<label for="rememberme" class="rememberme">
-						<input id="rememberme" name="rememberme" type="checkbox" checked="checked" value="forever" /> <?php esc_html_e( 'Remember me', TIELABS_TEXTDOMAIN ) ?>
-					</label>
-
-					<?php do_action( 'TieLabs/Login/before_button' ); ?>
-
-					<?php echo apply_filters( 'gglcptch_display_recaptcha', '' ); ?>
-
-					<button type="submit" class="button fullwidth login-submit"><?php esc_html_e( 'Log In', TIELABS_TEXTDOMAIN ) ?></button>
-
-					<?php do_action( 'TieLabs/Login/after_button' ); ?>
-				</form>
-
-				<?php
-
-					do_action( 'TieLabs/Login/after_form' );
-
-					// Compatibility with the WordPress Social Login plugin
-					do_action( 'wordpress_social_login' );
-
-					// Register Link
-					if ( get_option( 'users_can_register' ) ){
-
-						$registration_url = sprintf( '<p class="register-link"><a href="%1$s">%2$s</a></p>', esc_url( wp_registration_url() ), esc_html__( "Don't have an account?", TIELABS_TEXTDOMAIN ) );
-						echo apply_filters( 'register', $registration_url );
-					}
-				?>
-
-			</div>
-			<?php
-		}
+	function tie_login_form(){
+		TIELABS_HELPER::get_template_part( 'templates/login' );
 	}
 }
 
@@ -1161,8 +1072,8 @@ if( ! function_exists( 'tie_article_schemas' )){
 				'@type' => 'Organization',
 				'name'  => get_bloginfo(),
 				'logo'  => array(
-						'@type'  => 'ImageObject',
-						'url'    => $site_logo,
+					'@type' => 'ImageObject',
+					'url'   => $site_logo,
 				)
 			),
 			'sourceOrganization' => array(
@@ -1172,8 +1083,8 @@ if( ! function_exists( 'tie_article_schemas' )){
 				'@id' => '#Publisher'
 			),
 			'mainEntityOfPage' => array(
-				'@type'      => 'WebPage',
-				'@id'        => get_permalink(),
+				'@type' => 'WebPage',
+				'@id'   => get_permalink(),
 			),
 			'author' => array(
 				'@type' => 'Person',
@@ -1253,25 +1164,75 @@ if( ! function_exists( 'tie_get_ajax_loader' )){
 }
 
 
+
+/*
+ * Check if the Search is active in the menus
+ */
+if( ! function_exists( 'tie_menu_has_search' )){
+
+	function tie_menu_has_search( $position = false, $ajax = false, $compact = false ){
+
+		if( empty( $position ) || ! tie_get_option( $position ) ){ // check if the menu itself is active
+			return false;
+		}
+
+		$position  = str_replace( '_', '-', $position );
+
+		$is_active = false;
+
+		if( tie_get_option( $position.'-components_search' ) ){ // search is active
+
+			$is_active = true;
+
+			// check if compact layout
+			if( $compact && tie_get_option( $position.'-components_search_layout' ) == 'compact' ){ // check if compact layout
+				$is_active = true;
+			}
+
+			// Ajax search check
+			if( $ajax ){
+				$is_active = false;
+
+				if( tie_get_option( $position.'-components_live_search' ) ){
+					$is_active = true;
+				}
+			}
+		}
+
+		return $is_active;
+	}
+}
+
+
 /*
  * Get the author profile link
  */
 if( ! function_exists( 'tie_get_author_profile_url' )){
 
-	function tie_get_author_profile_url( $user_id = false ){
+	function tie_get_author_profile_url( $author = false ){
 
-		if( empty( $user_id ) ){
-			$user_id = get_the_author_meta( 'ID' );
+		// Author is object
+		if( ! empty( $author ) && is_object( $author ) ){
+
+			if( isset( $author->type ) && 'guest-author' == $author->type ){
+				return get_author_posts_url( $author->ID, $author->user_nicename );
+			}
+
+			$author = $author->ID;
+		}
+
+		// Empty Author
+		if( empty( $author ) ){
+			$author = get_the_author_meta( 'ID' );
 		}
 
 		// Use the BuddyPress member profile page
 		if( TIELABS_BUDDYPRESS_IS_ACTIVE && tie_get_option( 'bp_use_member_profile' ) ){
-
-			return bp_core_get_user_domain( $user_id );
+			return bp_core_get_user_domain( $author );
 		}
 
 		// Use the default Author profile page
-		return get_author_posts_url( $user_id );
+		return get_author_posts_url( $author );
 	}
 }
 
@@ -1317,49 +1278,82 @@ if( ! function_exists( 'tie_get_social' )){
 
 	function tie_get_social( $options = array() ){
 
-		/**
-		 * $options{}
-		 * 		- $tooltip
-		 *		- $before
-		 *		- $after
-		 */
-
 		$defaults = array(
-			'tooltip'   => '',
 			'reverse'   => false,
 			'show_name' => false,
-			'before' 		=> "<ul>",
-			'after' 		=> "</ul> \n",
+			'before'    => "<ul>",
+			'after'     => "</ul> \n",
 		);
 
 		$options = wp_parse_args( $options, $defaults );
+
 		extract( $options );
 
-		$social 		  = tie_get_option( 'social' );
-		$social_class = 'social-link '.$tooltip;
-
-		// RSS
-		if ( tie_get_option( 'rss_icon' ) ){
-			$social['rss'] = ! empty( $social['rss'] ) ? $social['rss'] : get_bloginfo( 'rss2_url' );
+		/*
+		 * Get the cached social networks
+		 * There are multiple places for the social networks, to avoid walking throw the whole process and to avoid
+		 * calling tie_social_networks multiple times, we cache the social array
+		 */
+		if( ! empty( $GLOBALS['tie_social_networks'] ) ){
+			$social = $GLOBALS['tie_social_networks'];
 		}
 
-		$social_array = tie_social_networks();
+		// No cached version
+		else{
 
-		// Custom Social Networking
-		for( $i=1 ; $i<=5 ; $i++ ){
+			$social = tie_get_option( 'social' );
 
-			if ( tie_get_option( "custom_social_icon_$i" ) && tie_get_option( "custom_social_url_$i" ) && tie_get_option( "custom_social_title_$i" ) ){
-
-				$custom_name = "custom-link-$i";
-				$social[ $custom_name ] = tie_get_option( "custom_social_url_$i" );
-
-				$social_array[ $custom_name ]	= array(
-					'title'	=> tie_get_option( "custom_social_title_$i" ),
-					'icon'	=> 'fa ' . tie_get_option( "custom_social_icon_$i" ),
-					'class'	=> 'social-custom-link ' . $custom_name );
+			// RSS
+			if ( tie_get_option( 'rss_icon' ) ){
+				$social['rss'] = ! empty( $social['rss'] ) ? $social['rss'] : get_bloginfo( 'rss2_url' );
 			}
+
+			$social_array = ! empty( $social ) ? tie_social_networks() : array();
+
+			// Custom Social Networks
+			for( $i=1 ; $i<=5 ; $i++ ){
+				if ( ( tie_get_option( "custom_social_icon_img_$i" ) || tie_get_option( "custom_social_icon_$i" ) ) && tie_get_option( "custom_social_url_$i" ) && tie_get_option( "custom_social_title_$i" ) ){
+
+					$network = "custom-link-$i";
+
+					$icon_format = array(
+						'title'	=> tie_get_option( "custom_social_title_$i" ),
+						'class'	=> 'social-custom-link ' . $network,
+					);
+
+					if( tie_get_option( "custom_social_icon_img_$i" ) ){
+						$icon_format['img']  = tie_get_option( "custom_social_icon_img_$i" );
+						$icon_format['icon'] = "fa fa-share social-icon-img-$i";
+					}
+					else{
+						$icon_format['icon'] = 'fa ' . tie_get_option( "custom_social_icon_$i" );
+					}
+
+					$social[ $network ] = array(
+						'url'    => esc_url( tie_get_option( "custom_social_url_$i" ) ),
+						'format' => $icon_format
+					);
+				}
+			}
+
+			// Create one array hold the social and it's icon, link, etc
+			if( ! empty( $social ) && is_array( $social ) ){
+				foreach ( $social as $network => $link ){
+
+					if( ! empty( $link ) && ! empty( $social_array[ $network ] ) ){
+						$social[ $network ] = array(
+							'url'    => esc_url( $link ),
+							'format' => $social_array[ $network ]
+						);
+					}
+				}
+			}
+
+			// Cache the social networks
+			$GLOBALS['tie_social_networks'] = $social;
 		}
 
+		//---
 		if( $reverse && is_array( $social ) ){
 			$social = array_reverse( $social );
 		}
@@ -1367,19 +1361,28 @@ if( ! function_exists( 'tie_get_social' )){
 		// Print the Icons
 		echo ( $before );
 
-		if( ! empty($social) && is_array( $social ) ){
-			foreach ( $social as $network => $link ){
-				if( ! empty( $link ) && ! empty( $social_array[ $network ] ) ){
-					$icon  = $social_array[ $network ]['icon'];
-					$class = $social_array[ $network ]['class'] . '-social-icon';
-					$title = $social_array[ $network ]['title'];
-					$text  = '';
+		if( ! empty( $social ) ){
 
-					if( ! empty( $show_name ) ){
-						$text = '<span class="social-text">'.$title.'</span>';
+			foreach ( $social as $network => $data ){
+
+				// Check if we have icon or img to continue
+				if( ! empty( $data['format']['img'] ) || ! empty( $data['format']['icon'] ) ){
+
+					// URL
+					$link = ! empty( $data['url'] ) ? $data['url'] : '#';
+
+					//
+					$icon  = ! empty( $data['format']['icon'] )  ? $data['format']['icon']  : '';
+					$title = ! empty( $data['format']['title'] ) ? $data['format']['title'] : '';
+					$class = ! empty( $data['format']['class'] ) ? $data['format']['class'] . '-social-icon' : '';
+
+					$text_class = ! empty( $show_name ) ? 'social-text' : 'screen-reader-text';
+
+					if( ! empty ( $data['format']['img'] ) ){
+						$class .= ' custom-social-img';
 					}
 
-					echo'<li class="social-icons-item"><a class="'. $social_class .' '. $class .'" title="'. $title .'" rel="nofollow noopener" target="_blank" href="'. esc_url( $link ) .'"><span class="'. $icon .'"></span>'. $text .'</a></li>';
+					echo '<li class="social-icons-item"><a class="social-link '. $class .'" rel="external noopener nofollow" target="_blank" href="'. $link .'"><span class="'. $icon .'"></span><span class="'.$text_class.'">'.$title.'</span></a></li>';
 				}
 			}
 		}
@@ -1397,167 +1400,142 @@ if( ! function_exists( 'tie_social_networks' )){
 	function tie_social_networks(){
 
 		$social_array = array(
-			'rss'	=> array(
-				'title'       => esc_html__( 'RSS', TIELABS_TEXTDOMAIN ),
+			'rss' => array(
+				'title' => esc_html__( 'RSS', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-rss',
-				'hint'  => esc_html__( 'Optional Custom Feed URL, Leave it empty to use the default WordPress feed URL.', TIELABS_TEXTDOMAIN ),
 				'class' => 'rss',
 			),
 
-			'google_plus' => array(
-				'title'       => esc_html__( 'Google+', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-google-plus',
-				'class' => 'google',
-			),
-
 			'facebook' => array(
-				'title'       => esc_html__( 'Facebook', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Facebook', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-facebook',
 				'class' => 'facebook',
 			),
 
 			'twitter' => array(
-				'title'       => esc_html__( 'Twitter', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Twitter', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-twitter',
 				'class' => 'twitter',
 			),
 
 			'Pinterest' => array(
-				'title'       => esc_html__( 'Pinterest', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Pinterest', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-pinterest',
 				'class' => 'pinterest',
 			),
 
 			'dribbble' => array(
-				'title'       => esc_html__( 'Dribbble', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Dribbble', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-dribbble',
 				'class' => 'dribbble',
 			),
 
 			'linkedin' => array(
-				'title'       => esc_html__( 'LinkedIn', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'LinkedIn', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-linkedin',
 				'class' => 'linkedin',
 			),
 
 			'flickr' => array(
-				'title'       => esc_html__( 'Flickr', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Flickr', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-flickr',
 				'class' => 'flickr',
 			),
 
 			'youtube' => array(
-				'title'       => esc_html__( 'YouTube', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-youtube',
+				'title' => esc_html__( 'YouTube', TIELABS_TEXTDOMAIN ),
+				'icon'  => 'fa fa-youtube-play',
 				'class' => 'youtube',
 			),
 
-			'digg' => array(
-				'title'       => esc_html__( 'Digg', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-digg',
-				'class' => 'digg',
-			),
-
 			'reddit' => array(
-				'title'       => esc_html__( 'Reddit', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Reddit', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-reddit',
 				'class' => 'reddit',
 			),
 
-			'stumbleupon'	=> array(
-				'title'       => esc_html__( 'StumbleUpon', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-stumbleupon',
-				'class' => 'stumbleupon',
-			),
-
 			'tumblr' => array(
-				'title'       => esc_html__( 'Tumblr', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Tumblr', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-tumblr',
 				'class' => 'tumblr',
 			),
 
 			'vimeo' => array(
-				'title'       => esc_html__( 'Vimeo', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Vimeo', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-vimeo',
 				'class' => 'vimeo',
 			),
 
 			'wordpress' => array(
-				'title'       => esc_html__( 'WordPress', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'WordPress', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-wordpress',
 				'class' => 'wordpress',
 			),
 
 			'yelp' => array(
-				'title'       => esc_html__( 'Yelp', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Yelp', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-yelp',
 				'class' => 'yelp',
 			),
 
 			'lastfm' => array(
-				'title'       => esc_html__( 'Last.FM', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Last.FM', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-lastfm',
 				'class' => 'lastfm',
 			),
 
-			'dropbox' => array(
-				'title'       => esc_html__( 'Dropbox', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-dropbox',
-				'class' => 'dropbox',
-			),
-
 			'xing' => array(
-				'title'       => esc_html__( 'Xing', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Xing', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-xing',
 				'class' => 'xing',
 			),
 
 			'deviantart' => array(
-				'title'       => esc_html__( 'DeviantArt', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'DeviantArt', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-deviantart',
 				'class' => 'deviantart',
 			),
 
 			'apple' => array(
-				'title'       => esc_html__( 'Apple', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Apple', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-apple',
 				'class' => 'apple',
 			),
 
 			'foursquare' => array(
-				'title'       => esc_html__( 'Foursquare', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Foursquare', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-foursquare',
 				'class' => 'foursquare',
 			),
 
 			'github' => array(
-				'title'       => esc_html__( 'GitHub', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'GitHub', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-github',
 				'class' => 'github',
 			),
 
 			'soundcloud' => array(
-				'title'       => esc_html__( 'SoundCloud', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'SoundCloud', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-soundcloud',
-				'class'=> 'soundcloud',
+				'class' => 'soundcloud',
 			),
 
 			'behance'	=> array(
-				'title'       => esc_html__( 'Behance', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Behance', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-behance',
-				'class'=> 'behance',
+				'class' => 'behance',
 			),
 
 			'instagram' => array(
-				'title'       => esc_html__( 'Instagram', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Instagram', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-instagram',
-				'class'=> 'instagram',
+				'class' => 'instagram',
 			),
 
 			'paypal' => array(
-				'title'       => esc_html__( 'Paypal', TIELABS_TEXTDOMAIN ),
+				'title' => esc_html__( 'Paypal', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-paypal',
-				'class'=> 'paypal',
+				'class' => 'paypal',
 			),
 
 			'spotify' => array(
@@ -1614,12 +1592,6 @@ if( ! function_exists( 'tie_social_networks' )){
 				'class' => 'twitch',
 			),
 
-			'vine' => array(
-				'title' => esc_html__( 'Vine', TIELABS_TEXTDOMAIN ),
-				'icon'  => 'fa fa-vine',
-				'class' => 'vine',
-			),
-
 			'viadeo' => array(
 				'title' => esc_html__( 'Viadeo', TIELABS_TEXTDOMAIN ),
 				'icon'  => 'fa fa-viadeo',
@@ -1645,6 +1617,11 @@ if( ! function_exists( 'tie_social_networks' )){
 			),
 		);
 
+		// Add the RSS hint in the backend only.
+		if( is_admin() ){
+			$social_array['rss']['hint'] = esc_html__( 'Optional Custom Feed URL, Leave it empty to use the default WordPress feed URL.', TIELABS_TEXTDOMAIN );
+		}
+
 		return apply_filters( 'TieLabs/social_networks', $social_array );
 	}
 }
@@ -1660,7 +1637,6 @@ if( ! function_exists( 'tie_author_social_array' )){
 		$author_social = array(
 			'facebook'    => array( 'text' => esc_html__( 'Facebook',  TIELABS_TEXTDOMAIN )),
 			'twitter'     => array( 'text' => esc_html__( 'Twitter',   TIELABS_TEXTDOMAIN )),
-			'google'      => array( 'text' => esc_html__( 'Google+',   TIELABS_TEXTDOMAIN ), 'icon' => 'google-plus' ),
 			'linkedin'    => array( 'text' => esc_html__( 'LinkedIn',  TIELABS_TEXTDOMAIN )),
 			'flickr'      => array( 'text' => esc_html__( 'Flickr',    TIELABS_TEXTDOMAIN )),
 			'youtube'     => array( 'text' => esc_html__( 'YouTube',   TIELABS_TEXTDOMAIN )),
@@ -1683,104 +1659,99 @@ if( ! function_exists( 'tie_default_translation_texts' )){
 	function tie_default_translation_texts( $texts ){
 
 		$default_texts = array(
-			'Share'                  => esc_html__( 'Share', TIELABS_TEXTDOMAIN ),
-			'No More Posts'          => esc_html__( 'No More Posts', TIELABS_TEXTDOMAIN ),
-			'View all results'       => esc_html__( 'View all results', TIELABS_TEXTDOMAIN ),
-			'Home'                   => esc_html__( 'Home', TIELABS_TEXTDOMAIN ),
-			'Type and hit Enter'     => esc_html__( 'Type and hit Enter', TIELABS_TEXTDOMAIN ),
-			'page'                   => esc_html__( 'page', TIELABS_TEXTDOMAIN ),
-			'All'                    => esc_html__( 'All', TIELABS_TEXTDOMAIN ),
-			'Previous page'          => esc_html__( 'Previous page', TIELABS_TEXTDOMAIN ),
-			'Next page'              => esc_html__( 'Next page', TIELABS_TEXTDOMAIN ),
-			'First'                  => esc_html__( 'First', TIELABS_TEXTDOMAIN ),
-			'Last'                   => esc_html__( 'Last', TIELABS_TEXTDOMAIN ),
-			'More'                   => esc_html__( 'More', TIELABS_TEXTDOMAIN ),
-			'%s ago'                 => esc_html__( '%s ago', TIELABS_TEXTDOMAIN ),
-			'Menu'                   => esc_html__( 'Menu', TIELABS_TEXTDOMAIN ),
-			'Welcome'                => esc_html__( 'Welcome', TIELABS_TEXTDOMAIN ),
-			'Pages'                  => esc_html__( 'Pages', TIELABS_TEXTDOMAIN ),
-			'Categories'             => esc_html__( 'Categories', TIELABS_TEXTDOMAIN ),
-			'Tags'                   => esc_html__( 'Tags', TIELABS_TEXTDOMAIN ),
-			'Authors'                => esc_html__( 'Authors', TIELABS_TEXTDOMAIN ),
-			'Archives'               => esc_html__( 'Archives', TIELABS_TEXTDOMAIN ),
-			'Trending'               => esc_html__( 'Trending', TIELABS_TEXTDOMAIN ),
-			'Via'                    => esc_html__( 'Via', TIELABS_TEXTDOMAIN ),
-			'Source'                 => esc_html__( 'Source', TIELABS_TEXTDOMAIN ),
-			'Views'                  => esc_html__( 'Views', TIELABS_TEXTDOMAIN ),
-			'One Comment'            => esc_html__( 'One Comment', TIELABS_TEXTDOMAIN ),
-			'%s Comments'            => esc_html__( '%s Comments', TIELABS_TEXTDOMAIN ),
-			'Read More &raquo;'      => esc_html__( 'Read More &raquo;', TIELABS_TEXTDOMAIN ),
-			'Share via Email'        => esc_html__( 'Share via Email', TIELABS_TEXTDOMAIN ),
-			'Print'                  => esc_html__( 'Print', TIELABS_TEXTDOMAIN ),
-			'About %s'               => esc_html__( 'About %s', TIELABS_TEXTDOMAIN ),
-			'By %s'                  => esc_html__( 'By %s', TIELABS_TEXTDOMAIN ),
-			'Popular'                => esc_html__( 'Popular', TIELABS_TEXTDOMAIN ),
-			'Recent'                 => esc_html__( 'Recent', TIELABS_TEXTDOMAIN ),
-			'Comments'               => esc_html__( 'Comments', TIELABS_TEXTDOMAIN ),
-			'Search Results for: %s' => esc_html__( 'Search Results for: %s', TIELABS_TEXTDOMAIN ),
-			'404 :('                 => esc_html__( '404 :(', TIELABS_TEXTDOMAIN ),
-			'No products found'      => esc_html__( 'No products found', TIELABS_TEXTDOMAIN ),
-			'Nothing Found'          => esc_html__( 'Nothing Found', TIELABS_TEXTDOMAIN ),
-			'Dashboard'              => esc_html__( 'Dashboard', TIELABS_TEXTDOMAIN ),
-			'Your Profile'           => esc_html__( 'Your Profile', TIELABS_TEXTDOMAIN ),
-			'Log Out'                => esc_html__( 'Log Out', TIELABS_TEXTDOMAIN ),
-			'Username'               => esc_html__( 'Username', TIELABS_TEXTDOMAIN ),
-			'Password'               => esc_html__( 'Password', TIELABS_TEXTDOMAIN ),
-			'Forget?'                => esc_html__( 'Forget?', TIELABS_TEXTDOMAIN ),
-			'Remember me'            => esc_html__( 'Remember me', TIELABS_TEXTDOMAIN ),
-			'Log In'                 => esc_html__( 'Log In', TIELABS_TEXTDOMAIN ),
-			'Search for'             => esc_html__( 'Search for', TIELABS_TEXTDOMAIN ),
-			'Price:'                 => esc_html__( 'Price:', TIELABS_TEXTDOMAIN ),
-			'Quantity:'              => esc_html__( 'Quantity:', TIELABS_TEXTDOMAIN ),
-			'Cart Subtotal:'         => esc_html__( 'Cart Subtotal:', TIELABS_TEXTDOMAIN ),
-			'View Cart'              => esc_html__( 'View Cart', TIELABS_TEXTDOMAIN ),
-			'Proceed to Checkout'    => esc_html__( 'Proceed to Checkout', TIELABS_TEXTDOMAIN ),
-			'Go to the shop'         => esc_html__( 'Go to the shop', TIELABS_TEXTDOMAIN ),
-			'Random Article'         => esc_html__( 'Random Article', TIELABS_TEXTDOMAIN ),
-			'Follow'                 => esc_html__( 'Follow', TIELABS_TEXTDOMAIN ),
-			'Check Also'             => esc_html__( 'Check Also', TIELABS_TEXTDOMAIN ),
-			'Story Highlights'       => esc_html__( 'Story Highlights', TIELABS_TEXTDOMAIN ),
-			'Subscribe'              => esc_html__( 'Subscribe', TIELABS_TEXTDOMAIN ),
-			'Related Articles'       => esc_html__( 'Related Articles', TIELABS_TEXTDOMAIN ),
-			'Read Next'              => esc_html__( 'Read Next', TIELABS_TEXTDOMAIN ),
-			'Videos'                 => esc_html__( 'Videos', TIELABS_TEXTDOMAIN ),
-			'Follow us on Flickr'    => esc_html__( 'Follow us on Flickr', TIELABS_TEXTDOMAIN ),
-			'Follow Us'              => esc_html__( 'Follow Us', TIELABS_TEXTDOMAIN ),
-			'Follow us on Twitter'   => esc_html__( 'Follow us on Twitter', TIELABS_TEXTDOMAIN ),
-			'Less than a minute'     => esc_html__( 'Less than a minute', TIELABS_TEXTDOMAIN ),
-			'%s hours read'          => esc_html__( '%s hours read', TIELABS_TEXTDOMAIN ),
-			'1 minute read'          => esc_html__( '1 minute read', TIELABS_TEXTDOMAIN ),
-			'%s minutes read'        => esc_html__( '%s minutes read', TIELABS_TEXTDOMAIN ),
-			'No new notifications'   => esc_html__( 'No new notifications', TIELABS_TEXTDOMAIN ),
-			'Notifications'          => esc_html__( 'Notifications', TIELABS_TEXTDOMAIN ),
-			'Show More'              => esc_html__( 'Show More', TIELABS_TEXTDOMAIN ),
-			'Load More'              => esc_html__( 'Load More', TIELABS_TEXTDOMAIN ),
-			'Show Less'              => esc_html__( 'Show Less', TIELABS_TEXTDOMAIN ),
+			'Share'                  => esc_html__( 'Share',                 TIELABS_TEXTDOMAIN ),
+			'No More Posts'          => esc_html__( 'No More Posts',         TIELABS_TEXTDOMAIN ),
+			'View all results'       => esc_html__( 'View all results',      TIELABS_TEXTDOMAIN ),
+			'Home'                   => esc_html__( 'Home',                  TIELABS_TEXTDOMAIN ),
+			'Type and hit Enter'     => esc_html__( 'Type and hit Enter',    TIELABS_TEXTDOMAIN ),
+			'page'                   => esc_html__( 'page',                  TIELABS_TEXTDOMAIN ),
+			'All'                    => esc_html__( 'All',                   TIELABS_TEXTDOMAIN ),
+			'Previous page'          => esc_html__( 'Previous page',         TIELABS_TEXTDOMAIN ),
+			'Next page'              => esc_html__( 'Next page',             TIELABS_TEXTDOMAIN ),
+			'First'                  => esc_html__( 'First',                 TIELABS_TEXTDOMAIN ),
+			'Last'                   => esc_html__( 'Last',                  TIELABS_TEXTDOMAIN ),
+			'More'                   => esc_html__( 'More',                  TIELABS_TEXTDOMAIN ),
+			'%s ago'                 => esc_html__( '%s ago',                TIELABS_TEXTDOMAIN ),
+			'Menu'                   => esc_html__( 'Menu',                  TIELABS_TEXTDOMAIN ),
+			'Welcome'                => esc_html__( 'Welcome',               TIELABS_TEXTDOMAIN ),
+			'Pages'                  => esc_html__( 'Pages',                 TIELABS_TEXTDOMAIN ),
+			'Categories'             => esc_html__( 'Categories',            TIELABS_TEXTDOMAIN ),
+			'Tags'                   => esc_html__( 'Tags',                  TIELABS_TEXTDOMAIN ),
+			'Authors'                => esc_html__( 'Authors',               TIELABS_TEXTDOMAIN ),
+			'Archives'               => esc_html__( 'Archives',              TIELABS_TEXTDOMAIN ),
+			'Trending'               => esc_html__( 'Trending',              TIELABS_TEXTDOMAIN ),
+			'Via'                    => esc_html__( 'Via',                   TIELABS_TEXTDOMAIN ),
+			'Source'                 => esc_html__( 'Source',                TIELABS_TEXTDOMAIN ),
+			'Views'                  => esc_html__( 'Views',                 TIELABS_TEXTDOMAIN ),
+			'One Comment'            => esc_html__( 'One Comment',           TIELABS_TEXTDOMAIN ),
+			'%s Comments'            => esc_html__( '%s Comments',           TIELABS_TEXTDOMAIN ),
+			'Read More &raquo;'      => esc_html__( 'Read More &raquo;',     TIELABS_TEXTDOMAIN ),
+			'Share via Email'        => esc_html__( 'Share via Email',       TIELABS_TEXTDOMAIN ),
+			'Print'                  => esc_html__( 'Print',                 TIELABS_TEXTDOMAIN ),
+			'About %s'               => esc_html__( 'About %s',              TIELABS_TEXTDOMAIN ),
+			'By %s'                  => esc_html__( 'By %s',                 TIELABS_TEXTDOMAIN ),
+			'Popular'                => esc_html__( 'Popular',               TIELABS_TEXTDOMAIN ),
+			'Recent'                 => esc_html__( 'Recent',                TIELABS_TEXTDOMAIN ),
+			'Comments'               => esc_html__( 'Comments',              TIELABS_TEXTDOMAIN ),
+			'Search Results for: %s' => esc_html__( 'Search Results for: %s',TIELABS_TEXTDOMAIN ),
+			'404 :('                 => esc_html__( '404 :(',                TIELABS_TEXTDOMAIN ),
+			'No products found'      => esc_html__( 'No products found',     TIELABS_TEXTDOMAIN ),
+			'Nothing Found'          => esc_html__( 'Nothing Found',         TIELABS_TEXTDOMAIN ),
+			'Dashboard'              => esc_html__( 'Dashboard',             TIELABS_TEXTDOMAIN ),
+			'Your Profile'           => esc_html__( 'Your Profile',          TIELABS_TEXTDOMAIN ),
+			'Log Out'                => esc_html__( 'Log Out',               TIELABS_TEXTDOMAIN ),
+			'Username'               => esc_html__( 'Username',              TIELABS_TEXTDOMAIN ),
+			'Password'               => esc_html__( 'Password',              TIELABS_TEXTDOMAIN ),
+			'Forget?'                => esc_html__( 'Forget?',               TIELABS_TEXTDOMAIN ),
+			'Remember me'            => esc_html__( 'Remember me',           TIELABS_TEXTDOMAIN ),
+			'Log In'                 => esc_html__( 'Log In',                TIELABS_TEXTDOMAIN ),
+			'Search for'             => esc_html__( 'Search for',            TIELABS_TEXTDOMAIN ),
+			'Subtotal:'              => esc_html__( 'Cart Subtotal:',        TIELABS_TEXTDOMAIN ),
+			'View Cart'              => esc_html__( 'View Cart',             TIELABS_TEXTDOMAIN ),
+			'Checkout'               => esc_html__( 'Checkout',              TIELABS_TEXTDOMAIN ),
+			'Go to the shop'         => esc_html__( 'Go to the shop',        TIELABS_TEXTDOMAIN ),
+			'Random Article'         => esc_html__( 'Random Article',        TIELABS_TEXTDOMAIN ),
+			'Follow'                 => esc_html__( 'Follow',                TIELABS_TEXTDOMAIN ),
+			'Check Also'             => esc_html__( 'Check Also',            TIELABS_TEXTDOMAIN ),
+			'Story Highlights'       => esc_html__( 'Story Highlights',      TIELABS_TEXTDOMAIN ),
+			'Subscribe'              => esc_html__( 'Subscribe',             TIELABS_TEXTDOMAIN ),
+			'Related Articles'       => esc_html__( 'Related Articles',      TIELABS_TEXTDOMAIN ),
+			'Read Next'              => esc_html__( 'Read Next',             TIELABS_TEXTDOMAIN ),
+			'Videos'                 => esc_html__( 'Videos',                TIELABS_TEXTDOMAIN ),
+			'Follow us on Flickr'    => esc_html__( 'Follow us on Flickr',   TIELABS_TEXTDOMAIN ),
+			'Follow Us'              => esc_html__( 'Follow Us',             TIELABS_TEXTDOMAIN ),
+			'Follow us on Twitter'   => esc_html__( 'Follow us on Twitter',  TIELABS_TEXTDOMAIN ),
+			'Less than a minute'     => esc_html__( 'Less than a minute',    TIELABS_TEXTDOMAIN ),
+			'%s hours read'          => esc_html__( '%s hours read',         TIELABS_TEXTDOMAIN ),
+			'1 minute read'          => esc_html__( '1 minute read',         TIELABS_TEXTDOMAIN ),
+			'%s minutes read'        => esc_html__( '%s minutes read',       TIELABS_TEXTDOMAIN ),
+			'No new notifications'   => esc_html__( 'No new notifications',  TIELABS_TEXTDOMAIN ),
+			'Notifications'          => esc_html__( 'Notifications',         TIELABS_TEXTDOMAIN ),
+			'Show More'              => esc_html__( 'Show More',             TIELABS_TEXTDOMAIN ),
+			'Load More'              => esc_html__( 'Load More',             TIELABS_TEXTDOMAIN ),
+			'Show Less'              => esc_html__( 'Show Less',             TIELABS_TEXTDOMAIN ),
+			'and'                    => esc_html__( 'and',                   TIELABS_TEXTDOMAIN ),
+			'km/h'                   => esc_html__( 'km/h',                  TIELABS_TEXTDOMAIN ),
+			'mph'                    => esc_html__( 'mph',                   TIELABS_TEXTDOMAIN ),
+			'Thunderstorm'           => esc_html__( 'Thunderstorm',          TIELABS_TEXTDOMAIN ),
+			'Drizzle'                => esc_html__( 'Drizzle',               TIELABS_TEXTDOMAIN ),
+			'Light Rain'             => esc_html__( 'Light Rain',            TIELABS_TEXTDOMAIN ),
+			'Heavy Rain'             => esc_html__( 'Heavy Rain',            TIELABS_TEXTDOMAIN ),
+			'Rain'                   => esc_html__( 'Rain',                  TIELABS_TEXTDOMAIN ),
+			'Snow'                   => esc_html__( 'Snow',                  TIELABS_TEXTDOMAIN ),
+			'Mist'                   => esc_html__( 'Mist',                  TIELABS_TEXTDOMAIN ),
+			'Clear Sky'              => esc_html__( 'Clear Sky',             TIELABS_TEXTDOMAIN ),
+			'Scattered Clouds'       => esc_html__( 'Scattered Clouds',      TIELABS_TEXTDOMAIN ),
 
-			'km/h'                   => esc_html__( 'km/h', TIELABS_TEXTDOMAIN ),
-			'mph'                    => esc_html__( 'mph', TIELABS_TEXTDOMAIN ),
-			'Thunderstorm'           => esc_html__( 'Thunderstorm', TIELABS_TEXTDOMAIN ),
-			'Drizzle'                => esc_html__( 'Drizzle', TIELABS_TEXTDOMAIN ),
-			'Light Rain'             => esc_html__( 'Light Rain', TIELABS_TEXTDOMAIN ),
-			'Heavy Rain'             => esc_html__( 'Heavy Rain', TIELABS_TEXTDOMAIN ),
-			'Rain'                   => esc_html__( 'Rain', TIELABS_TEXTDOMAIN ),
-			'Snow'                   => esc_html__( 'Snow', TIELABS_TEXTDOMAIN ),
-			'Mist'                   => esc_html__( 'Mist', TIELABS_TEXTDOMAIN ),
-			'Clear Sky'              => esc_html__( 'Clear Sky', TIELABS_TEXTDOMAIN ),
-			'Scattered Clouds'       => esc_html__( 'Scattered Clouds', TIELABS_TEXTDOMAIN ),
-
-			'View your shopping cart'       => esc_html__( 'View your shopping cart', TIELABS_TEXTDOMAIN ),
-			'Enter your Email address'      => esc_html__( 'Enter your Email address', TIELABS_TEXTDOMAIN ),
-			"Don't have an account?"        => esc_html__( "Don't have an account?", TIELABS_TEXTDOMAIN ),
+			'View your shopping cart'       => esc_html__( 'View your shopping cart',       TIELABS_TEXTDOMAIN ),
+			'Enter your Email address'      => esc_html__( 'Enter your Email address',      TIELABS_TEXTDOMAIN ),
+			"Don't have an account?"        => esc_html__( "Don't have an account?",        TIELABS_TEXTDOMAIN ),
 			'Your cart is currently empty.' => esc_html__( 'Your cart is currently empty.', TIELABS_TEXTDOMAIN ),
 
-			'Oops! That page can&rsquo;t be found.'   => esc_html__( 'Oops! That page can&rsquo;t be found.', TIELABS_TEXTDOMAIN ),
+			'Oops! That page can&rsquo;t be found.'   => esc_html__( 'Oops! That page can&rsquo;t be found.',   TIELABS_TEXTDOMAIN ),
 			'Type your search words then press enter' => esc_html__( 'Type your search words then press enter', TIELABS_TEXTDOMAIN ),
 			'It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help.'      => esc_html__( "It seems we can't find what you're looking for. Perhaps searching can help.", TIELABS_TEXTDOMAIN ),
 			'Sorry, but nothing matched your search terms. Please try again with some different keywords.' => esc_html__( 'Sorry, but nothing matched your search terms. Please try again with some different keywords.', TIELABS_TEXTDOMAIN ),
-
-			'Adblock Detected' => esc_html__( 'Adblock Detected', TIELABS_TEXTDOMAIN ),
-			'Please consider supporting us by disabling your ad blocker' => esc_html__( 'Please consider supporting us by disabling your ad blocker', TIELABS_TEXTDOMAIN ),
 		);
 
 		if( ! empty( $texts ) && is_array( $texts ) ){

@@ -8,16 +8,15 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author 		TieLabs
- * @version   3.0.0
+ * @version   4.0.2
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
-
 ob_start();
 
 
-# Search
+// Search
 if( tie_get_option( $components_id.'-components_search' ) ):
 	$live_search_class = tie_get_option( "$components_id-components_live_search" ) ? 'class="is-ajax-search" ' : '';
 
@@ -35,7 +34,10 @@ if( tie_get_option( $components_id.'-components_search' ) ):
 		<li class="search-bar menu-item custom-menu-link" aria-label="<?php esc_html_e( 'Search', TIELABS_TEXTDOMAIN ); ?>">
 			<form method="get" id="search" action="<?php echo esc_url(home_url( '/' )); ?>/">
 				<input id="search-input" <?php echo ( $live_search_class ); ?>type="text" name="s" title="<?php esc_html_e( 'Search for', TIELABS_TEXTDOMAIN ) ?>" placeholder="<?php esc_html_e( 'Search for', TIELABS_TEXTDOMAIN ) ?>" />
-				<button id="search-submit" type="submit"><span class="fa fa-search" aria-hidden="true"></span></button>
+				<button id="search-submit" type="submit">
+					<span class="fa fa-search" aria-hidden="true"></span>
+					<span class="screen-reader-text"><?php esc_html_e( 'Search for', TIELABS_TEXTDOMAIN ) ?></span>
+				</button>
 			</form>
 		</li>
 		<?php
@@ -43,8 +45,7 @@ if( tie_get_option( $components_id.'-components_search' ) ):
 endif;
 
 
-
-# Slide sidebar
+// Slide sidebar
 if( tie_get_option( $components_id.'-components_slide_area' ) ):?>
 	<li class="side-aside-nav-icon menu-item custom-menu-link">
 		<a href="#">
@@ -56,22 +57,7 @@ if( tie_get_option( $components_id.'-components_slide_area' ) ):?>
 endif;
 
 
-
-# Login
-if( tie_get_option( $components_id.'-components_login' ) ):
-	$login_icon = is_user_logged_in() ? 'user' : 'lock'; ?>
-	<li class="popup-login-icon menu-item custom-menu-link">
-	 	<a href="#" class="lgoin-btn tie-popup-trigger">
-			<span class="fa fa-<?php echo esc_attr( $login_icon ) ?>" aria-hidden="true"></span>
-			<span class="screen-reader-text"><?php esc_html_e( 'Log In', TIELABS_TEXTDOMAIN ) ?></span>
-		</a>
-	</li>
-	<?php
-endif;
-
-
-
-# Random
+// Random
 if( tie_get_option( $components_id.'-components_random' ) ):?>
 	<li class="random-post-icon menu-item custom-menu-link">
 		<a href="<?php echo esc_url( add_query_arg( 'random-post', 1 ) ); ?>" class="random-post" title="<?php esc_html_e( 'Random Article', TIELABS_TEXTDOMAIN ) ?>" rel="nofollow">
@@ -83,8 +69,7 @@ if( tie_get_option( $components_id.'-components_random' ) ):?>
 endif;
 
 
-
-# Cart
+// Cart
 if( tie_get_option( $components_id.'-components_cart' ) && TIELABS_WOOCOMMERCE_IS_ACTIVE ):?>
 	<li class="shopping-cart-icon menu-item custom-menu-link">
 		<a href="<?php echo wc_get_cart_url() ?>" title="<?php esc_html_e( 'View your shopping cart', TIELABS_TEXTDOMAIN ); ?>">
@@ -113,9 +98,7 @@ if( tie_get_option( $components_id.'-components_cart' ) && TIELABS_WOOCOMMERCE_I
 endif;
 
 
-
-
-# BuddyPress Notifications
+// BuddyPress Notifications
 if( tie_get_option( $components_id.'-components_bp_notifications' ) && is_user_logged_in() && TIELABS_BUDDYPRESS_IS_ACTIVE ):
 
 	$notification = apply_filters( 'TieLabs/BuddyPress/notifications', '' ); ?>
@@ -142,8 +125,40 @@ if( tie_get_option( $components_id.'-components_bp_notifications' ) && is_user_l
 endif;
 
 
+// Login
+if( tie_get_option( $components_id.'-components_login' ) ): ?>
 
-# Social
+	<?php if( is_user_logged_in() ){ ?>
+
+		<li class="profile-icon menu-item custom-menu-link">
+			<a href="#" class="profile-btn">
+				<?php
+					$current_user = wp_get_current_user();
+					echo get_avatar( $current_user->ID, apply_filters( 'TieLabs/Login/avatar_size', 30 ) );
+				?>
+				<span class="screen-reader-text"><?php esc_html_e( 'Your Profile', TIELABS_TEXTDOMAIN ) ?></span>
+			</a>
+
+			<div class="components-sub-menu comp-sub-menu components-user-profile">
+				<?php tie_login_form(); ?>
+			</div><!-- .components-sub-menu /-->
+		</li>
+
+		<?php } else { ?>
+
+		<li class="popup-login-icon menu-item custom-menu-link">
+			<a href="#" class="lgoin-btn tie-popup-trigger">
+				<span class="fa fa-lock" aria-hidden="true"></span>
+				<span class="screen-reader-text"><?php esc_html_e( 'Log In', TIELABS_TEXTDOMAIN ) ?></span>
+			</a>
+		</li>
+
+		<?php } ?>
+	<?php
+endif;
+
+
+// Social
 if( tie_get_option( $components_id.'-components_social' ) ):
 	if( tie_get_option( "$components_id-components_social_layout" ) == 'list' ):?>
 		<li class="list-social-icons menu-item custom-menu-link">
@@ -161,7 +176,6 @@ if( tie_get_option( $components_id.'-components_social' ) ):
 			?>
 		</li><!-- #list-social-icons /-->
 		<?php
-
 	elseif( tie_get_option( $components_id.'-components_social_layout' ) == 'grid' ):?>
 		<li class="grid-social-icons menu-item custom-menu-link">
 			<a href="#" class="follow-btn">
@@ -196,18 +210,15 @@ if( tie_get_option( $components_id.'-components_social' ) ):
 endif;
 
 
-
-# Weather
+// Weather
 if( tie_get_option( $components_id.'-components_weather' ) ):
 
 	$location  = tie_get_option( $components_id.'-components_wz_location' );
-	$api_key   = tie_get_option( $components_id.'-components_wz_api_key' );
 
-	if( ! empty( $location ) && ! empty( $api_key ) ){
+	if( ! empty( $location ) ){
 
 		$args = array(
 			'location'      => $location,
-			'api_key'       => $api_key,
 			'units'         => tie_get_option( $components_id.'-components_wz_unit' ),
 			'custom_name'   => tie_get_option( $components_id.'-components_wz_city_name' ),
 			'animated'      => tie_get_option( $components_id.'-components_wz_animated' ),
@@ -218,18 +229,11 @@ if( tie_get_option( $components_id.'-components_weather' ) ):
 		echo '<li class="weather-menu-item menu-item custom-menu-link">';
 		new TIELABS_WEATHER( $args );
 		echo '</li>';
-
-		/*
-			$availble = array( 'df', '01d', '01n', '02d', '02n', '09d', '10d', '10n', '11d', '13d', '50d' );
-			$args['debug'] = $value;
-			foreach ( $availble as $value)
-		*/
 	}
 endif;
 
 
-
-# Show the elements
+// Show the elements
 $output = ob_get_clean();
 
 if( ! empty( $output )){

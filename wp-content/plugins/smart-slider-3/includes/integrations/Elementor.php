@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 }
 
 function n2_elementor_force_iframe() {
-    \N2SS3Shortcode::forceIframe('elementor');
+    \N2SS3Shortcode::forceIframe('elementor', true);
 }
 
 add_action('template_redirect', function () {
@@ -83,8 +83,10 @@ class Nextend_Widget_SmartSlider extends \Elementor\Widget_Base {
         }
     }
 
+    /**
+     * Must be declared as empty method to prevent issues with SEO plugins.
+     */
     public function render_plain_content() {
-        echo 'Smart Slider with ID: ' . $this->get_settings('smartsliderid');
     }
 
     protected function _content_template() {

@@ -22,6 +22,8 @@ class DiviSmartSlider3Extension extends DiviExtension {
             $this,
             'admin_enqueue_scripts'
         ));
+
+        add_action('smartslider3_slider_changed', 'DiviSmartSlider3Extension::clearDiviCache');
     }
 
     public function admin_enqueue_scripts() {
@@ -38,6 +40,31 @@ class DiviSmartSlider3Extension extends DiviExtension {
             }
         </script>
         <?php
+    }
+
+    public static function clearDiviCache() {
+        if (function_exists('et_fb_delete_builder_assets')) {
+            /**
+             * We must delete the js files in wp-content/cache/et/ folder to refresh the slider list in Divi module
+             */
+            et_fb_delete_builder_assets();
+        }
+    }
+
+    public function wp_hook_enqueue_scripts() {
+        parent::wp_hook_enqueue_scripts();
+
+        if (!et_core_is_fb_enabled()) {
+            wp_dequeue_style("{$this->name}-styles");
+        }
+    }
+
+    protected function _enqueue_bundles() {
+        parent::_enqueue_bundles();
+
+        if (!et_core_is_fb_enabled()) {
+            wp_dequeue_script("{$this->name}-frontend-bundle");
+        }
     }
 }
 

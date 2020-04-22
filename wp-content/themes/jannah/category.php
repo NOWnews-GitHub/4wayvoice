@@ -10,7 +10,20 @@ get_header(); ?>
 
 	<div <?php tie_content_column_attr(); ?>>
 
-		<?php if ( have_posts() ) : ?>
+		<?php
+
+		// Do not duplicate posts
+		if( ! empty( $GLOBALS['tie_do_not_duplicate'] ) && is_array( $GLOBALS['tie_do_not_duplicate'] )){
+
+			global $wp_query;
+			$args = array_merge( $wp_query->query_vars, array( 'post__not_in' => $GLOBALS['tie_do_not_duplicate'] ) );
+
+			// Run The Query
+			query_posts( $args );
+		}
+
+
+		if ( have_posts() ) : ?>
 
 			<header class="entry-header-outer container-wrapper">
 				<?php
@@ -20,9 +33,11 @@ get_header(); ?>
 					the_archive_title( '<h1 class="page-title">', '</h1>' );
 
 					if( tie_get_option( 'category_desc' )){
-
-						the_archive_description( '<div class="taxonomy-description">', '</div>' );
+						the_archive_description( '<div class="taxonomy-description entry">', '</div>' );
 					}
+
+					do_action( 'TieLabs/after_archive_title' );
+
 				?>
 			</header><!-- .entry-header-outer /-->
 
@@ -46,11 +61,17 @@ get_header(); ?>
 				'category_meta'   => apply_filters( 'TieLabs/Archive_Thumbnail/category_meta', false ),
 			));
 
+			do_action( 'TieLabs/after_archive_posts' );
 
 			// Page navigation
 			$pagination = tie_get_object_option( 'category_pagination' ) ? tie_get_object_option( 'category_pagination' ) : tie_get_option( 'category_pagination' );
 
 			TIELABS_PAGINATION::show( array( 'type' => $pagination ) );
+
+			// Get the Footer Description section
+			TIELABS_HELPER::get_template_part( 'templates/category', 'footer' );
+
+			do_action( 'TieLabs/after_archive_pagination' );
 
 		// If no content, include the "No posts found" template
 		else :

@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author 		TieLabs
- * @version   3.0.0
+ * @version   4.4.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -26,7 +26,7 @@ do_action( 'TieLabs/before_footer' );
 
 	<?php
 
-		do_action( 'TieLbas/before_footer_widgets' );
+		do_action( 'TieLbas/Footer/before_widgets' );
 
 		TIELABS_HELPER::get_template_part( 'templates/footer', 'instagram' );
 
@@ -36,8 +36,14 @@ do_action( 'TieLabs/before_footer' );
 			<div id="footer-widgets-container">
 				<div class="container">
 					<?php
+
+						do_action( 'TieLbas/Footer/before_widgets_sections' );
+
 						TIELABS_HELPER::get_template_part( 'sidebar', 'footer', array( 'name' => 'area_1' ) );
 						TIELABS_HELPER::get_template_part( 'sidebar', 'footer', array( 'name' => 'area_2' ) );
+
+						do_action( 'TieLbas/Footer/after_widgets_sections' );
+
 					?>
 				</div><!-- .container /-->
 			</div><!-- #Footer-widgets-container /-->
@@ -58,6 +64,8 @@ do_action( 'TieLabs/before_footer' );
 						<div class="tie-col-md-12">
 
 							<?php
+
+								do_action( 'TieLbas/Footer/Copyright/before' );
 
 								// Replace Footers variables
 								$footer_vars = array( '%year%', '%site%', '%url%' );
@@ -85,9 +93,15 @@ do_action( 'TieLabs/before_footer' );
 
 								// Footer social icons
 								if( tie_get_option( 'footer_social' ) ){
+
+									do_action( 'TieLbas/Footer/Copyright/before_social' );
+
 									tie_get_social( array( 'before' => '<ul class="social-icons">') );
+
+									do_action( 'TieLbas/Footer/Copyright/after_social' );
 								}
 
+								do_action( 'TieLbas/Footer/Copyright/after' );
 							?>
 
 						</div><!-- .tie-col /-->
@@ -112,6 +126,5 @@ if( tie_get_option( 'footer_top' ) ){
 			<span class="fa fa-angle-up"></span>
 			<span class="screen-reader-text"><?php esc_html_e( 'Back to top button', TIELABS_TEXTDOMAIN ) ?></span>
 		</a>
-		<div class="clear"></div>
 	<?php
 }

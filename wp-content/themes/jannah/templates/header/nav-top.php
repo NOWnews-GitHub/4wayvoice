@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author 		TieLabs
- * @version   3.0.0
+ * @version   4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -53,9 +53,8 @@ if( tie_get_option( "top-nav-components_search" ) && tie_get_option( "top-nav-co
 				if( tie_get_option( 'top_date' ) ){
 					$date_format = tie_get_option( 'todaydate_format', 'l ,  j  F Y' ); ?>
 
-					<div class="topbar-today-date">
-						<span class="fa fa-clock-o" aria-hidden="true"></span>
-						<strong class="inner-text"><?php echo date_i18n( $date_format, current_time( 'timestamp' ) ); ?></strong>
+					<div class="topbar-today-date fa-before">
+						<?php echo date_i18n( $date_format, current_time( 'timestamp' ) ); ?>
 					</div>
 					<?php
 				}

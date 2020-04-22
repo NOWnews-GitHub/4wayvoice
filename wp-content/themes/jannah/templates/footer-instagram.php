@@ -8,16 +8,17 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author 		TieLabs
- * @version   2.1.0
+ * @version   4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-if( tie_get_option( 'footer_instagram' ) && tie_get_option( 'footer_instagram_source_id' ) && ! TIELABS_HELPER::is_mobile_and_hidden( 'footer_instagram' )){
+if( tie_get_option( 'footer_instagram' ) && ! TIELABS_HELPER::is_mobile_and_hidden( 'footer_instagram' )){
 
 	$args = array(
-		'username' => tie_get_option( 'footer_instagram_source_id' ),
+		'username' => tie_get_option( 'footer_instagram_username' ),
+		'userid'   => tie_get_option( 'footer_instagram_userid' ),
 		'number'   => tie_get_option( 'footer_instagram_rows' ) == 2 ? 12 : 6,
 		'link'     => tie_get_option( 'footer_instagram_media_link', 'file' ),
 	);

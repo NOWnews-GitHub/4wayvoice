@@ -48,7 +48,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 		}
 
 
-
 		/**
 		 * Get all categories as array of ID and name
 		 */
@@ -73,7 +72,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 
 			return $categories;
 		}
-
 
 
 		/**
@@ -105,7 +103,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 
 			return $menus;
 		}
-
 
 
 		/**
@@ -141,7 +138,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 		}
 
 
-
 		/**
 		 * Get all background Patterns
 		 */
@@ -155,7 +151,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 
 			return $patterns;
 		}
-
 
 
 		/**
@@ -174,7 +169,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 		}
 
 
-
 		/**
 		 * Check if the current page is the theme options
 		 */
@@ -183,7 +177,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 			$current_page = ! empty( $_REQUEST['page'] ) ? $_REQUEST['page'] : '';
 			return $current_page == 'tie-theme-options';
 		}
-
 
 
 		/**
@@ -200,8 +193,6 @@ if( ! class_exists( 'TIELABS_ADMIN_HELPER' )){
 
 			return false;
 		}
-
-
 	}
 
 }

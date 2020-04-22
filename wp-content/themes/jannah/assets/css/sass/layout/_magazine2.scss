@@ -4,7 +4,7 @@
 	&.woocommerce div.product .related.products{
 		border-width: 0;
     padding: 0;
-    background: transparent;
+    background-color: transparent;
     opacity: 0.99;
 	}
 
@@ -55,12 +55,6 @@
 		@include breakpoint(max_min_sm){
 			padding: 15px;
 		}
-	}
-
-	.half-box.mag-box .posts-items>li:first-child,
-	.big-post-top-box .posts-items > li:first-child{
-		border-bottom: 0;
-		padding-bottom: 0;
 	}
 
 	.dark-skin &{

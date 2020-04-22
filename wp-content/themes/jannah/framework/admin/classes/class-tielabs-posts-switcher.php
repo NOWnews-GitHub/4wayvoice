@@ -17,7 +17,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		public static $switcher_themes;
 
 
-
 		/**
 		 * __construct
 		 *
@@ -25,26 +24,24 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		 */
 		function __construct(){
 
-			# Check if the current user role
+			// Check if the current user role
 			if( ! current_user_can( 'switch_themes' ) ){
 				return;
 			}
 
-			# Disbable the switcher if the Disable option is on
+			// Disable the switcher if the Disable option is on
 			if( tie_get_option( 'disable_switcher' ) ){
 				return;
 			}
 
-			# Filters
+			// Filters
 			add_filter( 'TieLabs/panel_submenus', array( $this, '_add_options_menu' ), 400 );
 			add_filter( 'TieLabs/about_tabs',     array( $this, '_add_about_tabs' )  , 30 );
 			add_filter( 'admin_notices',          array( $this, '_switcher_notices' ), 30 );
 
-
-			# Themes Supported by the Switcher-
+			// Themes Supported by the Switcher-
 			self::$switcher_themes = array( 'braxton', 'click-mag', 'flex-mag', 'goodlife-wp', 'goodnews5', 'hottopix', 'maxmag', 'multinews', 'Newsmag', 'Newspaper', 'publisher', 'simplemag', 'thevoux-wp', 'topnews', 'valenti' );
 		}
-
 
 
 		/**
@@ -61,7 +58,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 
 			return $tabs;
 		}
-
 
 
 		/**
@@ -81,7 +77,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		}
 
 
-
 		/**
 		 * _detect_themes
 		 *
@@ -90,7 +85,7 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 
 			global $wpdb;
 
-			# Get the slug of all themes installed before---------------------
+			// Get the slug of all themes installed before
 			$query  = 'SELECT option_name FROM ' . $wpdb->options . ' WHERE option_name LIKE "theme_mods_%"';
 			$themes = $wpdb->get_results( $query );
 
@@ -105,7 +100,7 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 				}
 			}
 
-			# Let's do some check
+			// Let's do some check
 			if( ! empty( $previous_themes ) && is_array( $previous_themes ) ){
 
 				$all_previous_themes = array();
@@ -113,7 +108,7 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 				# Check for TieLabs Themes First
 				if( in_array( 'sahifa', $previous_themes ) || in_array( 'jarida', $previous_themes ) || get_option( 'tie_options' ) ){
 
-					# YAY this is a Loyal Customer ;)
+					// YAY this is a Loyal Customer ;)
 					if( in_array( 'jarida', $previous_themes ) ){
 						$detected_theme = 'Jarida';
 
@@ -125,7 +120,7 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 					}
 				}
 
-				# Check if the site used one of our Switcher suported themes
+				// Check if the site used one of our Switcher suported themes
 				if( empty( $detected_theme ) ){
 					foreach ( $previous_themes as $theme ){
 
@@ -159,7 +154,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		}
 
 
-
 		/**
 		 * _switcher_notices
 		 *
@@ -168,15 +162,14 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 
 			$notice_id = 'tie_switcher_notice_'. TIELABS_THEME_ID;
 
-			if ( TIELABS_NOTICES::is_dismissed( $notice_id ) || get_option( 'tie_switch_to_'. TIELABS_THEME_ID ) ){
+			if ( ! TIELABS_ADMIN_HELPER::is_theme_options_page() || TIELABS_NOTICES::is_dismissed( $notice_id ) || get_option( 'tie_switch_to_'. TIELABS_THEME_ID ) ){
 				return false;
 			}
 
-
-			#Get the theme name
+			// Get the theme name
 			$detected_theme = self::_detect_themes();
 
-			# We just found the old theme
+			// We just found the old theme
 			if( ! empty( $detected_theme ) ){
 				$is_on = true;
 				$title = sprintf( esc_html__( 'Are You Megrating from %s?', TIELABS_TEXTDOMAIN ), $detected_theme );
@@ -207,7 +200,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		}
 
 
-
 		/**
 		 * _out
 		 *
@@ -218,12 +210,12 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 
 				TIELABS_WELCOME_PAGE::_head_section( 'switcher' );
 
-				# is the theme activated
+				// is the theme activated
 				if( ! get_option( 'tie_token_'.TIELABS_THEME_ID ) ){
 					TIELABS_VERIFICATION::authorize_notice( false );
 				}
 
-				# Is the Switcher plugin active
+				// Is the Switcher plugin active
 				elseif( ! class_exists( 'JANNAH_SWITCHER_CLASS' ) ){
 
 					echo '<h2>'. sprintf( esc_html__( 'Switch to %s Theme', TIELABS_TEXTDOMAIN ), apply_filters( 'TieLabs/theme_name', 'TieLabs' ) ) .'</h2>';
@@ -240,7 +232,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 					));
 				}
 
-
 				else{
 					do_action( 'jannah_switcher_content' );
 				}
@@ -249,7 +240,6 @@ if( ! class_exists( 'TIELABS_POSTS_SWITCHER' )){
 		}
 
 	}
-
 
 
 	new TIELABS_POSTS_SWITCHER();

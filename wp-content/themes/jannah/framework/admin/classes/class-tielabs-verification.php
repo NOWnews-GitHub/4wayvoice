@@ -8,11 +8,9 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-
 if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 
 	class TIELABS_VERIFICATION {
-
 
 
 		/**
@@ -23,7 +21,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 			add_action( 'admin_enqueue_scripts',          array( $this, 'load_notices' ) );
 			add_filter( 'TieLabs/welcome_splash_content', array( $this, 'theme_registerantion_section' ), 9 );
 		}
-
 
 
 		/**
@@ -41,7 +38,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 				'https://tielabs.com'
 			);
 		}
-
 
 
 		/**
@@ -83,7 +79,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 		}
 
 
-
 		/**
 		 * Authorized Successfully
 		 */
@@ -97,7 +92,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 				'class'       => 'success',
 			));
 		}
-
 
 
 		/**
@@ -125,7 +119,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 		}
 
 
-
 		/**
 		 * Authorize Error
 		 */
@@ -148,19 +141,18 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 			}
 
 			TIELABS_NOTICES::message( array(
-				'notice_id'      => 'theme_authorized_error',
-				'title'          => esc_html__( 'ERROR', TIELABS_TEXTDOMAIN ),
-				'message'        => $notice_content,
-				'dismissible'    => false,
-				'class'          => 'error',
-				'button_text'    => esc_html__( 'Try again', TIELABS_TEXTDOMAIN ),
-				'button_url'     => self::api_url(),
-				'button_class'   => 'green',
-				'button_2_text'  => esc_html__( 'Buy a License', TIELABS_TEXTDOMAIN ),
-				'button_2_url'   => tie_get_purchase_link(),
+				'notice_id'     => 'theme_authorized_error',
+				'title'         => esc_html__( 'ERROR', TIELABS_TEXTDOMAIN ),
+				'message'       => $notice_content,
+				'dismissible'   => false,
+				'class'         => 'error',
+				'button_text'   => esc_html__( 'Try again', TIELABS_TEXTDOMAIN ),
+				'button_url'    => self::api_url(),
+				'button_class'  => 'green',
+				'button_2_text' => esc_html__( 'Buy a License', TIELABS_TEXTDOMAIN ),
+				'button_2_url'  => tie_get_purchase_link(),
 			));
 		}
-
 
 
 		/**
@@ -199,14 +191,13 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 
 				<?php
 
-				self::support_notice();
 				self::rating_notice();
+				self::support_notice();
 			}
 
 			echo '</div>';
 			echo '<br /><br /><hr />';
 		}
-
 
 
 		/**
@@ -233,7 +224,7 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 						'<strong style="color: orange;">'. $support_info['human_date'] .'</strong>',
 						'<strong>',
 						'</strong>',
-						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'extend-support' )) .'">',
+						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'extend-support' ) ) .'">',
 						'</a>'
 					);
 				}
@@ -248,7 +239,7 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 						'<strong style="color: green;">'. $support_info['human_date'] .'</strong>',
 						'<strong>',
 						'</strong>',
-						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'extend-expiring-support' )) .'">',
+						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'extend-expiring-support' ) ) .'">',
 						'</a>'
 					);
 				}
@@ -263,7 +254,7 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 					esc_html__( 'Your Support Period has expired, %1$sAutomatic Theme Updates%2$s and %1$sSupport System Access%2$s have been disabled. %3$sRenew your Support Period%4$s. Once the support is renewed please click on the button bellow.', TIELABS_TEXTDOMAIN ),
 					'<strong>',
 					'</strong>',
-					'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'renew-support' )) .'">',
+					'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'renew-support' ) ) .'">',
 					'</a>'
 				);
 			}
@@ -283,7 +274,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 				'button_2_url'  => apply_filters( 'TieLabs/External/renew_support_article', '' ),
 			));
 		}
-
 
 
 		/*
@@ -309,7 +299,7 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 						'<strong>'. $the_rate .'</strong>',
 						'<a target="_blank" href="'. apply_filters( 'TieLabs/External/open_ticket', '' ) .'">',
 						'<a target="_blank" href="'. apply_filters( 'TieLabs/External/share_idea', '' ) .'">',
-						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'change-rating' )) .'">',
+						'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'change-rating' ) ) .'">',
 						'</a>'
 					);
 				}
@@ -341,7 +331,6 @@ if( ! class_exists( 'TIELABS_VERIFICATION' ) ){
 				));
 			}
 		}
-
 
 
 		/**

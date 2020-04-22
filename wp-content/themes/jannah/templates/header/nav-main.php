@@ -30,9 +30,8 @@ if( tie_get_option( 'main_nav' ) || tie_get_option( 'header_layout' ) == 1 ):
 	}
 
 	// Header Layout
-	$logo_width 				= '';
-	$header_line_height = '';
-	$has_line_height 		= '';
+	$logo_width  = '';
+	$line_height = '';
 
 	if( $header_layout == 1 ){
 
@@ -43,22 +42,22 @@ if( tie_get_option( 'main_nav' ) || tie_get_option( 'header_layout' ) == 1 ):
 		$logo_margin_top    = ! empty( $logo_margin_top )    ? $logo_margin_top    : 20; // Default value in the CSS file
 		$logo_margin_bottom = ! empty( $logo_margin_bottom ) ? $logo_margin_bottom : 20; // Default value in the CSS file
 
-		$logo_width			    = 'style="width:' . intval( $logo_width ). 'px"';
-		$has_line_height 	  = ' has-line-height';
-		$header_line_height = 'style="line-height:' . intval( $logo_height + $logo_margin_top + $logo_margin_bottom ). 'px"';
+		$logo_width  = ( $logo_type == 'logo' ) ? 'style="width:' . intval( $logo_width ). 'px"' : '';
+		$logo_height = ( $logo_type == 'logo' ) ? $logo_height : 49;
+		$line_height = 'style="line-height:' . intval( $logo_height + $logo_margin_top + $logo_margin_bottom ). 'px"';
 	}
 
 ?>
 
 <div class="main-nav-wrapper">
-	<nav id="main-nav" <?php echo ( $live_search_data_skin ); ?> class="<?php echo esc_attr( $main_menu_class ) ?>" <?php echo ( $header_line_height ) ?> aria-label="<?php esc_html_e( 'Primary Navigation', TIELABS_TEXTDOMAIN ); ?>">
+	<nav id="main-nav" <?php echo ( $live_search_data_skin ); ?> class="<?php echo esc_attr( $main_menu_class ) ?>" <?php echo ( $line_height ) ?> aria-label="<?php esc_html_e( 'Primary Navigation', TIELABS_TEXTDOMAIN ); ?>">
 		<div class="container">
 
 			<div class="main-menu-wrapper">
 
 				<?php
 					if( $header_layout == 1 ){ ?>
-						<div class="header-layout-1-logo <?php echo esc_attr( $has_line_height ) ?>" <?php echo ( $logo_width ) ?>>
+						<div class="header-layout-1-logo" <?php echo ( $logo_width ) ?>>
 							<?php
 
 								do_action( 'TieLabs/Logo/before' );

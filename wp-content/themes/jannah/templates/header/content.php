@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 ?>
 
-<div class="container">
+<div class="container header-container">
 	<div class="tie-row logo-row">
 
 		<?php do_action( 'TieLabs/Logo/before_wrapper' ); ?>

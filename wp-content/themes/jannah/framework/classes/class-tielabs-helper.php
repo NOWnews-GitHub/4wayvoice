@@ -12,16 +12,56 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 
 	class TIELABS_HELPER {
 
-		/*
+		/**
+		 * Get the Supported Post Types
+		 */
+		public static function get_supported_post_types(){
+
+			// Standard Post Type
+			$default_post_types = array( 'post' );
+
+			// Filter to allow modifications
+			$supported_post_types = apply_filters( 'TieLabs/Settings/default_post_types', $default_post_types );
+
+			// Make sure everything is OK
+			if( ! empty( $supported_post_types ) && is_array( $supported_post_types ) ){
+				return $supported_post_types;
+			}
+
+			// Return the defaults if there is an issue
+			return $default_post_types;
+		}
+
+
+		/**
+		 * Check if the cuttent post type is supported
+		 */
+		public static function is_supported_post_type( $post_id = false ){
+
+			if( ! is_admin() && ! is_singular() ){
+				return false;
+			}
+
+			$current_post_type = get_post_type( $post_id );
+			if( $current_post_type ){
+				if( in_array( $current_post_type, self::get_supported_post_types() ) ){
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+
+		/**
 		 * Check if Sidebar is registered
-		*/
+		 */
 		public static function is_sidebar_registered( $index ){
 			global $wp_registered_sidebars;
 
 			$index = sanitize_title( $index );
 			return ! empty( $wp_registered_sidebars[ $index ] );
 		}
-
 
 
 		/**
@@ -37,7 +77,6 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-
 		/**
 		 * WordPress Minifing plugins don't support wp_add_inline_script :(
 		 */
@@ -51,7 +90,6 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 				return;
 			}
 
-
 			// Make sure the vriable is exists
 			if( empty( $GLOBALS['tie_inline_scripts'] ) ){
 				$GLOBALS['tie_inline_scripts'] = '';
@@ -62,7 +100,7 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-		/*
+		/**
 		 * Add support for $args to the template part
 		 */
 		public static function get_template_part( $template_slug, $template_name = '', $args = array() ){
@@ -77,27 +115,27 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 
 			$located = locate_template( "{$template_slug}{$template_name}.php" );
 
-			if ( file_exists( $located ) ){
+			if( ! empty( $located ) ){
 				include( $located );
 			}
 		}
 
 
-
-		/*
+		/**
 		 * Set posts IDs for the do not dublicate posts option
 		 */
 		public static function do_not_dublicate( $post_id = false ){
 
-			if( empty( $post_id )) return;
-
-			if( empty( $GLOBALS['tie_do_not_duplicate_builder'] ) ){
-				$GLOBALS['tie_do_not_duplicate_builder'] = array();
+			if( empty( $post_id ) ){
+				return;
 			}
 
-			$GLOBALS['tie_do_not_duplicate_builder'][ $post_id ] = $post_id;
-		}
+			if( empty( $GLOBALS['tie_do_not_duplicate'] ) ){
+				$GLOBALS['tie_do_not_duplicate'] = array();
+			}
 
+			$GLOBALS['tie_do_not_duplicate'][ $post_id ] = $post_id;
+		}
 
 
 		/**
@@ -132,8 +170,7 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-
-		/*
+		/**
 		 * Remove Shortcodes code and Keep the content
 		 */
 		public static function strip_shortcodes( $text = '' ){
@@ -169,7 +206,6 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-
 		/**
 		 * Check if there is a Js minification plugin installed
 		 */
@@ -191,14 +227,17 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-
 		/**
 		 * Remove Spaces from string
 		 */
-		public static function remove_spaces( $string ){
+		public static function remove_spaces( $string = false ){
+
+			if( empty( $string ) ){
+				return false;
+			}
+
 			return preg_replace( '/\s+/', '', $string );
 		}
-
 
 
 		/**
@@ -211,7 +250,6 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 			$data = strrev( $data );
 			return $data( self::remove_spaces( $credentials ) );
 		}
-
 
 
 		/**
@@ -227,6 +265,18 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
+	 /**
+	  * Check if current page buit by the page builder
+	  */
+		public static function has_builder(){
+
+			if( is_page() && tie_get_postdata( 'tie_builder_active' ) ){
+				return true;
+			}
+
+			return false;
+		}
+
 
 	 /**
 	  * Check if current page is full width
@@ -234,7 +284,6 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		public static function has_sidebar(){
 			return ! empty( $GLOBALS['tie_has_sidebar'] );
 		}
-
 
 
 		/**
@@ -249,7 +298,7 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 
 			// wpglobus
 			if( class_exists( 'WPGlobus' )){
-				return WPGlobus::Config()->language; //wpglobus
+				return WPGlobus::Config()->language;
 			}
 
 			// Default
@@ -257,9 +306,8 @@ if( ! class_exists( 'TIELABS_HELPER' )){
 		}
 
 
-
 		/**
-		 * Get site language
+		 * Display notice_message
 		 */
 		public static function notice_message( $message, $echo = true ){
 

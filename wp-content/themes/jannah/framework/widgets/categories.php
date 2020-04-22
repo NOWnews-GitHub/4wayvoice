@@ -53,7 +53,7 @@ if( ! class_exists( 'TIE_CATEGORIES_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance          = $old_instance;
 			$instance['title'] = sanitize_text_field( $new_instance['title'] );
-			$instance['depth'] = $new_instance['depth'] ;
+			$instance['depth'] = ! empty( $new_instance['depth'] ) ? 'true' : 0;
 			return $instance;
 		}
 
@@ -63,8 +63,8 @@ if( ! class_exists( 'TIE_CATEGORIES_WIDGET' )){
 		public function form( $instance ){
 			$defaults = array( 'title' => esc_html__('Categories', TIELABS_TEXTDOMAIN)  );
 			$instance = wp_parse_args( (array) $instance, $defaults );
-			$title    = isset( $instance['title'] ) ? $instance['title'] : '';
-			$depth    = isset( $instance['depth'] ) ? $instance['depth'] : ''; ?>
+			$title    = ! empty( $instance['title'] ) ? $instance['title'] : '';
+			$depth    = ! empty( $instance['depth'] ) ? $instance['depth'] : ''; ?>
 
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', TIELABS_TEXTDOMAIN) ?></label>
@@ -90,4 +90,3 @@ if( ! class_exists( 'TIE_CATEGORIES_WIDGET' )){
 	}
 
 }
-?>

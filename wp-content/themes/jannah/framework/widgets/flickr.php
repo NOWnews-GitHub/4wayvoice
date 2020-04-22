@@ -27,8 +27,8 @@ if( ! class_exists( 'TIE_FLICKR_PHOTOS' )){
 				echo ( $args['before_title'] . $instance['title'] . $args['after_title'] );
 			}
 
-			$no_of_photos   = isset( $instance['no_of_photos'] )   ? $instance['no_of_photos'] : 6;
-			$flickr_display = isset( $instance['flickr_display'] ) ? $instance['flickr_display'] : 'latest';
+			$no_of_photos   = ! empty( $instance['no_of_photos'] )   ? $instance['no_of_photos']   : 6;
+			$flickr_display = ! empty( $instance['flickr_display'] ) ? $instance['flickr_display'] : 'latest';
 
 			if( ! empty( $instance['flickr_id'] )){
 			?>
@@ -64,9 +64,9 @@ if( ! class_exists( 'TIE_FLICKR_PHOTOS' )){
 			$defaults = array( 'title' =>esc_html__( 'Flickr', TIELABS_TEXTDOMAIN), 'no_of_photos' => 6, 'flickr_display' => 'latest' );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title          = isset( $instance['title'] )          ? $instance['title'] : '';
-			$flickr_id      = isset( $instance['flickr_id'] )      ? $instance['flickr_id'] : '';
-			$no_of_photos   = isset( $instance['no_of_photos'] )   ? $instance['no_of_photos'] : 6;
+			$title          = isset( $instance['title'] )          ? $instance['title']          : '';
+			$flickr_id      = isset( $instance['flickr_id'] )      ? $instance['flickr_id']      : '';
+			$no_of_photos   = isset( $instance['no_of_photos'] )   ? $instance['no_of_photos']   : 6;
 			$flickr_display = isset( $instance['flickr_display'] ) ? $instance['flickr_display'] : 'latest';
 
 			?>
@@ -110,4 +110,3 @@ if( ! class_exists( 'TIE_FLICKR_PHOTOS' )){
 	}
 
 }
-?>

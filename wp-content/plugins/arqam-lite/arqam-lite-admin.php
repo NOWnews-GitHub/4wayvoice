@@ -525,9 +525,14 @@ if( ! class_exists( 'ARQAM_LITE_ADMIN' )){
 																<th scope="row"><label for="social[instagram][text]"><?php esc_html_e( 'Text Below The Number', 'arqam-lite' ) ?></label></th>
 																<td><input type="text" name="social[instagram][text]" class="code" id="social[instagram][text]" value="<?php if( ! empty($arq_options['social']['instagram']['text']) ) echo esc_attr( $arq_options['social']['instagram']['text'] ) ?>"></td>
 															</tr>
+															<tr>
+																<th scope="row"><label for="social[instagram][api]"><?php esc_html_e( 'Access Token Key', 'arqam-lite' ) ?></label></th>
+																<td><input type="text" name="social[instagram][api]" class="code" id="social[instagram][api]" value="<?php if( ! empty($arq_options['social']['instagram']['api']) ) echo $arq_options['social']['instagram']['api'] ?>"></td>
+															</tr>
 														</tbody>
 													</table>
-													<div><strong><?php esc_html_e( 'Need Help?', 'arqam-lite' ) ?></strong><p><em><?php esc_html_e( 'Enter Your Instagram Username.', 'arqam-lite' ) ?></em></p></div>
+													<div><strong><?php esc_html_e( 'Need Help?', 'arqam-lite' ) ?></strong><p><em><?php printf( __( 'Enter Your Instagram Username, From <a href="%s" target="_blank">this page</a> You can get your Access Token.' , 'arqam-lite' ), 'https://instagram.pixelunion.net/' ) ?></em></p></div>
+
 													<div class="clear"></div>
 												</div>
 											</div> <!-- Box end /-->
@@ -594,7 +599,7 @@ if( ! class_exists( 'ARQAM_LITE_ADMIN' )){
 										</div> <!-- Post Body COntent -->
 
 										<div id="postbox-container-1" class="postbox-container">
-											<a href="http://codecanyon.net/item/arqam-retina-responsive-wp-social-counter-plugin/5085289?ref=tielabs&utm_source=arqam-options&utm_medium=link&utm_campaign=arqam-lite&utm_content=banner" target="_blank">
+											<a href="https://1.envato.market/Y31NB" target="_blank">
 												<img style="max-width:100%;" src="<?php echo plugins_url( 'assets/images/get-arqam.png', __FILE__ ) ?>" alt="" />
 											</a>
 												<div class="inside" style="background-color: #E8FBFF; border:1px solid #43D1EC; padding:10px; margin-bottom:15px;">
@@ -606,7 +611,6 @@ if( ! class_exists( 'ARQAM_LITE_ADMIN' )){
 															<li><?php esc_html_e( 'Option To set the Cache time to reduce load time and API calls.', 'arqam-lite' ) ?></li>
 															<li><?php esc_html_e( 'More Layout options.', 'arqam-lite' ) ?></li>
 															<li><strong><?php esc_html_e( 'More Social Networks', 'arqam-lite' ) ?></strong>
-
 
 																<ol>
 																	<li><?php esc_html_e( 'Goodreads', 'arqam-lite' ) ?></li>
@@ -621,7 +625,6 @@ if( ! class_exists( 'ARQAM_LITE_ADMIN' )){
 																	<li><?php esc_html_e( 'Vk', 'arqam-lite' ) ?></li>
 																	<li><?php esc_html_e( 'Envato', 'arqam-lite' ) ?></li>
 																	<li><?php esc_html_e( 'MailChimp List', 'arqam-lite' ) ?></li>
-																	<li><?php esc_html_e( 'Vine', 'arqam-lite' ) ?></li>
 																	<li><?php esc_html_e( 'Steam', 'arqam-lite' ) ?></li>
 																	<li><?php esc_html_e( 'myMail plugin list', 'arqam-lite' ) ?></li>
 																	<li><?php esc_html_e( 'Mailpoet plugin List', 'arqam-lite' ) ?></li>

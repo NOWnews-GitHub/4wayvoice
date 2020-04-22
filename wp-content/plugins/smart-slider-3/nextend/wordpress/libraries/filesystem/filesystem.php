@@ -28,21 +28,21 @@ class N2Filesystem extends N2FilesystemAbstract {
          * skip the realpath check so it won't fail in the future.
          * @url https://github.com/humanmade/S3-Uploads
          */
-        if ($scheme && in_array($scheme, array('s3'))) {
+        if (!stream_is_local($wp_upload_dir['basedir'])) {
             $uploadPath = $wp_upload_dir['basedir'];
         } else {
             $uploadPath = rtrim(realpath($wp_upload_dir['basedir']), "/\\");
             if (empty($uploadPath)) {
                 echo 'Error: Your upload path is not valid or does not exist: ' . $wp_upload_dir['basedir'];
                 $uploadPath = rtrim($wp_upload_dir['basedir'], "/\\");
+            } else {
+                self::measurePermission($uploadPath);
             }
         }
 
         if (strpos($this->_basepath, $uploadPath) !== 0) {
             $this->paths[] = $uploadPath;
         }
-
-        self::measurePermission(N2Platform::getPublicDir());
     }
 
     public static function getImagesFolder() {

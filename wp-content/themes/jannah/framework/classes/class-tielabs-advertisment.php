@@ -20,9 +20,6 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 		 */
 		function __construct() {
 
-			// Ad Blocker
-			add_action( 'wp_footer', array( $this, 'ad_blocker' ) );
-
 			// Background Ad
 			add_action( 'TieLabs/before_wrapper', array( $this, 'background_ad' ) );
 
@@ -53,8 +50,26 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 			// After X posts in Archives
 			add_action( 'TieLabs/after_post_in_archives', array( $this, 'ad_after_x_posts' ), 10, 2 );
 
+			// Below Category Slider
+			add_action( 'TieLabs/Category/after_slider', array( $this, 'after_category_slider' ) );
+
+			// Above Category Title
+			add_action( 'TieLabs/before_archive_title', array( $this, 'before_category_title' ) );
+
+			// Below Category Title
+			add_action( 'TieLabs/after_archive_title', array( $this, 'after_category_title' ) );
+
+			// Below Category Posts
+			add_action( 'TieLabs/after_archive_posts', array( $this, 'after_category_posts' ) );
+
+			// Below Category Pagination
+			add_action( 'TieLabs/after_archive_pagination', array( $this, 'after_category_pagination' ) );
+
 			// Article Inline Ads
 			add_filter( 'the_content', array( $this, 'article_inline_ad' ) );
+
+			// Ad Blocker
+			add_action( 'wp_footer', array( $this, 'ad_blocker' ) );
 		}
 
 
@@ -64,14 +79,14 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 		function get_ad( $banner, $before = false, $after = false, $echo = true ){
 
 			// Check if the banner is disabled or hidden on mobiles
-			if( ! tie_get_option( $banner ) || TIELABS_HELPER::is_mobile_and_hidden( $banner ) ) return;
+			if( ! tie_get_option( $banner ) || TIELABS_HELPER::is_mobile_and_hidden( $banner ) ){
+				return;
+			}
 
-			$the_ad  = '';
-			$the_ad .= $before;
+			$the_ad = $before;
 
 			// Ad Title
 			if( tie_get_option( $banner.'_title' ) ){
-
 				$the_ad .= tie_get_option( $banner.'_title_link' ) ? '<a title="'. esc_attr( tie_get_option( $banner.'_title' ) ) .'" href="'. esc_attr( tie_get_option( $banner.'_title_link' ) ) .'" rel="nofollow noopener" target="_blank" class="stream-title">' : '<span class="stream-title">';
 				$the_ad .= tie_get_option( $banner.'_title' );
 				$the_ad .= tie_get_option( $banner.'_title_link' ) ? '</a>' : '</span>';
@@ -93,7 +108,6 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 			// Custom Code
 			elseif( $code = tie_get_option( $banner.'_adsense' ) ){
 
-
 				$the_ad .= do_shortcode( apply_filters( 'TieLabs/custom_ad_code', $code ) );
 			}
 
@@ -112,7 +126,7 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 				';
 			}
 
-			$the_ad .= ( $after );
+			$the_ad .= $after;
 
 			// Print the Ad
 			if( $echo ){
@@ -120,30 +134,6 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 			}
 
 			return $the_ad;
-		}
-
-
-		/**
-		 * Ad Blocker
-		 */
-		function ad_blocker(){
-
-			if( ! tie_get_option( 'ad_blocker_detector' ) ){
-				return;
-			}
-
-			?>
-				<div id="tie-popup-adblock" class="tie-popup is-fixed-popup">
-					<div class="tie-popup-container">
-						<div class="container-wrapper">
-						<span class="fa fa-ban" aria-hidden="true"></span>
-						<h2><?php esc_html_e( 'Adblock Detected', TIELABS_TEXTDOMAIN ) ?></h2>
-						<div class="adblock-message"><?php esc_html_e( 'Please consider supporting us by disabling your ad blocker', TIELABS_TEXTDOMAIN ) ?></div>
-						</div><!-- .container-wrapper  /-->
-					</div><!-- .tie-popup-container /-->
-				</div><!-- .tie-popup /-->
-				<script type='text/javascript' src='<?php echo TIELABS_TEMPLATE_URL ?>/assets/js/advertisement.js'></script>
-			<?php
 		}
 
 
@@ -265,6 +255,67 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 
 
 		/**
+		 * After Category Slider
+		 */
+		function after_category_slider(){
+
+			$this->get_ad( 'banner_category_below_slider', '<div class="stream-item stream-item-below-category-slider">', '</div>' );
+		}
+
+
+		/**
+		 * Before Category Title
+		 */
+		function before_category_title(){
+
+			if ( ! is_category() ) {
+				return;
+			}
+
+			$this->get_ad( 'banner_category_above_title', '<div class="stream-item stream-item-above-category-title">', '</div>' );
+		}
+
+
+		/**
+		 * After Category Title
+		 */
+		function after_category_title(){
+
+			if ( ! is_category() ) {
+				return;
+			}
+
+			$this->get_ad( 'banner_category_below_title', '<div class="stream-item stream-item-below-category-title">', '</div>' );
+		}
+
+
+		/**
+		 * After Category Posts
+		 */
+		function after_category_posts(){
+
+			if ( ! is_category() ) {
+				return;
+			}
+
+			$this->get_ad( 'banner_category_below_posts', '<div class="stream-item stream-item-below-category-posts">', '</div>' );
+		}
+
+
+		/**
+		 * After Category Pagination
+		 */
+		function after_category_pagination(){
+
+			if ( ! is_category() ) {
+				return;
+			}
+
+			$this->get_ad( 'banner_category_below_pagination', '<div class="stream-item stream-item-below-category-pagination">', '</div>' );
+		}
+
+
+		/**
 		 * After X posts in Archives
 		 */
 		function ad_after_x_posts( $layout, $latest_count ){
@@ -343,6 +394,35 @@ if( ! class_exists( 'TIELABS_ADVERTISMENT' )){
 			return implode( '', $paragraphs );
 		}
 
+
+		/**
+		 * Ad Blocker
+		 */
+		function ad_blocker(){
+
+			if( ! tie_get_option( 'ad_blocker_detector' ) ){
+				return;
+			}
+
+			?>
+				<div id="tie-popup-adblock" class="tie-popup is-fixed-popup">
+					<div class="tie-popup-container">
+						<div class="container-wrapper">
+
+							<span class="fa fa-ban" aria-hidden="true"></span>
+
+							<h2><?php echo tie_get_option( 'adblock_title', esc_html__( 'Adblock Detected', TIELABS_TEXTDOMAIN ) ); ?></h2>
+
+							<div class="adblock-message">
+								<?php echo tie_get_option( 'adblock_message', esc_html__( 'Please consider supporting us by disabling your ad blocker', TIELABS_TEXTDOMAIN ) ); ?>
+							</div>
+
+						</div><!-- .container-wrapper  /-->
+					</div><!-- .tie-popup-container /-->
+				</div><!-- .tie-popup /-->
+				<script type='text/javascript' src='<?php echo TIELABS_TEMPLATE_URL ?>/assets/js/advertisement.js'></script>
+			<?php
+		}
 
 	}
 

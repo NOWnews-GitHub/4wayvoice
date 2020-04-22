@@ -77,6 +77,11 @@ if( ! class_exists( 'TIELABS_PAGINATION' )){
 					$class = ( $type == 'infinite' ) ? 'infinite-scroll-archives' : '';
 
 					if( $wp_query->max_num_pages > $paged ){
+
+						// Load the file contains the requrired js codes
+						wp_enqueue_script( 'tie-js-viewport' );
+
+						// --
 						echo '<a data-url="'. get_pagenum_link( 99999 ) .'" data-text="'. esc_html__( 'Load More', TIELABS_TEXTDOMAIN ) .'" data-query="'. $query .'" data-max="'. $wp_query->max_num_pages .'" data-page="'. $paged .'" data-latest="'. $latest_post .'" id="load-more-archives" class="container-wrapper show-more-button load-more-button '. $class .'">'. esc_html__( 'Load More', TIELABS_TEXTDOMAIN ) .'</a>';
 					}
 				}

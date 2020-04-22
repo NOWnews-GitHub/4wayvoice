@@ -8,16 +8,18 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-if( empty( $videos_data ) ) return;
+if( empty( $videos_data ) ){
+	return;
+}
 
-// Enqueue the Sliders Js file
-wp_enqueue_script( 'tie-js-sliders' );
+// Enqueue the Videos Playlist Js file
+wp_enqueue_script( 'tie-js-videoslist' );
 
 // Variables
 $youtube_thumbnail_base = 'https://i.ytimg.com/vi/';
@@ -36,7 +38,7 @@ $custom_color = str_replace( '#', '', $custom_color );
 // Get Videos
 foreach ( $videos_data as $video ){
 
-	# Youtube
+	// YouTube
 	if( $video['type'] == 'y' ){
 
 		$video_id = $video['id'];
@@ -60,9 +62,18 @@ foreach ( $videos_data as $video ){
 		}
 	}
 
-	$videos_list[] = $video_data;
+	if( ! empty( $video_data ) ){
+		$videos_list[] = $video_data;
+	}
 }
 
+
+if( ! tie_get_option( 'api_youtube' ) ){
+	TIELABS_HELPER::notice_message( esc_html__( 'You need to set the YouTube API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ) );
+}
+elseif( get_option( 'tie_youtube_api_error' ) ){
+	TIELABS_HELPER::notice_message( esc_html__( 'YouTube API ERROR, Go to the Youtube API Console on Google Cloud and remove any restrictions on the API key, Then edit the current page and click on the Update/Save button to re-connect to the YouTube servers to load the videos.', TIELABS_TEXTDOMAIN ) .'<br /><br /><em>'. get_option( 'tie_youtube_api_error' ) .'</em>' );
+}
 ?>
 
 <div class="videos-block">
@@ -70,9 +81,9 @@ foreach ( $videos_data as $video ){
 
 		<?php tie_get_ajax_loader(); ?>
 
-		<div class="video-player-wrapper">
+		<div class="video-player-wrapper tie-ignore-fitvid">
 			<?php foreach( $videos_list as $video ): ?>
-				<iframe class="video-frame" id="video-<?php echo esc_attr( $id ) ?>-1" src="<?php echo esc_attr( $video['id'] ) ?>" width="771" height="434" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen async></iframe>
+				<iframe class="video-frame" id="video-<?php echo esc_attr( $id ) ?>-1" src="<?php echo esc_attr( $video['id'] ) ?>" title="Videos List" width="771" height="434" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen async></iframe>
 			<?php break; endforeach; ?>
 		</div><!-- .video-player-wrapper -->
 
@@ -98,18 +109,18 @@ foreach ( $videos_data as $video ){
 			foreach( $videos_list as $video ):
 				$video_number++;
 				?>
-				<div data-name="video-<?php echo esc_attr( $id. '-' .$video_number ) ?>" data-src="<?php echo esc_attr( $video['id'] ) ?>" class="video-playlist-item">
+				<div data-name="video-<?php echo esc_attr( $id. '-' .$video_number ) ?>" data-video-src="<?php echo esc_attr( $video['id'] ) ?>" class="video-playlist-item">
 					<div class="video-number"><?php echo esc_attr( $video_number ) ?></div>
 					<div class="video-play-icon"><span class="fa fa-play" aria-hidden="true"></span></div>
 					<div class="video-paused-icon"><span class="fa fa-pause" aria-hidden="true"></span></div>
 
 					<?php
 						if( tie_get_option( 'lazy_load' )){ ?>
-							<div data-src="<?php echo esc_attr( $video['thumb'] ); ?>" class="lazy-img video-thumbnail"></div>
+							<div data-lazy-bg="<?php echo esc_attr( $video['thumb'] ); ?>" class="video-thumbnail post-thumb"></div>
 							<?php
 						}
 						else{ ?>
-							<div style="background-image: url(<?php echo esc_attr( $video['thumb'] ); ?>)" class="video-thumbnail"></div>
+							<div style="background-image: url(<?php echo esc_attr( $video['thumb'] ); ?>)" class="video-thumbnail post-thumb"></div>
 							<?php
 						}
 					?>

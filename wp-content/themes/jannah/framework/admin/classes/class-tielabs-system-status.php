@@ -7,11 +7,9 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-
 if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 	class TIELABS_SYSTEM_STATUS{
-
 
 		public $menu_slug = 'tie-system-status';
 
@@ -23,10 +21,10 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		 */
 		function __construct(){
 
+			add_action( 'tie_admin_notices',      array( $this, 'outdated_templates_notice' ) );
 			add_filter( 'TieLabs/panel_submenus', array( $this, '_add_options_menu' ), 99 );
 			add_filter( 'TieLabs/about_tabs',     array( $this, '_add_about_tabs' ),   20 );
 		}
-
 
 
 		/**
@@ -39,10 +37,10 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 			$this->_print_theme_info();
 			$this->_print_environment_info();
 			$this->_print_plugins_info();
+			$this->_template_file_check( true, false );
 			$this->_print_report();
 			$this->_end_page();
 		}
-
 
 
 		/**
@@ -63,7 +61,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _add_bout_tabs
 		 *
@@ -78,7 +75,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 			return $tabs;
 		}
-
 
 
 		/**
@@ -98,7 +94,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _memory_limit
 		 *
@@ -113,7 +108,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 			return $wp_memory_limit;
 		}
-
 
 
 		/**
@@ -141,7 +135,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _get_request
 		 *
@@ -160,7 +153,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _environment_info
 		 *
@@ -169,8 +161,30 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		private function _environment_info(){
 			global $wpdb;
 
-			$post_response = $this->_post_request();
-			$get_response  = $this->_get_request();
+			$get_response_msg  = '';
+
+			// Remote Post
+			$post_response     = $this->_post_request();
+			$post_response_msg = '';
+
+			if( is_wp_error( $post_response ) ){
+				$post_response_msg = $post_response->get_error_message();
+			}
+			elseif( ! empty( $post_response['response']['code'] ) ) {
+				$post_response_msg = $post_response['response']['code'];
+			}
+
+			// Remote Get
+			$get_response     = $this->_get_request();
+			$get_response_msg = '';
+
+			if( is_wp_error( $get_response ) ){
+				$get_response_msg = $get_response->get_error_message();
+			}
+			elseif( ! empty( $get_response['response']['code'] ) ) {
+				$get_response_msg = $get_response['response']['code'];
+			}
+
 
 			return array(
 				'home_url'                  => home_url( '/' ),
@@ -193,15 +207,14 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 				'mbstring_enabled'          => extension_loaded( 'mbstring' ),
 				'xmlreader_enabled'         => extension_loaded( 'xmlreader' ),
 				'remote_post_successful'    => $post_response,
-				'remote_post_response'      => ( is_wp_error( $post_response ) ? $post_response->get_error_message() : $post_response['response']['code'] ),
+				'remote_post_response'      => $post_response_msg,
 				'remote_get_successful'     => $get_response,
-				'remote_get_response'       => ( is_wp_error( $get_response ) ? $get_response->get_error_message() : $get_response['response']['code'] ),
+				'remote_get_response'       => $get_response_msg,
 				'secure_connection'         => 'https' === substr( get_home_url(), 0, 5 ),
 				'hide_errors'               => ! ( defined( 'WP_DEBUG' ) && defined( 'WP_DEBUG_DISPLAY' ) && WP_DEBUG && WP_DEBUG_DISPLAY ) || 0 === intval( ini_get( 'display_errors' ) ),
 			);
 
 		}
-
 
 
 		/**
@@ -235,7 +248,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 			return array_merge( $active_theme_info, $parent_theme_info );
 		}
-
 
 
 		/**
@@ -298,7 +310,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _let_to_num
 		 *
@@ -321,7 +332,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 			}
 			return $ret;
 		}
-
 
 
 		/**
@@ -408,7 +418,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 				</tbody>
 			</table>
 
-
 			<table class="tie-status-table status-report widefat" cellspacing="0">
 				<thead>
 					<tr>
@@ -449,7 +458,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 									else{
 										echo esc_html( $environment['php_max_execution_time'] );
 									}
-
 								?>
 							</td>
 						</tr>
@@ -557,7 +565,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _print_theme_info
 		 */
@@ -647,7 +654,7 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 					<?php endif ?>
 
 					<?php if( $switcher = get_option( 'tie_switch_to_'. TIELABS_THEME_ID ) ):
-									  $switcher = explode( '.', $switcher );
+										$switcher = explode( '.', $switcher );
 										if( is_array( $switcher ) && ! empty( $switcher[0] ) ){ ?>
 						<tr>
 							<td data-export-label="Switched From"><?php esc_html_e( 'Switched From', TIELABS_TEXTDOMAIN ); ?>:</td>
@@ -662,7 +669,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 			<?php
 		}
-
 
 
 		/**
@@ -724,7 +730,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 
 			<?php
 		}
-
 
 
 		/**
@@ -810,9 +815,7 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 					'text'  => sprintf( esc_html__( 'Looking for a good web hosting company? %1$sCheck our recommendations!%2$s', TIELABS_TEXTDOMAIN ), '<a target="_blank" href="'. apply_filters( 'TieLabs/External/hosting', '' ) .'"><strong>', '</strong></a>' ),
 					'type'  => 'message',
 				));
-
 		}
-
 
 
 		/**
@@ -825,7 +828,6 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 		}
 
 
-
 		/**
 		 * _end_page
 		 */
@@ -833,10 +835,177 @@ if( ! class_exists( 'TIELABS_SYSTEM_STATUS' )){
 			echo '</div>';
 		}
 
+
+		/**
+		 * Show a notice highlighting bad template files
+		 */
+		function outdated_templates_notice(){
+			add_action( 'admin_notices', array( $this, '_template_file_check' ), 105 );
+		}
+
+
+		/**
+		 * Find the overriden files
+		 */
+		function _template_file_check( $show_table = false, $show_notice = true ) {
+
+			if ( ! is_child_theme() ) {
+				return;
+			}
+
+			$original_path = get_template_directory()   . '/templates/';
+			$template_path = get_stylesheet_directory() . '/templates/';
+
+			$core_templates = $this->scan_template_files( $original_path );
+			$outdated       = false;
+			$override_files = array();
+
+			foreach ( $core_templates as $file ) {
+
+				$ext = explode( '.', $file );
+
+				if( end( $ext ) == 'php' ){
+
+					$developer_theme_file = false;
+
+					if ( file_exists( $template_path . $file ) ) {
+
+						$developer_theme_file = $template_path . $file;
+
+						$core_version      = $this->get_template_version( $original_path . $file );
+						$developer_version = $this->get_template_version( $developer_theme_file );
+
+						$override_files[] = array(
+							'file'         => str_replace( WP_CONTENT_DIR . '/themes/', '', $developer_theme_file ),
+							'version'      => $developer_version,
+							'core_version' => $core_version,
+						);
+
+						if ( $core_version && $developer_version && version_compare( $developer_version, $core_version, '<' ) ) {
+							$outdated = true;
+						}
+					}
+				}
+			}
+
+			// if there is no any overriden files don't print anything
+			if( empty( $override_files ) ){
+				return;
+			}
+
+			// Display the Error message
+			if( $outdated && $show_notice ){
+				TIELABS_NOTICES::message( array(
+					'title'          => esc_html__( 'ERROR', TIELABS_TEXTDOMAIN ),
+					'message'        => esc_html__( 'Your child theme contains outdated copies of some template files. These files may need updating to ensure they are compatible with the current version of the theme.', TIELABS_TEXTDOMAIN ),
+					'dismissible'    => false,
+					'class'          => 'error',
+					'button_text'    => esc_html__( 'View affected templates', TIELABS_TEXTDOMAIN ),
+					'button_url'     => esc_url( admin_url( 'admin.php?page=tie-system-status' ) ),
+				));
+			}
+
+			if( $show_table ){
+			?>
+
+				<table class="tie-status-table status-report widefat" cellspacing="0">
+					<thead>
+						<tr>
+							<th colspan="2" data-export-label="Templates"><?php esc_html_e( 'Child Theme Templates', TIELABS_TEXTDOMAIN ); ?></th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<?php if ( ! empty( $override_files ) ) { ?>
+							<tr>
+								<td data-export-label="Overrides"><?php esc_html_e( 'Overrides', TIELABS_TEXTDOMAIN ); ?></td>
+								<td>
+									<?php
+									$total_overrides = count( $override_files );
+									for ( $i = 0; $i < $total_overrides; $i++ ) {
+										$override = $override_files[ $i ];
+										if ( $override['core_version'] && ( empty( $override['version'] ) || version_compare( $override['version'], $override['core_version'], '<' ) ) ) {
+											$current_version = $override['version'] ? $override['version'] : '-';
+											printf(
+												/* Translators: %1$s: Template name, %2$s: Template version, %3$s: Core version. */
+												esc_html__( '%1$s version %2$s is out of date. The core version is %3$s', TIELABS_TEXTDOMAIN ),
+												'<code>' . esc_html( $override['file'] ) . '</code>',
+												'<strong style="color:red">' . esc_html( $current_version ) . '</strong>',
+												esc_html( $override['core_version'] )
+											);
+										} else {
+											echo esc_html( $override['file'] );
+										}
+										if ( ( count( $override_files ) - 1 ) !== $i ) {
+											echo ', ';
+										}
+										echo '<br />';
+									}
+									?>
+								</td>
+							</tr>
+						<?php } ?>
+
+					</tbody>
+				</table>
+
+				<?php
+			} // Show the table
+		}
+
+
+		/**
+		 * Scan the template files
+		 */
+		function scan_template_files( $template_path ) {
+			$files  = scandir( $template_path );
+			$result = array();
+			if ( $files ) {
+				foreach ( $files as $key => $value ) {
+					if ( ! in_array( $value, array( ".", ".." ) ) ) {
+						if ( is_dir( $template_path . DIRECTORY_SEPARATOR . $value ) ) {
+							$sub_files = $this->scan_template_files( $template_path . DIRECTORY_SEPARATOR . $value );
+							foreach ( $sub_files as $sub_file ) {
+								$result[] = $value . DIRECTORY_SEPARATOR . $sub_file;
+							}
+						} else {
+							$result[] = $value;
+						}
+					}
+				}
+			}
+
+			return $result;
+		}
+
+
+		/**
+		 * Retrieve metadata from a file. Based on WP Core's get_file_data function
+		 */
+		function get_template_version( $file ) {
+			// We don't need to write to the file, so just open for reading.
+			$fp = fopen( $file, 'r' );
+
+			// Pull only the first 8kiB of the file in.
+			$file_data = fread( $fp, 8192 );
+
+			// PHP will close file handle, but we are good citizens.
+			fclose( $fp );
+
+			// Make sure we catch CR-only line endings.
+			$file_data = str_replace( "\r", "\n", $file_data );
+			$version   = '';
+
+			if ( preg_match( '/^[ \t\/*#@]*' . preg_quote( '@version', '/' ) . '(.*)$/mi', $file_data, $match ) && $match[1] ){
+				$version = _cleanup_header_comment( $match[1] );
+			}
+
+			return $version ;
+		}
+
 	}
 
 
-	# Instantiate the class
+	// Instantiate the class
 	new TIELABS_SYSTEM_STATUS();
-
 }

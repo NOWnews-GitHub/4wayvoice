@@ -731,6 +731,11 @@
 			#signup-avatar img {
 				margin: 0 0 $marg-sml $marg-med;
 			}
+
+			.wp-pwd button{
+				left: 0;
+				right: auto;
+			}
 		} // close .signup-form
 
 	} // close .register-page

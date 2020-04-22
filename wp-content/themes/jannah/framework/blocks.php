@@ -7,7 +7,7 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-# Check if the page is protected by password
+// Check if the page is protected by password
 if( post_password_required() ){
 
 	echo '
@@ -22,7 +22,7 @@ if( post_password_required() ){
 }
 
 
-# Get the builder data
+// Get the builder data
 $sections = maybe_unserialize( tie_get_postdata( 'tie_page_builder' ) );
 
 
@@ -30,7 +30,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 	do_action( 'TieLabs/Builder/before' );
 
-	# check if the do not duplicate option is enabled
+	// check if the do not duplicate option is enabled
 	$is_do_not_dublicate = tie_get_postdata( 'tie_do_not_dublicate' ) ? true : false;
 
 	$section_number = 0;
@@ -44,6 +44,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 			'title'              => '',
 			'url'                => '',
 			'title_style'        => '',
+			'title_icon'         => '',
 			'title_color'        => '',
 			'section_width'      => '',
 			'custom_class'       => '',
@@ -58,7 +59,6 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 			'sidebar_id'         => '',
 			'section_id'         => '',
 		));
-
 
 		$classes          = array();
 		$section_id       = $section_settings['section_id'];
@@ -76,16 +76,14 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 		$is_tag_open      = false;
 		$count_half_box   = 0;
 
-
-		# Section Number
+		// Section Number
 		$section_number++;
 
 		if( $section_number == 1 ){
 			$classes[] = 'is-first-section';
 		}
 
-
-		# Section Sidebar
+		// Section Sidebar
 		$sidebar = 'full-width';
 		$sidebar_position = $section_settings['sidebar_position'];
 
@@ -98,18 +96,15 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 		$classes[] = $sidebar;
 
-
-		# Section Width
+		// Section Width
 		if( ! $section_settings['section_width'] ){
 			$internal_class = '-normal';
 			$outer_class = ' normal-width';
 		}
 
 
-
-
-
 		if( $sidebar == 'full-width' ){
+
 			$container_open  = '
 				<div class="container'. $internal_class .'">
 					<div class="tie-row main-content-row">
@@ -143,14 +138,13 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 		}
 
 
-
-		# Background
+		// Background
 		$section_bg_class = ' without-background';
 		if( $section_settings['background_img'] || $section_settings['background_color'] || $section_settings['background_video'] || $section_settings['dark_skin'] ){
 
 			$section_bg_class = ' has-background';
 
-			# Section Dark Skin
+			// Section Dark Skin
 			if( $section_settings['dark_skin'] ){
 				$classes[] = 'dark-skin';
 			}
@@ -159,17 +153,32 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 				$section_styles[] = 'background-color: '. $section_settings['background_color'] .';';
 			}
 
-			if( $section_settings['background_video'] ){
-				$section_video_bg = 'data-jarallax-video="'. $section_settings['background_video'] .'"';
-				$classes[] = 'has-video-background';
-			}
-			elseif( $section_settings['background_img'] ){
+			if( $section_settings['background_img'] ){
 				$section_styles[] = 'background-image: url( '. $section_settings['background_img'] .');';
 			}
 
-			if( $section_settings['parallax'] ){
+			if( $section_settings['background_video'] ){
 
-				# Get the parallax js file
+				$video_url = $section_settings['background_video'];
+
+				// Check if the URL contains an mp4 file
+				if( strpos( $video_url, '.mp4' ) !== false ){
+
+					// Make sure that there is no mp4: added before
+					if( substr( $video_url, 0, 4 ) !== "mp4:" ){
+
+						// Add mp4:
+						$video_url = 'mp4:'. $video_url;
+					}
+				}
+
+				$section_video_bg = 'data-jarallax-video="'. $video_url .'"';
+				$classes[] = 'has-video-background';
+			}
+
+			if( $section_settings['parallax'] || $section_settings['background_video'] ){ // If video is active enable the parallax
+
+				// Get the parallax js file
 				wp_enqueue_script( 'tie-js-parallax' );
 
 				$classes[] = 'tie-parallax';
@@ -185,13 +194,17 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 		$outer_class .= $section_bg_class;
 
-
-		# Section Title Class
+		// Section Title Class
 		if( $section_settings['section_title'] && $section_settings['title'] ){
 			$outer_class .= ' has-title';
 		}
 
-		# Section Custom Classes
+		// Section Title Icon
+		if( $section_settings['title_icon'] ){
+			$outer_class .= ' has-title-icon';
+		}
+
+		// Section Custom Classes
 		if( $section_settings['custom_class'] ){
 			$outer_class .= ' '.$section_settings['custom_class'];
 		}
@@ -203,43 +216,54 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 		<?php
 
-		# Section Title
-		if( $section_settings['section_title'] && $section_settings['title'] ){
+		// Section Title
+		if( $section_settings['section_title'] && ( $section_settings['title'] || $section_settings['title_icon'] ) ){
 
-			# Section title tags
+			// Section title tags
 			$before_section_title = $section_settings['section_width'] ? '<div class="container">' : '';
 			$after_section_title  = $section_settings['section_width'] ? '</div>' : '';
 
-			# Url
+			// Title
+			$title  = '';
+
+			if( $section_settings['title_icon'] ){
+				$title .= '<span class="fa '. $section_settings['title_icon'] .'"></span>';
+			}
+
+			if( $section_settings['title'] ){
+				if( ! empty( $title ) ){
+					$title .= ' ';
+				}
+				$title .= $section_settings['title'];
+			}
+
+			// Url
 			$before_section_link = $section_settings['url'] ? '<a href="'. esc_url( $section_settings['url'] ) .'" title="'.esc_attr( $section_settings['title'] ).'">' : '';
 			$after_section_link  = $section_settings['url'] ? '</a>' : '';
 
-			# CLass
+			// CLass
 			$title_class  = 'section-title ';
 			$title_class .= $section_settings['title_style'] ? 'section-title-'.$section_settings['title_style'] : tie_get_box_class( 'section-title-default' );
-
 
 			echo apply_filters( 'TieLabs/before_section_title', $before_section_title, $section_settings );
 
 			echo '<h2 class="'. $title_class .'">';
-			echo '<span class="the-section-title">' .$before_section_link . $section_settings['title'] . $after_section_link.'</span>';
+			echo '<span class="the-section-title">' .$before_section_link . $title . $after_section_link.'</span>';
 			echo '</h2>';
 
 			echo apply_filters( 'TieLabs/after_section_title', $after_section_title, $section_settings );
-
 		}
-
 
 		echo ( $before_content );
 
-
-		# Get the Blocks
+		// Get the Blocks
 		if( ! empty( $section['blocks'] ) && is_array( $section['blocks'] )){
 
 			foreach( $section['blocks'] as $block ){
 
-				# Reset variables
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * Reset variables
+				 */
 				$count          = 0;
 				$after	        = '';
 				$style 	        = 'default';
@@ -248,16 +272,16 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 				$after_items	  = '</ul><div class="clearfix"></div>';
 				$excerpt_length = '';
 
-
 				$block_count++;
 
-
-				# Default Block settings
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * Default Block settings
+				 */
 				$block = wp_parse_args( $block, array(
 					'style'            => 'default',
 					'cat'              => '',
 					'title'            => '',
+					'icon'             => '',
 					'order'            => 'latest',
 					'woo_cats'         => '',
 					'id'               => '',
@@ -302,37 +326,38 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 				));
 
 
-				# Set the $style variable
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * Set the $style variable
+				 */
 				if( ! empty( $block['style'] ) ){
 
-					# $style will be changed to the match the suitable loop file name
+					// $style will be changed to the match the suitable loop file name
 					$style = str_replace( '_', '-', $block['style'] );
 
-					# Hold the original style
+					// Hold the original style
 					$block['sub_style'] = $style;
 				}
 
-
-				# If the Section is full width
-				/*-----------------------------------------------------------------------------------*/
+				// If the Section is full width
 				if( $sidebar == 'full-width' ){
 					$block['is_full'] = 'true';
 				}
 
-
-				# Check the box id
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * Check the box id
+				 */
 				if( ! empty( $block['boxid'] ) ){
 					$block['boxid'] = str_replace( '-', '_', $block['boxid'] );
 				}
 
-
-				# The Block is a SLIDER
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * The Block is a SLIDER
+				 */
 				if( ( strpos( $style, 'slider-' ) !== false ) || $style == 'videos-list' || $style == 'lsslider' || $style == 'revslider' ){
 
 					$slider = str_replace( 'slider-', '', $style );
+
+					$is_first_slider = ( $block_count == 1 ) ? true : false;
 
 					if( $block_count != 1 && $is_tag_open && ( $slider <= 4 || $slider == 17 ) ){
 						echo ( $container_close );
@@ -352,7 +377,6 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					elseif( ! empty( $block['tags'] )){
 						$query_type = 'tags';
 					}
-
 
 					TIELABS_HELPER::get_template_part( 'templates/featured', '', array(
 						'slider_settings' => array(
@@ -387,14 +411,14 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 							'slider_id'        => $block['boxid'],
 							'dark_skin'        => $block['dark'],
 							'color'            => $block['color'],
+							'is_first_slider'  => $is_first_slider,
 						)
 					));
-
 				}
 
-
-				# The Block is NOT a SLIDER
-				/*-----------------------------------------------------------------------------------*/
+				/**
+				 * The Block is NOT a SLIDER
+				 */
 				else{
 
 					if( ! $is_tag_open ){
@@ -402,13 +426,12 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 						$is_tag_open = true;
 					}
 
-
-					# Blocks settings
-					/*-----------------------------------------------------------------------------------*/
+					/**
+					 * Blocks settings
+					 */
 
 					// Allow external modify on the block args
 					if( $custom_block_style = apply_filters( 'TieLabs/block_style_'. $style .'_args', false ) ){
-
 						extract( $custom_block_style  );
 					}
 
@@ -543,7 +566,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 								$block['filters']       = false;
 								$block['scrolling_box'] = true;
 
-								# Enqueue the Sliders Js file
+								// Enqueue the Sliders Js file
 								wp_enqueue_script( 'tie-js-sliders' );
 
 								break;
@@ -560,7 +583,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 								$block['filters']       = false;
 								$block['scrolling_box'] = true;
 
-								# Enqueue the Sliders Js file
+								// Enqueue the Sliders Js file
 								wp_enqueue_script( 'tie-js-sliders' );
 
 								break;
@@ -697,6 +720,10 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 								$block['pagi']          = false;
 								$block['filters']       = false;
 								$block['scrolling_box'] = true;
+
+								// Enqueue the Sliders Js file
+								wp_enqueue_script( 'tie-js-sliders' );
+
 								break;
 
 
@@ -706,44 +733,32 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 						}
 					}
 
-
-					# Content Only without wrapper
-					/*-----------------------------------------------------------------------------------*/
-					if( ! empty( $block['content_only'] ) ){
-						$block_class .= ' content-only';
-					}
-
-
-					# Dark Skin Class
-					/*-----------------------------------------------------------------------------------*/
+					// Dark Skin Class
 					if( ! empty( $block['dark'] ) ){
 						$block_class .= ' box-dark-skin dark-skin';
 					}
 
+					// Content Only without wrapper
+					if( ! empty( $block['content_only'] ) ){
+						$block_class .= ' content-only';
+					}
 
-					# Media Overlay Class
-					/*-----------------------------------------------------------------------------------*/
+					// Media Overlay Class
 					if( ! empty( $block['media_overlay'] ) ){
 						$block_class .= ' media-overlay';
 					}
 
-
-					# Custom Color Class
-					/*-----------------------------------------------------------------------------------*/
+					// Custom Color Class
 					if( ! empty( $block['color'] ) ){
 						$block_class .= ' has-custom-color';
 					}
 
-
-					# Custom Excerpt Length
-					/*-----------------------------------------------------------------------------------*/
+					// Custom Excerpt Length
 					if( empty( $block['excerpt_length'] ) ){
 						$block['excerpt_length'] = $excerpt_length;
 					}
 
-
-					# Classes for the 50% blocks
-					/*-----------------------------------------------------------------------------------*/
+					// Classes for the 50% blocks
 					if( $block['style'] == '2c' || $block['style'] == 'ad_50' || $block['style'] == 'code_50' ){
 
 						$count_half_box++;
@@ -766,13 +781,12 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					}
 
 
-					# Get the block query
-					/*-----------------------------------------------------------------------------------*/
+					// Get the block query
 					$block = apply_filters( 'TieLabs/Builder/Block/args', $block );
+
 					$block_query = tie_query( $block );
 
 					$pagination_data = ! empty( $block['pagi'] ) ? ' data-current="1"' : '';
-
 
 					// Before Block Action
 					do_action( 'TieLabs/Builder/before_block' );
@@ -798,11 +812,14 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 							<?php
 
-							echo '<ul class="tabs">';
-							foreach ( $home_tabs as $cat ){
-								echo'<li><a href="#cat-tab-'. $block['boxid'] .'-'. $cat .'">'. get_the_category_by_ID( $cat ) .'</a></li>';
+							if( ! empty( $home_tabs ) ){
+
+								echo '<ul class="tabs is-flex-tabs">';
+								foreach ( $home_tabs as $cat ){
+									echo'<li><a href="#cat-tab-'. $block['boxid'] .'-'. $cat .'">'. get_the_category_by_ID( $cat ) .'</a></li>';
+								}
+								echo '</ul>';
 							}
-							echo '</ul>';
 
 							$block['number'] = ! empty( $block['number'] ) ? $block['number'] : 5;
 
@@ -841,7 +858,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 																TIELABS_HELPER::get_template_part( 'templates/loops/loop', 'large-first', $b_args );
 
-																# Do not dublicate posts
+																// Do not dublicate posts
 																if( $is_do_not_dublicate ){
 																	TIELABS_HELPER::do_not_dublicate( get_the_ID() );
 																}
@@ -860,10 +877,6 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					</div><!-- .tabs-widget /-->
 			    <?php
 
-
-
-
-
 				/*-----------------------------------------------------------------------------------*/
 				# Breeaking News
 				/*-----------------------------------------------------------------------------------*/
@@ -879,49 +892,35 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 						'breaking_block'  => $block,
 					));
 
-
-
-
-
 				/*-----------------------------------------------------------------------------------*/
-				# Ad and Ad 50% Block
+				 # Ad and Ad 50% Block
 				/*-----------------------------------------------------------------------------------*/
 				elseif( $style == 'ad' || $style == 'ad-50' ):
 					?>
 
 					<div class="container-wrapper">
-
 						<?php
+							// Get the Ad banner Image
+							if( ! empty( $block['ad_img'] ) ){
 
-						#Get the Ad banner Image
-						if( ! empty( $block['ad_img'] ) ){
+								$ad_image = $block['ad_img'];
+								$target 	= empty( $block['ad_target'] ) ? ''   : esc_attr( ' target="_blank"' );
+								$nofollow = empty( $block['ad_nofollow'] ) ? '' : esc_attr( ' rel="nofollow noopener"'  );
+								$url      = apply_filters( 'TieLabs/ads_url', empty( $block['ad_url'] ) ? '' : esc_url( $block['ad_url'] ) );
+								$alt 		  = empty( $block['ad_alt'] ) ? '' : esc_attr( $block['ad_alt'] );
 
-							$ad_image = $block['ad_img'];
-							$target 	= empty( $block['ad_target'] ) ? ''   : esc_attr( ' target="_blank"' );
-							$nofollow = empty( $block['ad_nofollow'] ) ? '' : esc_attr( ' rel="nofollow noopener"'  );
-							$url      = apply_filters( 'TieLabs/ads_url', empty( $block['ad_url'] ) ? '' : esc_url( $block['ad_url'] ) );
-							$alt 		  = empty( $block['ad_alt'] ) ? '' : esc_attr( $block['ad_alt'] );
+								echo "<a href=\"$url\" title=\"$alt\"$target$nofollow>";
+								echo apply_filters( "TieLabs/block/ad_image", "<img src=\"$ad_image\" alt=\"$alt\" width=\"728\" height=\"90\">", $ad_image ) ;
+								echo"</a>";
+							}
 
-							echo "
-							<a href=\"$url\" title=\"$alt\"$target$nofollow>
-								<img src=\"$ad_image\" alt=\"$alt\" width=\"728\" height=\"90\">
-							</a>";
-						}
-
-						# Get the Ad Custom Code
-						elseif( ! empty( $block['ad_code'] ) ){
-
-							echo do_shortcode( apply_filters( 'TieLabs/custom_ad_code', $block['ad_code'] ) );
-						}
-
+							// Get the Ad Custom Code
+							elseif( ! empty( $block['ad_code'] ) ){
+								echo do_shortcode( apply_filters( 'TieLabs/block/ad_code', $block['ad_code'] ) );
+							}
 						?>
-
 					</div><!-- .container-wrapper /-->
 				<?php
-
-
-
-
 
 				/*-----------------------------------------------------------------------------------*/
 				# All Other blocks
@@ -931,32 +930,27 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					<div class="container-wrapper">
 
 						<?php
-
-							# Get The Blcok Title
+							// Get The Blcok Title
 							tie_block_title( $block );
-
 						?>
 
 						<div class="mag-box-container clearfix">
 
 							<?php
 
-							# Ad and Ad 50% Block
-							/*-----------------------------------------------------------------------------------*/
+							// Ad and Ad 50% Block
 							if( $style == 'code' || $style == 'code-50' ){
 
-								# Get the custom content code and apply the content filters
+								// Get the custom content code and apply the content filters
 								if( ! empty( $block['custom_content'] ) ){
 									echo '
-										<div class="entry">'. apply_filters( 'the_content', $block['custom_content'] ) . '</div>
-										<div class="clearfix"></div>
+										<div class="entry clearfix">'. apply_filters( 'the_content', $block['custom_content'] ) . '</div>
 									';
 
 								}
 							}
 
-							# WooCommerce Block
-							/*-----------------------------------------------------------------------------------*/
+							// WooCommerce Block
 							elseif( ( $style == 'woocommerce' || $style == 'woocommerce-slider' ) ){
 
 								if( TIELABS_WOOCOMMERCE_IS_ACTIVE ){
@@ -985,8 +979,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 							}
 
-							# Posts Blocks
-							/*-----------------------------------------------------------------------------------*/
+							// Posts Blocks
 							else{
 
 								if( $block_query->have_posts() ){
@@ -1003,7 +996,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 										TIELABS_HELPER::get_template_part( 'templates/loops/loop', $style, $b_args );
 
-										# Do not dublicate posts
+										// Do not dublicate posts
 										if( $is_do_not_dublicate ){
 											TIELABS_HELPER::do_not_dublicate( get_the_ID() );
 										}
@@ -1024,17 +1017,17 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 							if ( ! empty( $block['pagi'] ) && $max_page > 1 ){
 
-								# Numeric Pagination
+								// Numeric Pagination
 								if( $block['pagi'] == 'numeric' ){
 									TIELABS_PAGINATION::show( array( 'query' => $block_query, 'type' => 'numeric' ) );
 								}
 
-								# Show more button Pagination
+								// Show more button Pagination
 								elseif( $block['pagi'] == 'show-more' ){
 									echo'<a class="block-pagination next-posts show-more-button" data-text="'. esc_html__( 'Show More', TIELABS_TEXTDOMAIN ) .'">'. esc_html__( 'Show More', TIELABS_TEXTDOMAIN ) .'</a>';
 								}
 
-								# Load more button Pagination
+								// Load more button Pagination
 								elseif( $block['pagi'] == 'load-more' ){
 									echo '<a class="block-pagination next-posts show-more-button load-more-button" data-text="'. esc_html__( 'Load More', TIELABS_TEXTDOMAIN ) .'">'. esc_html__( 'Load More', TIELABS_TEXTDOMAIN ) .'</a>';
 								}
@@ -1049,7 +1042,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 
 			<?php
 
-				# Block Js Variable
+				// Block Js Variable
 				if( ( ! empty( $block['pagi'] ) && $block['pagi'] != 'numeric' ) || ! empty( $block['filters'] ) ){
 
 					$unwanted_keys = array(
@@ -1076,6 +1069,9 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					}
 					if( empty( $js_block['excerpt_length'] ) ){
 						$js_block['excerpt_length'] = '';
+					}
+					if( empty( $js_block['media_overlay'] ) ){
+						$js_block['media_overlay'] = '';
 					}
 
 					?>
@@ -1107,7 +1103,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 					else{
 						$sidebar = tie_get_option( 'sidebar_page' );
 
-						# Default sidebar if there is no a custom sidebar
+						// Default sidebar if there is no a custom sidebar
 						if( empty( $sidebar ) || ( ! empty( $sidebar ) && ! TIELABS_HELPER::is_sidebar_registered( $sidebar ) )){
 							 $sidebar = 'primary-widget-area';
 						}
@@ -1118,7 +1114,7 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 				}
 
 
-				# Show the sidebar if contains Widgets
+				// Show the sidebar if contains Widgets
 				if( is_active_sidebar( $sidebar ) ){
 
 					$sidebar_class = 'sidebar tie-col-md-4 tie-col-xs-12 normal-side';
@@ -1150,7 +1146,8 @@ if( ! empty( $sections ) && is_array( $sections ) ){
 </div><!-- .<?php echo esc_attr( $section_id ) ?> /-->
 
 	<?php
-} // Foreach
 
-	wp_reset_postdata();
+		wp_reset_postdata();
+
+	} // Foreach
 }

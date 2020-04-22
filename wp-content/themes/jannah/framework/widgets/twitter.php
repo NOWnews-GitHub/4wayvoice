@@ -39,7 +39,7 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 				$twitter_username = str_replace( '@', '', TIELABS_HELPER::remove_spaces( $instance['username'] ) );
 				$consumer_key     = $instance['consumer_key'];
 				$consumer_secret  = $instance['consumer_secret'];
-				$no_of_tweets     = empty( $instance['no_of_tweets'] ) ? 5 : $instance['no_of_tweets'];
+				$no_of_tweets     = ! empty( $instance['no_of_tweets'] ) ? $instance['no_of_tweets'] : 5;
 				$widget_id        = $args['widget_id'];
 
 				// Get the stored data
@@ -48,7 +48,7 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 
 				if( empty( $twitter_data )){
 
-					if( empty( $token )){
+					if( empty( $token ) ){
 
 						//preparing credentials
 						$credentials  = $consumer_key . ':' . $consumer_secret;
@@ -71,7 +71,7 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 						$keys     = json_decode(wp_remote_retrieve_body($response));
 
 						if( ! empty( $keys ) ){
-							update_option( 'tie_TwitterToken'.$widget_id , $keys->access_token);
+							update_option( 'tie_TwitterToken'.$widget_id , $keys->access_token );
 							$token = $keys->access_token;
 						}
 					}
@@ -92,7 +92,12 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 
 					$response = wp_remote_get( $api_url, $args );
 
-					if ( ! is_wp_error( $response )){
+					if ( is_wp_error( $response )){
+
+						tie_debug_log( $response->get_error_message(), true );
+					}
+					else{
+
 						$twitter_data = json_decode(wp_remote_retrieve_body($response));
 						set_transient( 'list_tweets'.$widget_id, $twitter_data, HOUR_IN_SECONDS );
 					}
@@ -116,7 +121,7 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 								$tweet     = $item->text;
 								$tweet     = $this->hyperlinks( $tweet );
 								$tweet     = $this->twitter_users( $tweet );
-								$permalink = 'http://twitter.com/#!/'. $twitter_username .'/status/'. $item->id_str;
+								$permalink = 'http://twitter.com/'. $twitter_username .'/status/'. $item->id_str;
 
 								$time = strtotime( $item->created_at );
 								if ((abs( time() - $time) ) < 86400 ){
@@ -184,7 +189,7 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 			$instance['username']        = $new_instance['username'];
 			$instance['consumer_key']    = $new_instance['consumer_key'];
 			$instance['consumer_secret'] = $new_instance['consumer_secret'];
-			$instance['slider']          = $new_instance['slider'];
+			$instance['slider']          = ! empty( $new_instance['slider'] ) ? 'true' : 0;
 
 			delete_option( 'tie_TwitterToken'.$widget_id );
 			delete_transient( 'list_tweets'.$widget_id );
@@ -198,12 +203,12 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 			$defaults = array( 'title' => esc_html__( 'Follow Us', TIELABS_TEXTDOMAIN ) , 'no_of_tweets' => '5' );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title           = isset( $instance['title'] ) ? $instance['title'] : '';
-			$username        = isset( $instance['username'] ) ? $instance['username'] : '';
-			$consumer_key    = isset( $instance['consumer_key'] ) ? $instance['consumer_key'] : '';
+			$title           = isset( $instance['title'] )           ? $instance['title'] : '';
+			$username        = isset( $instance['username'] )        ? $instance['username'] : '';
+			$consumer_key    = isset( $instance['consumer_key'] )    ? $instance['consumer_key'] : '';
 			$consumer_secret = isset( $instance['consumer_secret'] ) ? $instance['consumer_secret'] : '';
-			$no_of_tweets    = isset( $instance['no_of_tweets'] ) ? $instance['no_of_tweets'] : 5;
-			$slider          = isset( $instance['slider'] ) ? $instance['slider'] : '';
+			$no_of_tweets    = isset( $instance['no_of_tweets'] )    ? $instance['no_of_tweets'] : 5;
+			$slider          = isset( $instance['slider'] )          ? $instance['slider'] : '';
 
 			?>
 
@@ -264,4 +269,3 @@ if( ! class_exists( 'TIE_LATEST_TWEET_WIDGET' )){
 	}
 
 }
-?>

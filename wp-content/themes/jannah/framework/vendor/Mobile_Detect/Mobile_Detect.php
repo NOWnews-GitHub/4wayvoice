@@ -25,7 +25,7 @@
  * @version     2.8.30
  */
 
-class Mobile_Detect
+class TIE_Mobile_Detect
 {
 	/**
 	 * Mobile detection type.

@@ -37,6 +37,10 @@ class N2SmartSliderTypeSimple extends N2SmartSliderType {
         $background = $params->get('background');
         $backgroundColor = $params->get('background-color', '');
         $sliderCSS  = $params->get('slider-css');
+		$borderRadius = $params->get('border-radius', 0);
+        if (!empty($borderRadius)) {
+            $sliderCSS .= 'overflow:hidden';
+        }
         if (!empty($background)) {
             $sliderCSS .= 'background-image: URL(' . N2ImageHelper::fixed($background) . ');';
         }
@@ -116,7 +120,7 @@ class N2SmartSliderTypeSimple extends N2SmartSliderType {
     }
 
     public function getScript() {
-        return "N2R(" . json_encode($this->jsDependency) . ",function(){new N2Classes.SmartSliderSimple('#{$this->slider->elementId}', " . json_encode($this->javaScriptProperties) . ");});";
+        return "N2R(" . json_encode($this->jsDependency) . ",function(){new N2Classes.SmartSliderSimple('#{$this->slider->elementId}', " . $this->encodeJavaScriptProperties() . ");});";
     }
 
     public function loadResources() {

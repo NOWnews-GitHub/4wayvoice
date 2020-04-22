@@ -62,9 +62,6 @@ function tie_save_page_builder( $post_id ){
 		# Save the builder settings ---------
 		if ( ! empty( $_POST['tie_builder_active'] ) && $_POST['tie_builder_active'] == 'yes' ){
 			update_post_meta( $post_id, 'tie_builder_active', 'yes' );
-
-			# Delete the page template of the page
-			//delete_post_meta( $post_id, '_wp_page_template' );
 		}
 		else{
 			delete_post_meta( $post_id, 'tie_builder_active' );
@@ -75,9 +72,13 @@ function tie_save_page_builder( $post_id ){
 			$builder_data = TIELABS_ADMIN_HELPER::array_filter( $builder_data );
 
 			update_post_meta( $post_id, 'tie_page_builder', $builder_data );
+
+			do_action( 'TieLabs/builder/after_save', $post_id, $builder_data );
 		}
 		else{
 			delete_post_meta( $post_id, 'tie_page_builder' );
+
+			do_action( 'TieLabs/builder/after_delete', $post_id );
 		}
 
 	}
@@ -113,6 +114,7 @@ function tie_get_builder_section( $section_number = false, $section = array() ){
 		'url'                => '',
 		'title_style'        => '',
 		'title_color'        => '',
+		'title_icon'         => '',
 		'sidebar_position'   => 'full',
 		'section_width'      => '',
 		'parallax'           => '',
@@ -176,14 +178,14 @@ function tie_get_builder_section( $section_number = false, $section = array() ){
 							'name'   => esc_html__( 'Section Title', TIELABS_TEXTDOMAIN ),
 							'id'     => 'section_title',
 							'type'   => 'checkbox',
-							'toggle' => "#section-$section_number-title-item, #section-$section_number-url-item, #section-$section_number-title_style-item, #section-$section_number-title_color-item",
+							'toggle' => "#section-$section_number-title-item, #section-$section_number-url-item, #section-$section_number-title_style-item, #section-$section_number-title_color-item, #section-$section_number-title_icon-item",
 						));
 
 					tie_page_builder_section_option(
 						$number = $section_number,
 						$value  = $section_settings['title'],
 						array(
-							'name' => esc_html__( 'Section Title', TIELABS_TEXTDOMAIN ) .' '. esc_html__( '(optional)', TIELABS_TEXTDOMAIN ),
+							'name' => esc_html__( 'Title', TIELABS_TEXTDOMAIN ),
 							'id'   => 'title',
 							'type' => 'text',
 						));
@@ -192,7 +194,7 @@ function tie_get_builder_section( $section_number = false, $section = array() ){
 						$number = $section_number,
 						$value  = $section_settings['url'],
 						array(
-							'name'        => esc_html__( 'Title URL', TIELABS_TEXTDOMAIN ) .' '. esc_html__( '(optional)', TIELABS_TEXTDOMAIN ),
+							'name'        => esc_html__( 'URL', TIELABS_TEXTDOMAIN ) .' '. esc_html__( '(optional)', TIELABS_TEXTDOMAIN ),
 							'id'          => 'url',
 							'placeholder' => 'https://',
 							'type'        => 'text',
@@ -218,6 +220,15 @@ function tie_get_builder_section( $section_number = false, $section = array() ){
 							'name' => esc_html__( 'Title Color', TIELABS_TEXTDOMAIN ),
 							'id'   => 'title_color',
 							'type' => 'color',
+						));
+
+					tie_page_builder_section_option(
+						$number = $section_number,
+						$value  = $section_settings['title_icon'],
+						array(
+							'name'   => esc_html__( 'Icon', TIELABS_TEXTDOMAIN ),
+							'id'     => 'title_icon',
+							'type'   => 'icon',
 						));
 
 					tie_build_theme_option(
@@ -541,7 +552,6 @@ function tie_get_builder_blocks( $block_id = false, $section_id = false , $block
 	$block_style           = $block['style'];
 	$style_data            = $builder_blocks_styles[ $block_style ];
 
-
 	if( ! empty( $style_data ) && is_array( $style_data ) ){
 		foreach ( $style_data as $style_block ){
 			foreach ( $style_block as $style_class_name => $style_image ){
@@ -598,6 +608,7 @@ function tie_get_builder_blocks( $block_id = false, $section_id = false , $block
 				'style'            => 'default',
 				'cat'              => '',
 				'title'            => '',
+				'icon'             => '',
 				'order'            => 'latest',
 				'woo_cats'         => '',
 				'id'               => '',
@@ -716,6 +727,17 @@ function tie_get_builder_blocks( $block_id = false, $section_id = false , $block
 						'type'   => 'text',
 					));
 
+				# Block Icon
+				tie_page_builder_option(
+					$block_id = $block_id,
+					$section  = $section_id,
+					$value    = $block['icon'],
+					array(
+						'name'   => esc_html__( 'Icon', TIELABS_TEXTDOMAIN ) .' '. esc_html__( '(optional)', TIELABS_TEXTDOMAIN ),
+						'id'     => 'icon',
+						'class'  => 'block-title-icon',
+						'type'   => 'icon',
+					));
 
 				# Block URL
 				tie_page_builder_option(
@@ -784,10 +806,11 @@ function tie_get_builder_blocks( $block_id = false, $section_id = false , $block
 
 				# Post Order
 				$block_post_order = array(
-					'latest'   => esc_html__( 'Recent Posts', TIELABS_TEXTDOMAIN ),
-					'rand'     => esc_html__( 'Random Posts', TIELABS_TEXTDOMAIN ),
-					'modified' => esc_html__( 'Last Modified Posts', TIELABS_TEXTDOMAIN ),
+					'latest'   => esc_html__( 'Recent Posts',         TIELABS_TEXTDOMAIN ),
+					'rand'     => esc_html__( 'Random Posts',         TIELABS_TEXTDOMAIN ),
+					'modified' => esc_html__( 'Last Modified Posts',  TIELABS_TEXTDOMAIN ),
 					'popular'  => esc_html__( 'Most Commented posts', TIELABS_TEXTDOMAIN ),
+					'title'    => esc_html__( 'Alphabetically',       TIELABS_TEXTDOMAIN ),
 				);
 
 				if( tie_get_option( 'tie_post_views' ) ){
@@ -931,11 +954,27 @@ function tie_get_builder_blocks( $block_id = false, $section_id = false , $block
 					$section  = $section_id,
 					$value    = $block['ad_code'],
 					array(
-						'name'   => esc_html__( 'Custom Ad Code', TIELABS_TEXTDOMAIN ),
-						'id'     => 'ad_code',
-						'type'   => 'textarea',
-						'class'  => 'block-e3lan-group block-e3lan-code-item',
+						'name'  => esc_html__( 'Custom Ad Code', TIELABS_TEXTDOMAIN ),
+						'id'    => 'ad_code',
+						'hint'  => esc_html__( 'Supports: Text, HTML and Shortcodes.', TIELABS_TEXTDOMAIN ),
+						'type'  => 'textarea',
+						'class' => 'block-e3lan-group block-e3lan-code-item',
 					));
+
+
+				if( ! tie_get_option( 'api_youtube' ) ){
+
+					tie_page_builder_option(
+						$block_id = $block_id,
+						$section  = $section_id,
+						$value    = false,
+						array(
+							'id'     => 'videos_youtube_notice',
+							'text'   => esc_html__( 'You need to set the YouTube API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ),
+							'type'   => 'error',
+							'class'  => 'block-video-list-group',
+						));
+				}
 
 				tie_page_builder_option(
 					$block_id = $block_id,
@@ -1576,5 +1615,19 @@ function tie_gutenberg_disable_notice(){
 		remove_action( 'admin_enqueue_scripts', 'gutenberg_check_if_classic_needs_warning_about_blocks' );
 	}
 }
+
+/*-----------------------------------------------------------------------------------*/
+# Dequeue Widgets Script if the Builder is Active
+/*-----------------------------------------------------------------------------------*/
+add_action( 'admin_enqueue_scripts', 'tie_gutenberg_dequeue_widgts', 11 );
+function tie_gutenberg_dequeue_widgts(){
+
+	if( TIELABS_ADMIN_HELPER::is_edit_gutenberg() ){
+		if( ! empty( $_GET['post'] ) && tie_get_postdata( 'tie_builder_active', false, $_GET['post'] ) ){
+			wp_dequeue_script( 'admin-widgets' );
+		}
+	}
+}
+
 
 

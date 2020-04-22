@@ -8,15 +8,18 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 // Returen if the current page is full width or one column
-if( ! TIELABS_HELPER::has_sidebar() ) return;
+if( ! TIELABS_HELPER::has_sidebar() ){
+	return;
+}
 
 // Check if the sidebars is hidden on mobiles
-if( TIELABS_HELPER::is_mobile_and_hidden( 'sidebars' )) return;
+if( TIELABS_HELPER::is_mobile_and_hidden( 'sidebars' ) ){
+	return;
+}
 
 
 // Sticky Sidebar
 $is_sticky = tie_get_option( 'sticky_sidebar' ) ? true : false;
-
 
 // Home Page
 if ( is_home() || is_front_page() ){

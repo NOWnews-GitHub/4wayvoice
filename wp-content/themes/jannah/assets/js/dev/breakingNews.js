@@ -1,12 +1,14 @@
-/*JQUERY NEWS TICKER 1.4 | https://www.jquerynewsticker.com/ | Description: jQuery News Ticker is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. |*/
-
 /*
-	Customized By TieLabs
-	By: Ashraf Reda
-*/
+ * JQUERY NEWS TICKER 1.4
+ * https://www.jquerynewsticker.com/
+ *
+ * Customized By TieLabs
+ * updated: 25/03/2019
+ */
 
 (function($){
 	$.fn.ticker = function(options) {
+
 		// Extend our default options with those provided.
 		// Note that the first arg to extend is an empty object -
 		// this is to keep from overriding our "defaults" object.
@@ -43,14 +45,14 @@
 				paused: false,
 				contentLoaded: false,
 				dom: {
-					contentID: '#ticker-content-' + uniqID,
-					tickerID : '#ticker-' + uniqID,
-					wrapperID: '#ticker-wrapper-' + uniqID,
-					revealID: '#ticker-swipe-' + uniqID,
+					contentID : '#ticker-content-' + uniqID,
+					tickerID  : '#ticker-' + uniqID,
+					wrapperID : '#ticker-wrapper-' + uniqID,
+					revealID  : '#ticker-swipe-' + uniqID,
 					revealElem: '#ticker-swipe-' + uniqID + ' SPAN',
 					controlsID: '#ticker-controls-' + uniqID,
-					prevID: '#prev-' + uniqID,
-					nextID: '#next-' + uniqID,
+					prevID    : '#prev-' + uniqID,
+					nextID    : '#next-' + uniqID,
 				}
 			};
 
@@ -98,6 +100,7 @@
 
 			/* Function to setup the page */
 			function initialisePage() {
+
 				// process the content for this ticker
 				processContent();
 
@@ -132,13 +135,13 @@
 				}
 
 				/* Pause On Hover -------*/
-		if(opts.displayType == 'reveal'){
-				$(settings.dom.contentID).mouseenter(function () {
-					pauseTicker();
-				}).mouseleave(function () {
-					restartTicker();
-				});
-			}
+				if(opts.displayType == 'reveal'){
+					$(settings.dom.contentID).mouseenter(function () {
+						pauseTicker();
+					}).mouseleave(function () {
+						restartTicker();
+					});
+				}
 
 				setupContentAndTriggerDisplay();
 			}
@@ -198,14 +201,27 @@
 						});
 					}
 					else{
+
 						$(settings.dom.revealID).hide();
 
-						$(settings.dom.contentID).velocity('stop').velocity( 'transition.' + opts.displayType + 'In' ,{ duration: opts.fadeInSpeed, complete: function () {
-							setTimeout(function(){
-								postReveal();
-							}, 10);
-							}
-						});
+						// Fade
+						if( opts.displayType == 'flipY' ){
+							$(settings.dom.contentID).fadeIn(opts.fadeInSpeed, function () {
+								setTimeout(function(){
+									postReveal();
+								}, 10);
+							});
+						}
+
+						// Sliding
+						else{
+							$(settings.dom.contentID).velocity('stop').velocity( 'transition.' + opts.displayType + 'In' ,{ duration: opts.fadeInSpeed, complete: function () {
+								setTimeout(function(){
+									postReveal();
+								}, 10);
+							}});
+						}
+
 					}
 				}
 				else {
@@ -217,20 +233,35 @@
 			function postReveal() {
 				if(settings.play) {
 					if (opts.displayType == 'reveal') {
+
 						// we have to separately fade the content out here to get around an IE bug - needs further investigation
-						$(settings.dom.contentID).velocity('stop').velocity('fadeOut', {delay: opts.pauseOnItems, duration: opts.fadeOutSpeed});
+						$(settings.dom.contentID).delay(opts.pauseOnItems).fadeOut(opts.fadeOutSpeed);
 
 						$(settings.dom.revealID).hide(0, function () {
 							$(settings.dom.contentID).fadeOut(opts.fadeOutSpeed, function () {
 								$(settings.dom.wrapperID)
 									.find(settings.dom.revealElem + ',' + settings.dom.contentID).hide().end()
-									.find(settings.dom.tickerID + ',' + settings.dom.revealID).show().removeAttr('style');
+									.find(settings.dom.tickerID   + ',' + settings.dom.revealID ).show().removeAttr('style');
 								setupContentAndTriggerDisplay();
 							});
 						});
 					}
+
+					// Rest Animations
 					else {
-						$(settings.dom.contentID).velocity('stop').velocity('transition.' + opts.displayType + 'Out' , {delay: opts.pauseOnItems , duration: opts.fadeOutSpeed, complete: setupContentAndTriggerDisplay });
+
+						// Fade
+						if( opts.displayType == 'flipY' ){
+							$(settings.dom.contentID).delay(opts.pauseOnItems).fadeOut(opts.fadeOutSpeed, function () {
+								setupContentAndTriggerDisplay();
+							});
+						}
+
+						// Sliding
+						else{
+							$(settings.dom.contentID).velocity('stop').velocity('transition.' + opts.displayType + 'Out' , {delay: opts.pauseOnItems , duration: opts.fadeOutSpeed, complete: setupContentAndTriggerDisplay });
+						}
+
 					}
 				}
 				else {
@@ -304,14 +335,14 @@
 
 	// plugin defaults - added as a property on our plugin function
 	$.fn.ticker.defaults = {
-		speed: 0.2,
-		debugMode: false,
-		controls: false,
-		direction: 'ltr',
-		pauseOnItems: 2000,
-		fadeInSpeed: 600,
-		fadeOutSpeed: 300,
-		displayType: 'reveal',
+		speed        : 0.2,
+		debugMode    : false,
+		controls     : false,
+		direction    : 'ltr',
+		pauseOnItems : 2000,
+		fadeInSpeed  : 600,
+		fadeOutSpeed : 300,
+		displayType  : 'reveal',
 
 		/** Predefiend displayType:
 			reveal          = typing

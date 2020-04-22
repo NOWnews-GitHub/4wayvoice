@@ -19,6 +19,7 @@
 
 	.container-full.has-background + &{
 		margin-top: 0;
+		overflow: hidden;
 	}
 
 	.widget-title-icon{
@@ -365,11 +366,17 @@ a.go-to-top-button{
 		line-height: 25px;
 
 		&.show-top-button{
-			bottom: 5px;
-
-			.has-mobile-share &{
-				bottom: 45px;
-			}
+			bottom: 45px;
 		}
+	}
+}
+
+// Footer Ads
+.stream-item-above-footer{
+	margin: 40px auto 5px;
+
+	@include breakpoint(max_min_sm){
+		max-width: 728px;
+		margin: 40px 15px 5px;
 	}
 }

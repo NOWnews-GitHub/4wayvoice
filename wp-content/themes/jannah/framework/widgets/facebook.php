@@ -22,9 +22,9 @@ if( ! class_exists( 'TIE_FACEBOOK_WIDGET' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			$hide_cover  = empty( $instance['hide_cover'] )  ? '' : $instance['hide_cover'];
-			$show_faces  = empty( $instance['show_faces'] )  ? '' : $instance['show_faces'];
-			$show_stream = empty( $instance['show_stream'] ) ? '' : $instance['show_stream'];
+			$hide_cover  = ! empty( $instance['hide_cover'] )  ? $instance['hide_cover']  : '';
+			$show_faces  = ! empty( $instance['show_faces'] )  ? $instance['show_faces']  : '';
+			$show_stream = ! empty( $instance['show_stream'] ) ? $instance['show_stream'] : '';
 
 			echo ( $args['before_widget'] );
 
@@ -40,11 +40,13 @@ if( ! class_exists( 'TIE_FACEBOOK_WIDGET' )){
 
 				?>
 					<div id="fb-root"></div>
+
+
 					<script data-cfasync="false">(function(d, s, id){
 					  var js, fjs = d.getElementsByTagName(s)[0];
 					  if (d.getElementById(id)) return;
 					  js = d.createElement(s); js.id = id;
-					  js.src = "//connect.facebook.net/<?php echo esc_attr($lang)?>/sdk.js#xfbml=1&version=v2.8";
+					  js.src = "//connect.facebook.net/<?php echo esc_attr($lang)?>/sdk.js#xfbml=1&version=v3.2";
 					  fjs.parentNode.insertBefore(js, fjs);
 					}(document, 'script', 'facebook-jssdk'));</script>
 					<div class="fb-page" data-href="<?php echo esc_url( $instance['page_url'] ) ?>" data-hide-cover="<?php echo ( $hide_cover == 'true'?'true':'false' ) ?>" data-show-facepile="<?php echo ( $show_faces == 'true'?'true':'false') ?>" data-show-posts="<?php echo ($show_stream == 'true'?'true':'false' ) ?>" data-adapt-container-width="true">
@@ -64,9 +66,9 @@ if( ! class_exists( 'TIE_FACEBOOK_WIDGET' )){
 			$instance                = $old_instance;
 			$instance['title']       = sanitize_text_field( $new_instance['title'] );
 			$instance['page_url']    = $new_instance['page_url'];
-			$instance['hide_cover']  = $new_instance['hide_cover'];
-			$instance['show_faces']  = $new_instance['show_faces'];
-			$instance['show_stream'] = $new_instance['show_stream'];
+			$instance['hide_cover']  = ! empty( $new_instance['hide_cover'] )  ? 'true' : false;
+			$instance['show_faces']  = ! empty( $new_instance['show_faces'] )  ? 'true' : false;
+			$instance['show_stream'] = ! empty( $new_instance['show_stream'] ) ? 'true' : false;
 			return $instance;
 		}
 
@@ -74,14 +76,17 @@ if( ! class_exists( 'TIE_FACEBOOK_WIDGET' )){
 		 * Outputs the settings form for the widget.
 		 */
 		public function form( $instance ){
+
 			$defaults = array( 'title' => esc_html__( 'Find us on Facebook', TIELABS_TEXTDOMAIN) );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title       = isset( $instance['title'] )       ? $instance['title'] : '';
-			$page_url    = isset( $instance['page_url'] )    ? $instance['page_url'] : '';
-			$hide_cover  = isset( $instance['hide_cover'] )  ? $instance['hide_cover'] : '';
-			$show_faces  = isset( $instance['show_faces'] )  ? $instance['show_faces'] : '';
-			$show_stream = isset( $instance['show_stream'] ) ? $instance['show_stream'] : ''; ?>
+			$title       = isset( $instance['title'] )       ? $instance['title']       : '';
+			$page_url    = isset( $instance['page_url'] )    ? $instance['page_url']    : '';
+			$hide_cover  = isset( $instance['hide_cover'] )  ? $instance['hide_cover']  : '';
+			$show_faces  = isset( $instance['show_faces'] )  ? $instance['show_faces']  : '';
+			$show_stream = isset( $instance['show_stream'] ) ? $instance['show_stream'] : '';
+
+			?>
 
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', TIELABS_TEXTDOMAIN) ?></label>
@@ -123,4 +128,3 @@ if( ! class_exists( 'TIE_FACEBOOK_WIDGET' )){
 	}
 
 }
-?>

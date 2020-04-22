@@ -42,15 +42,24 @@ window.n2c = (function (origConsole) {
 }(window.console));
 
 n2c.debug(false);
+var isIpad13 = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+
 window.n2const = {
     passiveEvents: false,
     devicePixelRatio: window.devicePixelRatio || 1,
-    isIOS: /iPad|iPhone|iPod/.test(navigator.platform),
-    isEdge: /Edge\/\d./i.test(navigator.userAgent),
+    isIOS: /iPad|iPhone|iPod/.test(navigator.platform) || isIpad13,
+    isEdge: (function () {
+        var m = navigator.userAgent.match(/Edge\/([0-9]+)/);
+        if (m === null) {
+            return false;
+        }
+
+        return m[1];
+    })(),
     isFirefox: navigator.userAgent.toLowerCase().indexOf('firefox') > -1,
-    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Silk/i.test(navigator.userAgent),
+    isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Silk/i.test(navigator.userAgent) || isIpad13,
     isPhone: (/Android/i.test(navigator.userAgent) && /mobile/i.test(navigator.userAgent)) || /webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-    isIE: (function detectIE() {
+    isIE: (function () {
         var ua = window.navigator.userAgent;
 
         var msie = ua.indexOf('MSIE ');
@@ -66,13 +75,6 @@ window.n2const = {
             return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
         }
 
-        var edge = ua.indexOf('Edge/');
-        if (edge > 0) {
-            // Edge (IE 12+) => return version number
-            return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-        }
-
-        // other browser
         return false;
     })(),
     isSamsungBrowser: navigator.userAgent.match(/SamsungBrowser/i),
@@ -101,7 +103,16 @@ window.n2const = {
         } else {
             window.location = l;
         }
-    }
+    },
+    isParentSameOrigin: function () {
+        try {
+            parent.document;
+            return true;
+        } catch (e) {
+        }
+
+        return false;
+    },
 };
 
 window.n2const.IOSVersion = (function () {
@@ -118,7 +129,7 @@ window.n2const.IOSVersion = (function () {
 
 window.n2const.isTablet = (function () {
     if (!window.n2const.isPhone) {
-        return /Android|iPad|tablet|Silk/i.test(navigator.userAgent);
+        return /Android|iPad|tablet|Silk/i.test(navigator.userAgent) || isIpad13;
     }
     return false;
 })();
@@ -146,8 +157,6 @@ window.n2const.rtl = (function () {
             marginRight: 'marginLeft',
             left: 'right',
             right: 'left',
-            next: 'previous',
-            previous: 'next',
             modifier: -1
         };
     }
@@ -159,8 +168,6 @@ window.n2const.rtl = (function () {
         marginRight: 'marginRight',
         left: 'left',
         right: 'right',
-        next: 'next',
-        previous: 'previous',
         modifier: 1
     };
 })();
@@ -364,6 +371,8 @@ N2D('Base64', function () {
  */
 
 N2D('ImagesLoaded', function ($, undefined) {
+
+    var local = {};
     /*!
      * EventEmitter v4.2.6 - git.io/ee
      * Oliver Caldwell
@@ -443,8 +452,7 @@ N2D('ImagesLoaded', function ($, undefined) {
                         response[key] = events[key];
                     }
                 }
-            }
-            else {
+            } else {
                 response = events[evt] || (events[evt] = []);
             }
 
@@ -504,9 +512,9 @@ N2D('ImagesLoaded', function ($, undefined) {
             for (key in listeners) {
                 if (listeners.hasOwnProperty(key) && indexOfListener(listeners[key], listener) === -1) {
                     listeners[key].push(listenerIsWrapped ? listener : {
-                            listener: listener,
-                            once: false
-                        });
+                        listener: listener,
+                        once: false
+                    });
                 }
             }
 
@@ -649,15 +657,13 @@ N2D('ImagesLoaded', function ($, undefined) {
                         // Pass the single listener straight through to the singular method
                         if (typeof value === 'function') {
                             single.call(this, i, value);
-                        }
-                        else {
+                        } else {
                             // Otherwise pass back to the multiple function
                             multiple.call(this, i, value);
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 // So evt must be a string
                 // And listeners must be an array of listeners
                 // Loop over it and pass each one to the multiple method
@@ -688,16 +694,14 @@ N2D('ImagesLoaded', function ($, undefined) {
             if (type === 'string') {
                 // Remove all listeners for the specified event
                 delete events[evt];
-            }
-            else if (type === 'object') {
+            } else if (type === 'object') {
                 // Remove all events matching the regex.
                 for (key in events) {
                     if (events.hasOwnProperty(key) && evt.test(key)) {
                         delete events[key];
                     }
                 }
-            }
-            else {
+            } else {
                 // Remove all listeners in all events
                 delete this._events;
             }
@@ -798,8 +802,7 @@ N2D('ImagesLoaded', function ($, undefined) {
         proto._getOnceReturnValue = function _getOnceReturnValue() {
             if (this.hasOwnProperty('_onceReturnValue')) {
                 return this._onceReturnValue;
-            }
-            else {
+            } else {
                 return true;
             }
         };
@@ -825,7 +828,7 @@ N2D('ImagesLoaded', function ($, undefined) {
         };
 
 
-        this.EventEmitter = EventEmitter;
+        local.EventEmitter = EventEmitter;
     }.call(window));
 
     /*!
@@ -897,7 +900,7 @@ N2D('ImagesLoaded', function ($, undefined) {
         };
 
         // browser global
-        window.eventie = eventie;
+        local.eventie = eventie;
 
     })(window);
 
@@ -912,10 +915,10 @@ N2D('ImagesLoaded', function ($, undefined) {
         // universal module definition
 
         // browser global
-        window.imagesLoaded = factory(
+        factory(
             window,
-            window.EventEmitter,
-            window.eventie
+            local.EventEmitter,
+            local.eventie
         );
 
     })(window,
@@ -970,7 +973,7 @@ N2D('ImagesLoaded', function ($, undefined) {
              */
             function ImagesLoaded(elem, options, onAlways) {
                 // coerce ImagesLoaded() without new, to be new ImagesLoaded()
-                if (!( this instanceof ImagesLoaded )) {
+                if (!(this instanceof ImagesLoaded)) {
                     return new ImagesLoaded(elem, options, onAlways);
                 }
                 // use elem as selector string
@@ -1082,8 +1085,8 @@ N2D('ImagesLoaded', function ($, undefined) {
 
             // IE8
             var getStyle = window.getComputedStyle || function (elem) {
-                    return elem.currentStyle;
-                };
+                return elem.currentStyle;
+            };
 
             /**
              * @param {Image} img
@@ -1272,197 +1275,300 @@ N2D('ImagesLoaded', function ($, undefined) {
 
 });
 N2D('UniversalPointer', function ($, undefined) {
+    var pointerEvents = !!(window.PointerEvent || window.MSPointerEvent || window.navigator.msPointerEnabled || window.navigator.pointerEnabled),
+        touchEvents = !!window.TouchEvent,
+        isIOS = touchEvents && navigator.userAgent.match(/iPhone|iPad|iPod/i);
+
+    function UniversalClickContext(el, handler) {
+        this.el = el;
+        this.handler = handler;
+        this.$el = $(el).data('universalclick', this);
+        this.preventMouse = false;
+        this.timeouts = [];
+        this.localListeners = [];
+        this.globalListeners = [];
+    }
+
+    UniversalClickContext.prototype.addTimeout = function (timeout) {
+        this.timeouts.push(timeout);
+    };
+
+    UniversalClickContext.prototype.clearTimeouts = function () {
+
+        for (var i = 0; i < this.timeouts.length; i++) {
+            clearTimeout(this.timeouts[i]);
+        }
+
+        this.timeouts = [];
+    };
+
+    UniversalClickContext.prototype.click = function (e) {
+
+        if (this.currentTarget !== undefined) {
+            /**
+             * For complex events, we need to fix the currentTarget property
+             * @type {{currentTarget: *, target: *}}
+             */
+            e = {
+                currentTarget: this.currentTarget,
+                target: this.el
+            };
+        }
+
+        this.handler.call(this.el, e);
+
+        this.clear();
+    };
+
+    UniversalClickContext.prototype.clear = function () {
+
+        for (var i = 0; i < this.localListeners.length; i++) {
+            this.localListeners[i][0].removeEventListener(this.localListeners[i][1], this.localListeners[i][2], this.localListeners[i][3]);
+        }
+    };
+
+    UniversalClickContext.prototype.addGlobalEventListener = function (type, listener, options) {
+        this.globalListeners.push([type, listener, options]);
+        this.el.addEventListener(type, listener, options);
+    };
+
+    UniversalClickContext.prototype.addLocalEventListener = function (el, type, listener, options) {
+        this.localListeners.push([el, type, listener, options]);
+        el.addEventListener(type, listener, options);
+    };
+
+    UniversalClickContext.prototype.remove = function () {
+
+        this.clear();
+
+        this.clearTimeouts();
+
+        for (var i = 0; i < this.globalListeners.length; i++) {
+            this.el.removeEventListener(this.globalListeners[i][0], this.globalListeners[i][1], this.globalListeners[i][2]);
+        }
+    };
+
+    UniversalClickContext.prototype.startComplexInteraction = function (currentTarget) {
+        this.clearTimeouts();
+        this.preventMouse = true;
+        this.currentTarget = currentTarget;
+    };
+
+    UniversalClickContext.prototype.endComplexInteraction = function () {
+        delete this.currentTarget;
+
+        this.addTimeout(setTimeout($.proxy(function () {
+            this.preventMouse = false;
+        }, this), 1000));
+    };
+
     $.event.special.universalclick = {
         add: function (handleObj) {
-            var el = $(this),
-                _suppress = false,
-                _suppressTimeout = null,
-                suppress = function () {
-                    _suppress = true;
-                    if (_suppressTimeout) {
-                        clearTimeout(_suppressTimeout);
-                    }
-                    _suppressTimeout = setTimeout(function () {
-                        _suppress = false;
-                    }, 400);
-                },
-                startX = 0, startY = 0;
+            var context = new UniversalClickContext(this, handleObj.handler);
 
-            try {
-                var cb = function (e) {
-                    startX = e.touches[0].clientX;
-                    startY = e.touches[0].clientY;
-                };
+            context.addGlobalEventListener('click', function (e) {
+                if (!context.preventMouse) {
+                    context.click(e);
+                }
+            });
 
-                el[0]['_touchstart'] = cb;
-                el[0].addEventListener('touchstart', cb, window.n2const.passiveEvents ? {passive: true} : false);
+            if (pointerEvents) {
+                context.addGlobalEventListener('pointerdown', function (downEvent) {
+                    if (!downEvent.isPrimary) return;
 
-                el.on('touchend.universalclick', function (e) {
-                    if (Math.abs(e.originalEvent.changedTouches[0].clientX - startX) < 10 && Math.abs(e.originalEvent.changedTouches[0].clientY - startY) < 10) {
-                        if (!_suppress) {
-                            suppress();
-                            handleObj.handler.apply(this, arguments);
+                    context.startComplexInteraction(downEvent.currentTarget);
+
+                    context.addLocalEventListener(document.body.parentNode, 'pointerup', function (upEvent) {
+                        if (!upEvent.isPrimary) return;
+
+                        if (downEvent.pointerId === upEvent.pointerId) {
+                            if (Math.abs(upEvent.clientX - downEvent.clientX) < 10 && Math.abs(upEvent.clientY - downEvent.clientY) < 10) {
+                                context.click(upEvent);
+                            } else {
+                                context.clear();
+                            }
+                            context.endComplexInteraction();
                         }
-                    }
-                }).on('click.universalclick', function (e) {
-                    if (!_suppress) {
-                        suppress();
-                        handleObj.handler.apply(this, arguments);
-                    }
-
+                    });
                 });
-            } catch (e) {
-                console.error(e);
-            }
-        },
+            } else {
+                if (touchEvents) {
+                    context.addGlobalEventListener('touchstart', function (downEvent) {
 
+                        context.startComplexInteraction(downEvent.currentTarget);
+
+                        context.addLocalEventListener(document.body.parentNode, 'touchend', function (upEvent) {
+                            if (Math.abs(upEvent.changedTouches[0].clientX - downEvent.changedTouches[0].clientX) < 10 && Math.abs(upEvent.changedTouches[0].clientY - downEvent.changedTouches[0].clientY) < 10) {
+                                context.click(upEvent);
+                            } else {
+                                context.clear();
+                            }
+                            context.endComplexInteraction();
+                        }, {passive: true});
+                    }, {passive: true});
+                }
+            }
+
+        },
         remove: function () {
-            $(this).off('.universalclick');
-            try {
-                this.removeEventListener('touchstart', this['_touchstart'], window.n2const.passiveEvents ? {passive: true} : false);
-                delete this['_touchstart'];
-            } catch (e) {
+            var $el = $(this),
+                context = $el.data('universalclick');
+            if (context) {
+                context.remove();
+                $el.removeData('universalclick');
             }
         }
     };
 
-    var touchElements = [],
-        globalTouchWatched = false,
-        touchStartCB = function (e) {
-            var target = $(e.target);
-            for (var i = touchElements.length - 1; i >= 0; i--) {
-                if (!touchElements[i].is(target) && touchElements[i].find(target).length == 0) {
-                    touchElements[i].trigger('universal_leave');
-                }
-            }
-        },
-        watchGlobalTouch = function () {
-            if (!globalTouchWatched) {
-                globalTouchWatched = true;
-                try {
-                    $('body').get(0).addEventListener('touchstart', touchStartCB, window.n2const.passiveEvents ? {passive: true} : false);
-                } catch (e) {
-                }
-            }
-        }, unWatchGlobalTouch = function () {
-            if (globalTouchWatched) {
-                try {
-                    $('body').get(0).removeEventListener('touchstart', touchStartCB, window.n2const.passiveEvents ? {passive: true} : false);
-                } catch (e) {
-                }
-                globalTouchWatched = false;
-            }
-        },
-        addTouchElement = function (el) {
-            if ($.inArray(el, touchElements) == -1) {
-                touchElements.push(el);
-            }
-            if (touchElements.length == 1) {
-                watchGlobalTouch();
-            }
-        },
-        removeTouchElement = function (el) {
-            var i = $.inArray(el, touchElements);
-            if (i >= 0) {
-                touchElements.splice(i, 1);
-                if (touchElements.length == 0) {
-                    unWatchGlobalTouch();
-                }
-            }
-        };
+
+    function UniversalEnterContext(el, handler, leaveOnSecond) {
+        this.el = el;
+        this.handler = handler;
+        this.$el = $(el).data('universalenter', this);
+        this.leaveOnSecond = leaveOnSecond;
+        this.preventMouse = false;
+        this.isActive = false;
+        this.timeouts = [];
+        this.localListeners = [];
+        this.globalListeners = [];
+    }
+
+    UniversalEnterContext.prototype.enter = function (e) {
+        if (this.leaveOnSecond && this.isActive) {
+            this.leave();
+            return false;
+        }
+
+        this.handler.apply(this.el, arguments);
+        this.isActive = true;
+        return true;
+    };
+
+    UniversalEnterContext.prototype.leave = function () {
+        this.clearTimeouts();
+
+        for (var i = 0; i < this.localListeners.length; i++) {
+            this.localListeners[i][0].removeEventListener(this.localListeners[i][1], this.localListeners[i][2], this.localListeners[i][3]);
+        }
+
+        this.isActive = false;
+        this.$el.triggerHandler('universalleave');
+    };
+
+    UniversalEnterContext.prototype.testLeave = function (target) {
+        if (!this.$el.is(target) && this.$el.find(target).length === 0) {
+            this.leave();
+        }
+    };
+
+    UniversalEnterContext.prototype.addTimeout = function (timeout) {
+        this.timeouts.push(timeout);
+    };
+
+    UniversalEnterContext.prototype.clearTimeouts = function () {
+
+        for (var i = 0; i < this.timeouts.length; i++) {
+            clearTimeout(this.timeouts[i]);
+        }
+
+        this.timeouts = [];
+    };
+
+    UniversalEnterContext.prototype.addGlobalEventListener = function (type, listener, options) {
+        this.globalListeners.push([type, listener, options]);
+        this.el.addEventListener(type, listener, options);
+    };
+
+    UniversalEnterContext.prototype.remove = function () {
+        if (this.isActive) {
+            this.leave();
+        }
+
+        this.clearTimeouts();
+
+        for (var i = 0; i < this.globalListeners.length; i++) {
+            this.el.removeEventListener(this.globalListeners[i][0], this.globalListeners[i][1], this.globalListeners[i][2]);
+        }
+    };
+
+    UniversalEnterContext.prototype.addLocalEventListener = function (el, type, listener, options) {
+        this.localListeners.push([el, type, listener, options]);
+        el.addEventListener(type, listener, options);
+    };
 
     $.event.special.universalenter = {
         add: function (handleObj) {
+            var context = new UniversalEnterContext(this, handleObj.handler, handleObj.data ? handleObj.data.leaveOnSecond : false);
 
-            var el = $(this),
-                _suppress = false,
-                _suppressTimeout = null,
-                suppress = function () {
-                    _suppress = true;
-                    if (_suppressTimeout) {
-                        clearTimeout(_suppressTimeout);
-                        _suppressTimeout = null;
-                    }
-                    _suppressTimeout = setTimeout(function () {
-                        _suppress = false;
-                    }, 400);
-                };
+            if (pointerEvents) {
+                context.addGlobalEventListener('pointerenter', function (e) {
+                    if (!e.isPrimary) return;
 
-            var leaveOnSecond = false;
-            if (handleObj.data) {
-                leaveOnSecond = handleObj.data.leaveOnSecond;
-            }
+                    context.clearTimeouts();
 
-            var touchTimeout = null,
-                leaveTimeout = null,
-                mouseenter = function (e) {
-                    if (!_suppress) {
-                        if (e.type === 'touchstart') {
-                            suppress();
-                            if (leaveOnSecond) {
-                                if (touchTimeout) {
-                                    el.trigger('universal_leave');
-                                } else {
-                                    addTouchElement(el);
-                                    handleObj.handler.apply(this, arguments);
-                                    touchTimeout = setTimeout(function () {
-                                        el.trigger('universal_leave');
-                                    }, 5000);
-                                }
-                            } else {
-                                if (touchTimeout) {
-                                    clearTimeout(touchTimeout);
-                                    touchTimeout = null;
-                                }
+                    if (context.enter(e)) {
 
-                                addTouchElement(el);
+                        if (e.pointerType !== 'mouse') {
+                            context.addLocalEventListener(document.body.parentNode, 'pointerdown', function (e) {
+                                if (!e.isPrimary) return;
 
-                                handleObj.handler.apply(this, arguments);
-                                touchTimeout = setTimeout(function () {
-                                    el.trigger('universal_leave');
-                                }, 5000);
-
-                            }
-                        } else {
-                            if (leaveTimeout) clearTimeout(leaveTimeout);
-                            handleObj.handler.apply(this, arguments);
-                            el.on('mouseleave.universalleave', function () {
-                                el.off('.universalleave');
-                                if (leaveOnSecond) {
-                                    el.trigger('universalleave');
-                                } else {
-                                    leaveTimeout = setTimeout(function () {
-                                        el.trigger('universalleave');
-                                        leaveTimeout = null;
-                                    }, 800);
-                                }
+                                context.testLeave(e.target);
                             });
+
+                            context.addTimeout(setTimeout(function () {
+                                context.leave();
+                            }, 5000));
                         }
                     }
-                };
 
-            el.on('universal_leave.universalenter', function (e) {
-                e.stopPropagation();
-                clearTimeout(touchTimeout);
-                touchTimeout = null;
-                removeTouchElement(el);
-                el.trigger('universalleave');
-            }).on('mouseenter.universalenter', mouseenter);
+                });
 
-            try {
-                el[0]['_mouseenter'] = mouseenter;
-                el[0].addEventListener('touchstart', mouseenter, window.n2const.passiveEvents ? {passive: true} : false);
-            } catch (e) {
+                context.addGlobalEventListener('pointerleave', function (e) {
+                    if (!e.isPrimary) return;
 
+                    if (e.pointerType === 'mouse') {
+                        context.leave();
+                    }
+                });
+            } else {
+
+                context.addGlobalEventListener('mouseenter', function (e) {
+                    if (!context.preventMouse) {
+                        context.enter(e);
+                    }
+                });
+
+                context.addGlobalEventListener('mouseleave', function () {
+                    if (!context.preventMouse) {
+                        context.leave();
+                    }
+                });
+
+                if (touchEvents) {
+                    context.addGlobalEventListener('touchstart', function (e) {
+                        context.preventMouse = true;
+                        context.clearTimeouts();
+
+                        if (context.enter(e)) {
+                            context.addLocalEventListener(document.body.parentNode, 'touchstart', function (e) {
+                                context.testLeave(e.target);
+                            });
+
+                            context.addTimeout(setTimeout(function () {
+                                context.leave();
+                                context.preventMouse = false;
+                            }, 5000));
+                        }
+                    }, {passive: true});
+                }
             }
         },
         remove: function () {
-            $(this).off('.universalenter .universalleave');
-            try {
-                this.removeEventListener('touchstart', this['_mouseenter'], window.n2const.passiveEvents ? {passive: true} : false);
-                delete this['_mouseenter'];
-            } catch (e) {
-
+            var $el = $(this),
+                context = $el.data('universalenter');
+            if (context) {
+                context.remove();
+                $el.removeData('universalenter');
             }
         }
     };
@@ -1493,7 +1599,7 @@ N2D('EventBurrito', function ($, undefined) {
 
         var o = {
             preventDefault: true,
-            clickTolerance: 0,
+            clickTolerance: 10,
             preventScroll: false,
             mouse: true,
             axis: 'x',
@@ -1507,13 +1613,10 @@ N2D('EventBurrito', function ($, undefined) {
         options && mergeObjects(o, options);
 
         var support = {
-                pointerEvents: !!window.navigator.pointerEnabled,
-                msPointerEvents: !!window.navigator.msPointerEnabled
+                pointerEvents: !!(window.PointerEvent || window.MSPointerEvent || window.navigator.msPointerEnabled || window.navigator.pointerEnabled || window.PointerEventsPolyfill)
             },
             start = {},
             diff = {},
-            speed = {},
-            stack = [],
             listeners = [],
             isScrolling,
             isRealScrolling,
@@ -1590,24 +1693,12 @@ N2D('EventBurrito', function ($, undefined) {
             diff = {
                 x: (eventType ? event.clientX : event.touches[0].clientX) - start.x,
                 y: (eventType ? event.clientY : event.touches[0].clientY) - start.y,
-
-                time: Number(new Date) - start.time
+                time: Date.now()
             };
-
-            if (diff.time - stack[stack.length - 1].time) {
-                for (var i = 0; i < stack.length - 1 && diff.time - stack[i].time > 80; i++) ;
-
-                speed = {
-                    x: (diff.x - stack[i].x) / (diff.time - stack[i].time),
-                    y: (diff.y - stack[i].y) / (diff.time - stack[i].time)
-                };
-
-                if (stack.length >= 5) stack.shift();
-                stack.push({x: diff.x, y: diff.y, time: diff.time});
-            }
         }
 
         function tStart(event, eType) {
+            if (event.isPrimary !== undefined && !event.isPrimary) return;
             if (isDragStarted) return;
 
             clicksAllowed = true;
@@ -1619,7 +1710,7 @@ N2D('EventBurrito', function ($, undefined) {
             isDragStarted = true;
 
             //attach event listeners to the document, so that the slider
-            //will continue to recieve events wherever the pointer is
+            //will continue to receive events wherever the pointer is
             if (eventType !== 0) {
                 addEvent(document, events[eventType][1], tMove, false);
             }
@@ -1634,15 +1725,13 @@ N2D('EventBurrito', function ($, undefined) {
                 x: eventType ? event.clientX : event.touches[0].clientX,
                 y: eventType ? event.clientY : event.touches[0].clientY,
 
-                time: Number(new Date)
+                time: Date.now()
             };
 
             //reset
             isScrolling = undefined;
             isRealScrolling = false;
-            diff = {x: 0, y: 0, time: 0};
-            speed = {x: 0, y: 0};
-            stack = [{x: 0, y: 0, time: 0}];
+            diff = {x: 0, y: 0};
 
             o.start(event, start);
 
@@ -1650,23 +1739,28 @@ N2D('EventBurrito', function ($, undefined) {
         }
 
         function tMove(event) {
+            if (event.isPrimary !== undefined && !event.isPrimary) return;
             //if user is trying to scroll vertically -- do nothing
-            if (o.axis == 'x') {
+            if (o.axis === 'x') {
                 if ((!o.preventScroll && isScrolling) || checks[eventType](event)) return;
             }
             if (checkTarget(event.target)) return;
 
             getDiff(event);
 
-            if (Math.abs(diff.x) > o.clickTolerance || Math.abs(diff.y) > o.clickTolerance) clicksAllowed = false; //if there was a move -- deny all the clicks before the next touchstart
+            if (Math.abs(diff.x) > o.clickTolerance || Math.abs(diff.y) > o.clickTolerance) {
+                clicksAllowed = false; //if there was a move -- deny all the clicks before next tStart
+            }
 
             //check whether the user is trying to scroll vertically
             if (isScrolling === undefined && eventType !== 2) {
-                //assign and check `isScrolling` at the same time
-                if (isScrolling = (Math.abs(diff.x) < Math.abs(diff.y)) && !o.preventScroll) return;
+                isScrolling = (Math.abs(diff.x) < Math.abs(diff.y)) && !o.preventScroll
+                if (isScrolling) {
+                    return;
+                }
             }
 
-            if (o.move(event, start, diff, speed, isRealScrolling)) {
+            if (o.move(event, start, diff, isRealScrolling)) {
                 if (o.preventDefault) {
                     preventDefault(event); //Prevent scrolling
                 }
@@ -1674,11 +1768,12 @@ N2D('EventBurrito', function ($, undefined) {
         }
 
         function tEnd(event) {
+            if (event.isPrimary !== undefined && !event.isPrimary) return;
             eventType && getDiff(event);
 
             //IE likes to focus links after touchend.
             //Since we don't want to disable link outlines completely for accessibility reasons,
-            //we just defocus it after touch and disable the outline for `:active` links in css.
+            //we just blur it after touch and disable the outline for `:active` links in css.
             //This way the outline will remain visible when using keyboard.
             !clicksAllowed && event.target && event.target.blur && event.target.blur();
 
@@ -1689,7 +1784,7 @@ N2D('EventBurrito', function ($, undefined) {
             removeEvent(document, events[eventType][2], tEnd, false);
             removeEvent(document, events[eventType][3], tEnd, false);
 
-            o.end(event, start, diff, speed, isRealScrolling);
+            o.end(event, start, diff, isRealScrolling);
             isRealScrolling = false;
             isDragStarted = false;
         }
@@ -1701,6 +1796,14 @@ N2D('EventBurrito', function ($, undefined) {
                     isRealScrolling = true;
                 }
             }));
+
+            if (eventModel === 1) {
+                if (o.axis === 'y') {
+                    _this.style.touchAction = 'pan-up pan-x';
+                } else {
+                    _this.style.touchAction = 'pan-y';
+                }
+            }
 
             //bind touchstart
             listeners.push(addEvent(_this, events[eventModel][0], function (e) {
@@ -1733,6 +1836,7 @@ N2D('EventBurrito', function ($, undefined) {
 
         //expose the API
         return {
+            supportsPointerEvents: support.pointerEvents,
             getClicksAllowed: function () {
                 return clicksAllowed;
             },
@@ -1746,37 +1850,6 @@ N2D('EventBurrito', function ($, undefined) {
 
     return EventBurrito;
 });
-var tmpModernizr = null;
-if(typeof window.Modernizr !== "undefined" ) tmpModernizr = window.Modernizr;
-
-/*! modernizr 3.2.0 (Custom Build) | MIT *
- * http://modernizr.com/download/?-csstransforms3d-addtest-domprefixes-prefixed-prefixes-shiv-testallprops-testprop-teststyles !*/
-!function(e,t,n){function r(e,t){return typeof e===t}function o(){var e,t,n,o,i,a,s;for(var l in C)if(C.hasOwnProperty(l)){if(e=[],t=C[l],t.name&&(e.push(t.name.toLowerCase()),t.options&&t.options.aliases&&t.options.aliases.length))for(n=0;n<t.options.aliases.length;n++)e.push(t.options.aliases[n].toLowerCase());for(o=r(t.fn,"function")?t.fn():t.fn,i=0;i<e.length;i++)a=e[i],s=a.split("."),1===s.length?Modernizr[s[0]]=o:(!Modernizr[s[0]]||Modernizr[s[0]]instanceof Boolean||(Modernizr[s[0]]=new Boolean(Modernizr[s[0]])),Modernizr[s[0]][s[1]]=o),N.push((o?"":"no-")+s.join("-"))}}function i(e){return e.replace(/([a-z])-([a-z])/g,function(e,t,n){return t+n.toUpperCase()}).replace(/^-/,"")}function a(e){var t=w.className,n=Modernizr._config.classPrefix||"";if(j&&(t=t.baseVal),Modernizr._config.enableJSClass){var r=new RegExp("(^|\\s)"+n+"no-js(\\s|$)");/*t=t.replace(i, "$1" + n + "js$2")*/}Modernizr._config.enableClasses&&(t+=" "+n+e.join(" "+n),j?w.className.baseVal=t:w.className=t)}function s(e,t){if("object"==typeof e)for(var n in e)b(e,n)&&s(n,e[n]);else{e=e.toLowerCase();var r=e.split("."),o=Modernizr[r[0]];if(2==r.length&&(o=o[r[1]]),"undefined"!=typeof o)return Modernizr;t="function"==typeof t?t():t,1==r.length?Modernizr[r[0]]=t:(!Modernizr[r[0]]||Modernizr[r[0]]instanceof Boolean||(Modernizr[r[0]]=new Boolean(Modernizr[r[0]])),Modernizr[r[0]][r[1]]=t),a([(t&&0!=t?"":"no-")+r.join("-")]),Modernizr._trigger(e,t)}return Modernizr}function l(e,t){return!!~(""+e).indexOf(t)}function f(){return"function"!=typeof t.createElement?t.createElement(arguments[0]):j?t.createElementNS.call(t,"http://www.w3.org/2000/svg",arguments[0]):t.createElement.apply(t,arguments)}function u(){var e=t.body;return e||(e=f(j?"svg":"body"),e.fake=!0),e}function c(e,n,r,o){var i,a,s,l,c="modernizr",d=f("div"),p=u();if(parseInt(r,10))for(;r--;)s=f("div"),s.id=o?o[r]:c+(r+1),d.appendChild(s);return i=f("style"),i.type="text/css",i.id="s"+c,(p.fake?p:d).appendChild(i),p.appendChild(d),i.styleSheet?i.styleSheet.cssText=e:i.appendChild(t.createTextNode(e)),d.id=c,p.fake&&(p.style.background="",p.style.overflow="hidden",l=w.style.overflow,w.style.overflow="hidden",w.appendChild(p)),a=n(d,e),p.fake?(p.parentNode.removeChild(p),w.style.overflow=l,w.offsetHeight):d.parentNode.removeChild(d),!!a}function d(e,t){return function(){return e.apply(t,arguments)}}function p(e,t,n){var o;for(var i in e)if(e[i]in t)return n===!1?e[i]:(o=t[e[i]],r(o,"function")?d(o,n||t):o);return!1}function m(e){return e.replace(/([A-Z])/g,function(e,t){return"-"+t.toLowerCase()}).replace(/^ms-/,"-ms-")}function h(t,r){var o=t.length;if("CSS"in e&&"supports"in e.CSS){for(;o--;)if(e.CSS.supports(m(t[o]),r))return!0;return!1}if("CSSSupportsRule"in e){for(var i=[];o--;)i.push("("+m(t[o])+":"+r+")");return i=i.join(" or "),c("@supports ("+i+") { #modernizr { position: absolute; } }",function(e){return"absolute"==getComputedStyle(e,null).position})}return n}function g(e,t,o,a){function s(){c&&(delete M.style,delete M.modElem)}if(a=r(a,"undefined")?!1:a,!r(o,"undefined")){var u=h(e,o);if(!r(u,"undefined"))return u}for(var c,d,p,m,g,v=["modernizr","tspan"];!M.style;)c=!0,M.modElem=f(v.shift()),M.style=M.modElem.style;for(p=e.length,d=0;p>d;d++)if(m=e[d],g=M.style[m],l(m,"-")&&(m=i(m)),M.style[m]!==n){if(a||r(o,"undefined"))return s(),"pfx"==t?m:!0;try{M.style[m]=o}catch(y){}if(M.style[m]!=g)return s(),"pfx"==t?m:!0}return s(),!1}function v(e,t,n,o,i){var a=e.charAt(0).toUpperCase()+e.slice(1),s=(e+" "+k.join(a+" ")+a).split(" ");return r(t,"string")||r(t,"undefined")?g(s,t,o,i):(s=(e+" "+E.join(a+" ")+a).split(" "),p(s,t,n))}function y(e,t,r){return v(e,n,n,t,r)}var C=[],_={_version:"3.2.0",_config:{classPrefix:"",enableClasses:!0,enableJSClass:!0,usePrefixes:!0},_q:[],on:function(e,t){var n=this;setTimeout(function(){t(n[e])},0)},addTest:function(e,t,n){C.push({name:e,fn:t,options:n})},addAsyncTest:function(e){C.push({name:null,fn:e})}},Modernizr=function(){};Modernizr.prototype=_,Modernizr=new Modernizr;var S=_._config.usePrefixes?" -webkit- -moz- -o- -ms- ".split(" "):[];_._prefixes=S;var w=t.documentElement,x="Moz O ms Webkit",E=_._config.usePrefixes?x.toLowerCase().split(" "):[];_._domPrefixes=E;var b;!function(){var e={}.hasOwnProperty;b=r(e,"undefined")||r(e.call,"undefined")?function(e,t){return t in e&&r(e.constructor.prototype[t],"undefined")}:function(t,n){return e.call(t,n)}}();var N=[],P="CSS"in e&&"supports"in e.CSS,T="supportsCSS"in e;Modernizr.addTest("supports",P||T);var j="svg"===w.nodeName.toLowerCase();_._l={},_.on=function(e,t){this._l[e]||(this._l[e]=[]),this._l[e].push(t),Modernizr.hasOwnProperty(e)&&setTimeout(function(){Modernizr._trigger(e,Modernizr[e])},0)},_._trigger=function(e,t){if(this._l[e]){var n=this._l[e];setTimeout(function(){var e,r;for(e=0;e<n.length;e++)(r=n[e])(t)},0),delete this._l[e]}},Modernizr._q.push(function(){_.addTest=s});j||!function(e,t){function n(e,t){var n=e.createElement("p"),r=e.getElementsByTagName("head")[0]||e.documentElement;return n.innerHTML="x<style>"+t+"</style>",r.insertBefore(n.lastChild,r.firstChild)}function r(){var e=C.elements;return"string"==typeof e?e.split(" "):e}function o(e,t){var n=C.elements;"string"!=typeof n&&(n=n.join(" ")),"string"!=typeof e&&(e=e.join(" ")),C.elements=n+" "+e,f(t)}function i(e){var t=y[e[g]];return t||(t={},v++,e[g]=v,y[v]=t),t}function a(e,n,r){if(n||(n=t),c)return n.createElement(e);r||(r=i(n));var o;return o=r.cache[e]?r.cache[e].cloneNode():h.test(e)?(r.cache[e]=r.createElem(e)).cloneNode():r.createElem(e),!o.canHaveChildren||m.test(e)||o.tagUrn?o:r.frag.appendChild(o)}function s(e,n){if(e||(e=t),c)return e.createDocumentFragment();n=n||i(e);for(var o=n.frag.cloneNode(),a=0,s=r(),l=s.length;l>a;a++)o.createElement(s[a]);return o}function l(e,t){t.cache||(t.cache={},t.createElem=e.createElement,t.createFrag=e.createDocumentFragment,t.frag=t.createFrag()),e.createElement=function(n){return C.shivMethods?a(n,e,t):t.createElem(n)},e.createDocumentFragment=Function("h,f","return function(){var n=f.cloneNode(),c=n.createElement;h.shivMethods&&("+r().join().replace(/[\w\-:]+/g,function(e){return t.createElem(e),t.frag.createElement(e),'c("'+e+'")'})+");return n}")(C,t.frag)}function f(e){e||(e=t);var r=i(e);return!C.shivCSS||u||r.hasCSS||(r.hasCSS=!!n(e,"article,aside,dialog,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}mark{background:#FF0;color:#000}template{display:none}")),c||l(e,r),e}var u,c,d="3.7.3",p=e.html5||{},m=/^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,h=/^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,g="_html5shiv",v=0,y={};!function(){try{var e=t.createElement("a");e.innerHTML="<xyz></xyz>",u="hidden"in e,c=1==e.childNodes.length||function(){t.createElement("a");var e=t.createDocumentFragment();return"undefined"==typeof e.cloneNode||"undefined"==typeof e.createDocumentFragment||"undefined"==typeof e.createElement}()}catch(n){u=!0,c=!0}}();var C={elements:p.elements||"abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output picture progress section summary template time video",version:d,shivCSS:p.shivCSS!==!1,supportsUnknownElements:c,shivMethods:p.shivMethods!==!1,type:"default",shivDocument:f,createElement:a,createDocumentFragment:s,addElements:o};e.html5=C,f(t),"object"==typeof module&&module.exports&&(module.exports=C)}("undefined"!=typeof e?e:this,t);var k=_._config.usePrefixes?x.split(" "):[];_._cssomPrefixes=k;var z=function(t){var r,o=S.length,i=e.CSSRule;if("undefined"==typeof i)return n;if(!t)return!1;if(t=t.replace(/^@/,""),r=t.replace(/-/g,"_").toUpperCase()+"_RULE",r in i)return"@"+t;for(var a=0;o>a;a++){var s=S[a],l=s.toUpperCase()+"_"+r;if(l in i)return"@-"+s.toLowerCase()+"-"+t}return!1};_.atRule=z;var F=_.testStyles=c,L={elem:f("modernizr")};Modernizr._q.push(function(){delete L.elem});var M={style:L.elem.style};Modernizr._q.unshift(function(){delete M.style});_.testProp=function(e,t,r){return g([e],n,t,r)};_.testAllProps=v;_.prefixed=function(e,t,n){return 0===e.indexOf("@")?z(e):(-1!=e.indexOf("-")&&(e=i(e)),t?v(e,t,n):v(e,"pfx"))};_.testAllProps=y,Modernizr.addTest("csstransforms3d",function(){var e=!!y("perspective","1px",!0),t=Modernizr._config.usePrefixes;if(e&&(!t||"webkitPerspective"in w.style)){var n,r="#modernizr{width:0;height:0}";Modernizr.supports?n="@supports (perspective: 1px)":(n="@media (transform-3d)",t&&(n+=",(-webkit-transform-3d)")),n+="{#modernizr{width:7px;height:18px;margin:0;padding:0;border:0}}",F(r+n,function(t){e=7===t.offsetWidth&&18===t.offsetHeight})}return e}),o(),a(N),delete _.addTest,delete _.addAsyncTest;for(var O=0;O<Modernizr._q.length;O++)Modernizr._q[O]();e.Modernizr=Modernizr}(window,document);
-
-Modernizr.addTest('csstransformspreserve3d', function () {
-    var prop = Modernizr.prefixed('transformStyle');
-    var val = 'preserve-3d';
-    var computedStyle;
-    if(!prop) return false;
-    prop = prop.replace(/([A-Z])/g, function(str,m1){ return '-' + m1.toLowerCase(); }).replace(/^ms-/,'-ms-');
-    Modernizr.testStyles('#modernizr{' + prop + ':' + val + ';}', function (el, rule) {
-        if(window.getComputedStyle){
-            computedStyle = getComputedStyle(el, null);
-            if(computedStyle) {
-                computedStyle = computedStyle.getPropertyValue(prop);
-            }else{
-                computedStyle = '';
-            }
-        }else{
-            computedStyle = '';
-        }
-    });
-    return (computedStyle === val);
-});
-
-window.nModernizr = window.Modernizr;
-
-if(tmpModernizr) window.Modernizr = tmpModernizr;
 N2D('RAF', function () {
 
     // http://stackoverflow.com/questions/3954438/remove-item-from-array-by-value
@@ -1794,7 +1867,7 @@ N2D('RAF', function () {
     function RAF() {
         this._isTicking = false;
         this._isMobile = false;
-        this._lastTick = 0;
+        this._lastTick = -1;
         this._ticks = [];
         this._postTickCallbacks = [];
 
@@ -1847,7 +1920,7 @@ N2D('RAF', function () {
     }
 
     RAF.prototype.addTick = function (callback) {
-        if (this._ticks.indexOf(callback) == -1) {
+        if (this._ticks.indexOf(callback) === -1) {
             this._ticks.push(callback);
         }
         if (!this._isTicking) {
@@ -1860,14 +1933,13 @@ N2D('RAF', function () {
         N2ArrayRemove(this._ticks, callback);
 
         if (this._ticks.length === 0 && this._isTicking) {
-            this._lastTick = 0;
+            this._lastTick = -1;
             this._isTicking = false;
         }
     };
 
     RAF.prototype._tickStart = function (time) {
         this._lastTick = time;
-        //this._tick(time);
 
         if (this._isTicking) {
             this._lastTick = time;
@@ -1877,13 +1949,15 @@ N2D('RAF', function () {
 
 
     RAF.prototype._tick = function (time) {
-        var delta = (time - this._lastTick) / 1000;
-        if (delta != 0) {
-            for (var i = 0; i < this._ticks.length; i++) {
-                this._ticks[i].call(null, delta);
-            }
+        if (this._lastTick !== -1) {
+            var delta = (time - this._lastTick) / 1000;
+            if (delta != 0) {
+                for (var i = 0; i < this._ticks.length; i++) {
+                    this._ticks[i].call(null, delta);
+                }
 
-            this.postTick();
+                this.postTick();
+            }
         }
         this._continueTick(time);
     };
@@ -2328,28 +2402,29 @@ N2D('AnimationCSS', 'RAF', function ($) {
             elements = [elements];
         }
 
-		    value = value + unit;
+        value = value + unit;
 
         for (var i = 0; i < elements.length; i++) {
             var element = elements[i];
 
-			      this.applyStyles(element, property, value);
+            this.applyStyles(element, property, value);
         }
     };
 
     AnimationCSS.prototype.applyStyles = function (element, property, value) {
-    	 var styles = {};
-    		styles[property] = value;
-    		if (typeof hookProperties[property] !== 'undefined') {
-    			hookProperties[property](element).prepare(styles);
-    		}
-    
-    		for (var prop in styles) {
-    			var prefixed = nModernizr.prefixed(prop);
-    			if (prefixed) {
-    				element.style[prefixed] = styles[prop];
-    			}
-    		}
+        var styles = {};
+        styles[property] = value;
+        if (typeof hookProperties[property] !== 'undefined') {
+            hookProperties[property](element).prepare(styles);
+        }
+
+        for (var prop in styles) {
+            try {
+                element.style[prop] = styles[prop];
+            } catch (e) {
+
+            }
+        }
     };
 
     AnimationCSS.prototype.makeTransitionData = function (element, property, startValue, endValue) {
@@ -2409,16 +2484,17 @@ N2D('AnimationCSS', 'RAF', function ($) {
         if (typeof hookProperties[property] !== 'undefined') {
             return hookProperties[property](element).get(property);
         }
-        var prefixed = nModernizr.prefixed(property);
-        if (prefixed) {
+
+        try {
             var value = $(element).css(property);
-            if (value == 'auto') {
+            if (value === 'auto') {
                 return 0;
             }
             return value;
+        } catch (e) {
+            return 0;
         }
-
-    }
+    };
 
     AnimationCSS.prototype.transformUnit = function (element, property, value, startUnit, endUnit) {
         if (value == 0) {
@@ -2518,7 +2594,7 @@ N2D('AnimationCSS', 'RAF', function ($) {
         return element.n2Transform;
     }
 
-	  hookProperties['transform'] = getTransformObject;
+    hookProperties['transform'] = getTransformObject;
     hookProperties['x'] = getTransformObject;
     hookProperties['y'] = getTransformObject;
     hookProperties['z'] = getTransformObject;
@@ -2529,19 +2605,19 @@ N2D('AnimationCSS', 'RAF', function ($) {
     hookProperties['scaleX'] = getTransformObject;
     hookProperties['scaleY'] = getTransformObject;
     hookProperties['scaleZ'] = getTransformObject;
-    
+
     var defaultTransformData = {
-    		x: 0,
-    		y: 0,
-    		z: 0,
-    		rotationX: 0,
-    		rotationY: 0,
-    		rotationZ: 0,
-    		scaleX: 1,
-    		scaleY: 1,
-    		scaleZ: 1,
-    		scale: 1
-  	};
+        x: 0,
+        y: 0,
+        z: 0,
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+        scaleX: 1,
+        scaleY: 1,
+        scaleZ: 1,
+        scale: 1
+    };
 
     function Transform(element) {
         this.data = $.extend({}, defaultTransformData);
@@ -2554,10 +2630,10 @@ N2D('AnimationCSS', 'RAF', function ($) {
 
     var rad = Math.PI / 180;
     Transform.prototype.prepare = function (styles) {
-    		
-        if(typeof styles.transform !== 'undefined' && styles.transform === 'none'){
-    			this.data = $.extend({}, defaultTransformData);
-    		}
+
+        if (typeof styles.transform !== 'undefined' && styles.transform === 'none') {
+            this.data = $.extend({}, defaultTransformData);
+        }
 
         if (typeof styles['scale'] !== 'undefined') {
             styles['scaleX'] = styles['scale'];

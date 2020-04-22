@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.2.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -16,31 +16,27 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 ?>
 
 <div <?php tie_post_class( 'container-wrapper post-element' ); ?>>
-	<div style="<?php echo tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-grid' ) ?>" class="slide">
+	<div style="<?php echo tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-post' ) ?>" class="slide">
 		<a href="<?php the_permalink() ?>" class="all-over-thumb-link"><span class="screen-reader-text"><?php the_title(); ?></span></a>
 
 		<div class="thumb-overlay">
 
 			<?php
-
-				# Get the Post Category
+				// Get the Post Category
 				if( $block['category_meta'] ){
 					tie_the_category();
 				}
-
 			?>
 
 			<div class="thumb-content">
 
 				<?php
-
 					if( $block['post_meta'] ){
 						tie_the_post_meta( array( 'author' => false, 'comments' => false, 'views' => false ), '<div class="thumb-meta">', '</div>' );
 					}
-
 				?>
 
-				<h3 class="thumb-title"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h3>
+				<h2 class="thumb-title"><a href="<?php the_permalink() ?>"><?php the_title() ?></a></h2>
 
 				<?php if( $block['excerpt'] ): ?>
 					<div class="thumb-desc">

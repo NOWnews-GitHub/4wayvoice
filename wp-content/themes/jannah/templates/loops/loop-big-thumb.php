@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -16,19 +16,23 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if( $count == 1 ) :
 
-	$background = tie_get_option( 'lazy_load' ) ? 'data-src="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-grid' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-grid' ) ) .'"'; ?>
+	$background = '';
+	$thumbnail  = tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-post' );
+
+	if( ! empty( $thumbnail ) ){
+		$background = tie_get_option( 'lazy_load' ) ? 'data-lazy-bg="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-grid' ) ) .'"';
+	}
+
+	?>
 
 	<li <?php tie_post_class( 'post-item' ); ?>>
 		<div class="big-thumb-left-box-inner" <?php echo ( $background ); ?>>
 
 			<?php
-
-				# Get the post thumbnail
+				// Get the post thumbnail
 				if ( has_post_thumbnail() ){
-
-					tie_post_thumbnail( false, 'large' );
+					tie_post_thumbnail( false, 'large', false, true, $block['media_overlay'] );
 				}
-
 			?>
 
 
@@ -37,15 +41,15 @@ if( $count == 1 ) :
 
 					<?php tie_the_category(); ?>
 
-					<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+					<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 
 					<?php
-						# Get the Post Meta info
+
+						// Get the Post Meta info
 						if( ! empty( $block['post_meta'] )){
 							tie_the_post_meta( '', '<div class="thumb-meta">', '</div>' );
 						}
 					?>
-
 				</div>
 			</div>
 		</div>
@@ -62,25 +66,23 @@ if( $count == 1 ) :
 
 		<?php
 
-			# Get the post thumbnail
+			// Get the post thumbnail
 			if ( has_post_thumbnail() && empty( $block['thumb_small'] ) ){
-				tie_post_thumbnail();
+				tie_post_thumbnail( TIELABS_SMALL_IMAGE, 'small', false, true, $block['media_overlay'] );
 			}
-
 		?>
 
 		<div class="post-details">
 
 			<?php
 
-				# Get the Post Meta info
+				// Get the Post Meta info
 				if( ! empty( $block['post_meta'] )){
 					tie_the_post_meta( array( 'trending' => true,'author' => false, 'comments' => false, 'views' => false, 'review' => true ) );
 				}
-
 			?>
 
-			<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+			<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 		</div><!-- .post-details /-->
 	</li>
 

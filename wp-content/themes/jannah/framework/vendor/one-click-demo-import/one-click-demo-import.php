@@ -149,7 +149,7 @@ class PT_One_Click_Demo_Import {
 	// by TieLabs ***************************************************************
 
 	$demos_count  = tie_get_latest_theme_data( 'demos' ) ? count( tie_get_latest_theme_data( 'demos' ) ) : 0;
-	update_option( TIELABS_THEME_SLUG .'_demos_count', $demos_count );
+	update_option( TIELABS_THEME_SLUG .'_demos_count', $demos_count, false );
 
 	?>
 
@@ -458,7 +458,7 @@ class PT_One_Click_Demo_Import {
 
 				// Store the installed Demo // TieLabs
 				if( ! empty( $this->import_files[ $this->selected_index ]['import_file_name'] )){
-					update_option( 'tie_installed_demo_'. TIELABS_THEME_ID, $this->import_files[ $this->selected_index ]['import_file_name']);
+					update_option( 'tie_installed_demo_'. TIELABS_THEME_ID, $this->import_files[ $this->selected_index ]['import_file_name'], false );
 				}
 			}
 			else {

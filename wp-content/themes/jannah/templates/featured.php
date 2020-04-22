@@ -28,7 +28,10 @@ elseif( is_category() ){
 
 	$category_id = get_query_var( 'cat' );
 
-	# Cache field key
+	// Don't duplicate posts
+	$is_do_not_dublicate = tie_get_category_option( 'do_not_dublicate' ) ? true : false;
+
+	// Cache field key
 	$cache_key = apply_filters( 'TieLabs/cache_key', '-slider-cat-'.$category_id );
 
 	$slider_settings = array(
@@ -100,29 +103,28 @@ if( ! empty( $slider_settings ) ){
 	extract( $slider_settings );
 
 
-	# Get the LayerSlider
+	// Get the LayerSlider
 	if( $lsslider && TIELABS_LS_Sliders_IS_ACTIVE ){
 		echo '<div class="third-party-slider">';
 			layerslider( $lsslider );
 		echo '</div>';
 	}
 
-	# Get the Revolution slider
+	// Get the Revolution slider
 	elseif( $revslider && TIELABS_REVSLIDER_IS_ACTIVE ){
 		echo '<div class="third-party-slider">';
 			putRevSlider( $revslider );
 		echo '</div>';
 	}
 
-	# Get the main slider
+	// Get the main slider
 	elseif( $featured_posts ){
 
-		# Enqueue the Sliders Js file
+		// Enqueue the Sliders Js file
 		wp_enqueue_script( 'tie-js-sliders' );
 
-
-		# Check the Cache
-		if( tie_get_option( 'cache' ) && ! empty( $cache_key ) && false !== get_transient( $cache_key ) && ! ( defined( 'WP_CACHE' ) && WP_CACHE ) ){
+		// Check the Cache
+		if( tie_get_option( 'jso_cache' ) && ! empty( $cache_key ) && false !== get_transient( $cache_key ) && ! ( defined( 'WP_CACHE' ) && WP_CACHE ) ){
 			$cached_slider = get_transient( $cache_key );
 		}
 
@@ -130,12 +132,11 @@ if( ! empty( $slider_settings ) ){
 
 			ob_start();
 
-			# Default Images Size
-			$image_size    = apply_filters( 'TieLabs/Sliders/img_grid_size', TIELABS_THEME_SLUG.'-image-grid' );
-			$full_img_size = apply_filters( 'TieLabs/Sliders/img_full_size', TIELABS_THEME_SLUG.'-image-full' );
+			// Default Images Size
+			$image_size    = apply_filters( 'TieLabs/Sliders/img_grid_size', TIELABS_THEME_SLUG.'-image-post' );
+			$full_img_size = apply_filters( 'TieLabs/Sliders/img_full_size', 'full' );
 
-
-			# Reset the posts counter
+			// Reset the posts counter
 			$count = 0;
 			$grid_count = 0;
 
@@ -230,14 +231,14 @@ if( ! empty( $slider_settings ) ){
 					break;
 			}
 
-			# Slider query
+			// Slider query
 			$args         = array();
 			$slider_items = array();
 
-			# If this is not a video list, we need to check the quries
+			// If this is not a video list, we need to check the quries
 			if( $slider != 'videos-list' && $slider != 'videos_list' ){
 
-				# Custom Slider
+				// Custom Slider
 				if( ! empty( $query_type ) && $query_type == 'custom' ){
 
 					$get_custom_slider = get_post_custom( $custom_slider );
@@ -245,10 +246,9 @@ if( ! empty( $slider_settings ) ){
 
 					if( ! empty( $slider_items ) && is_array( $slider_items )){
 						foreach ( $slider_items as $slide_id => $slide_item ){
-							$slider_items[ $slide_id ]['slide_title']      = $slide_item['title'];
-							$slider_items[ $slide_id ]['slide_title_attr'] = esc_html( $slide_item['title'] );
-							$slider_items[ $slide_id ]['slide_image']      = tie_get_option( 'lazy_load' ) ? 'data-lazy="'. tie_slider_img_src( $slide_item['id'], $image_size ) .'"' : 'style="'. tie_slider_img_src_bg( $slide_item['id'], $image_size ) .'"';
-							$slider_items[ $slide_id ]['slide_link']       = esc_url( $slide_item['link'] );
+							$slider_items[ $slide_id ]['slide_title'] = $slide_item['title'];
+							$slider_items[ $slide_id ]['slide_image'] = tie_get_option( 'lazy_load' ) ? 'data-lazy="'. tie_slider_img_src( $slide_item['id'], $image_size ) .'"' : 'style="'. tie_slider_img_src_bg( $slide_item['id'], $image_size ) .'"';
+							$slider_items[ $slide_id ]['slide_link']  = esc_url( $slide_item['link'] );
 
 							if( $show_excerpt ){
 								$slider_items[ $slide_id ]['slide_caption'] = '<div class="thumb-desc">'. $slide_item['caption'] .'</div><!-- .thumb-desc -->';
@@ -264,7 +264,7 @@ if( ! empty( $slider_settings ) ){
 					$args['order']  = $order;
 
 
-					# If the current page is category
+					// If the current page is category
 					if( is_category() ){
 
 						$args['id'] = $category_id;
@@ -274,10 +274,10 @@ if( ! empty( $slider_settings ) ){
 						}
 					}
 
-					# Block in the page builder
+					// Block in the page builder
 					else{
 
-						# Get posts by tags
+						// Get posts by tags
 						if( ! empty( $query_type ) && $query_type == 'tags' ){
 							$args['tags'] = $query_tags;
 						}
@@ -300,12 +300,12 @@ if( ! empty( $slider_settings ) ){
 						}
 					}
 
-					# Exclude posts by IDs
+					// Exclude posts by IDs
 					if( $exclude_posts ){
 						$args['exclude_posts'] = $exclude_posts;
 					}
 
-					# Run the Query
+					// Run the Query
 					// Related Posts Mode in the Single Post Page
 					if( ! empty( $related_mode ) ){
 						$slider_query = new wp_query( $related_mode );
@@ -316,49 +316,50 @@ if( ! empty( $slider_settings ) ){
 
 					while ( $slider_query->have_posts() ){
 
-						# Get the post ID
+						// Get the post ID
 						$slider_query->the_post();
 						$slider_post_id = get_the_ID();
 
-						# Get the bakground image
+						// Get the bakground image
 						$background = tie_get_option( 'lazy_load' ) ? 'data-lazy="'. tie_thumb_src( $image_size ) .'"' : 'style="'. tie_thumb_src_bg( $image_size ) .'"';
 
-						# Add the slide data
-						$slider_items[ $slider_post_id ]['slide_title']      = tie_get_title( $title_length );
-						$slider_items[ $slider_post_id ]['slide_title_attr'] = the_title_attribute( 'echo=0' );
-						$slider_items[ $slider_post_id ]['slide_image']      = $background;
-						$slider_items[ $slider_post_id ]['slide_link']       = get_permalink();
+						// Add the slide data
+						$slider_items[ $slider_post_id ]['slide_title'] = tie_get_title( $title_length );
+						$slider_items[ $slider_post_id ]['slide_image'] = $background;
+						$slider_items[ $slider_post_id ]['slide_link']  = get_permalink();
 
-						# Slide Meta
+						// Slide Meta
 						$slide_meta  = '';
 						$slide_meta .= tie_get_trending_icon();
+						$slide_meta  = apply_filters( 'TieLabs/Slider/post_meta/before_date', $slide_meta );
 						$slide_meta .= $show_date ? tie_get_time( true ) : '';
+						$slide_meta  = apply_filters( 'TieLabs/Slider/post_meta/after_date', $slide_meta );
 
 						if( ! empty( $slide_meta ) ){
 							$slider_items[ $slider_post_id ]['slide_meta'] = $slide_meta;
 						}
 
-						# Excerpt
+						// Excerpt
 						if( $show_excerpt ){
 							$slider_items[ $slider_post_id ]['slide_caption'] = '<div class="thumb-desc">'. tie_get_excerpt( $excerpt_length ) .'</div><!-- .thumb-desc -->';
 						}
 
-						# Primary Category
+						// Primary Category
 						if( $show_category ){
 							$slider_items[ $slider_post_id ]['slide_categories'] = tie_get_category();
 						}
 
-						# Review
+						// Review
 						if( $show_reviews ){
 							$slider_items[ $slider_post_id ]['review_score'] = tie_get_score( 'large' );
 						}
 
-						# Do not duplicate posts For Page Builder
+						// Do not duplicate posts For Page Builder
 						if( $is_do_not_dublicate ){
 							TIELABS_HELPER::do_not_dublicate( $slider_post_id );
 						}
 
-						# Do not duplicate posts For Posts
+						// Do not duplicate posts For Posts
 						if( ! empty( $related_mode ) ){
 							tie_single_post_do_not_dublicate( $slider_post_id );
 						}
@@ -370,13 +371,13 @@ if( ! empty( $slider_settings ) ){
 			} // is not Video PlayList
 
 
-			# Colored Mask class
+			// Colored Mask class
 			$slider_class .= $colored_mask ? ' slide-mask' : '';
 
-			# slide class
+			// slide class
 			$single_slide_class = ( $slider > 8 && $slider < 50 ) ? 'grid-item' : 'slide';
 
-			# LazyLoad is enaled
+			// LazyLoad is enaled
 			if( tie_get_option( 'lazy_load' ) ){
 				$single_slide_class .= ' lazy-bg';
 			}
@@ -384,7 +385,7 @@ if( ! empty( $slider_settings ) ){
 
 			$slider_wrapper_class = '';
 
-			# Media Overlay
+			// Media Overlay
 			if( $media_overlay && $query_type != 'custom' ){
 				$slider_wrapper_class .= ' media-overlay';
 			}
@@ -394,7 +395,7 @@ if( ! empty( $slider_settings ) ){
 				$slider_wrapper_class .= ' is-slider-overlay-disabled';
 			}
 
-			# Video list parent box class
+			// Video list parent box class
 			if( $slider == 'videos-list' || $slider == 'videos_list' ){
 				$slider_wrapper_class .= ' tie-video-main-slider';
 
@@ -403,22 +404,20 @@ if( ! empty( $slider_settings ) ){
 				}
 			}
 
-			# Slider data attr.
+			// Slider data attr.
 			$slider_data_attr = '';
 
-			# AutoPlay
+			// AutoPlay
 			$slider_data_attr .= ( $featured_auto ) ? ' data-autoplay="true"' : '';
 
-
-			# Slider Speed
+			// Slider Speed
 			$slider_data_attr .= ( $slider_speed ) ? ' data-speed="'. $slider_speed .'"' : ' data-speed="3000"';
 
-
-			# Common slider markup
-      $lazy_or_no_content = tie_get_option( 'lazy_load' ) ? '<div %2$s><img %1$s src="'. TIELABS_TEMPLATE_URL .'/assets/images/tie-empty.png" width="780" height="500" alt=""><div class="slide-bg"></div>' : '<div %1$s %2$s>';
+			// Common slider markup
+      $lazy_or_no_content = tie_get_option( 'lazy_load' ) ? '<div %2$s><img %1$s src="'. tie_lazyload_placeholder('slider') .'" width="780" height="470" alt="%4$s"><div class="slide-bg"></div>' : '<div %1$s %2$s>';
 
       $before_slider = $lazy_or_no_content . '
-					<a href="%3$s" class="all-over-thumb-link"><span class="screen-reader-text">%4$s</span></a>
+					<a href="%3$s" class="all-over-thumb-link" aria-label="%4$s"></a>
 					<div class="thumb-overlay">';
 
 						if( $media_overlay && $query_type != 'custom' ){
@@ -433,14 +432,14 @@ if( ! empty( $slider_settings ) ){
 			';
 
 			$slide_title_html = '
-				<h2 class="thumb-title"><a href="%1$s" title="%2$s">%3$s</a></h2>
+				<h2 class="thumb-title"><a href="%1$s">%2$s</a></h2>
 			'; ?>
 
 			<section id="tie-<?php echo esc_attr( $slider_id ) ?>" class="slider-area mag-box<?php echo esc_attr( $slider_wrapper_class ) ?>">
 
 				<?php
 
-				# Video Play List
+				// Video Play List
 				if( $slider == 'videos-list' || $slider == 'videos_list' ){
 
 					if( $videos_data ){
@@ -462,7 +461,7 @@ if( ! empty( $slider_settings ) ){
 
 						<?php
 
-							# Loader icon
+							// Loader icon
 							if( $slider == 2 || $slider == 5 || $slider == 6 || $slider == 7 ){
 								tie_get_ajax_loader();
 							}
@@ -507,7 +506,7 @@ if( ! empty( $slider_settings ) ){
 																	echo '<div class="thumb-meta">'. $slide_meta .'</div>';
 																}
 
-																printf( $slide_title_html, $slide_link, $slide_title_attr, $slide_title );
+																printf( $slide_title_html, $slide_link, $slide_title );
 
 															echo '</div> <!-- .thumb-content /-->';
 														}
@@ -525,7 +524,7 @@ if( ! empty( $slider_settings ) ){
 																	echo '<div class="thumb-meta">'. $slide_meta .'</div>';
 																}
 
-																printf( $slide_title_html, $slide_link, $slide_title_attr, $slide_title );
+																printf( $slide_title_html, $slide_link, $slide_title );
 
 																if( ! empty( $slide_caption )){
 																	echo ( $slide_caption );
@@ -547,7 +546,7 @@ if( ! empty( $slider_settings ) ){
 																	echo '<div class="thumb-meta">'. $slide_meta .'</div>';
 																}
 
-																printf( $slide_title_html, $slide_link, $slide_title_attr, $slide_title );
+																printf( $slide_title_html, $slide_link, $slide_title );
 
 															echo '</div> <!-- .thumb-content /-->';
 														}
@@ -556,7 +555,7 @@ if( ! empty( $slider_settings ) ){
 
 												echo ( $after_slider );
 
-												#  Reset the posts count after 6 posts
+												// Reset the posts count after 6 posts
 												$count = ( $count == 6 ) ? 0 : $count;
 											}
 										?>
@@ -588,7 +587,7 @@ if( ! empty( $slider_settings ) ){
 												foreach ( $slider_items as $slider_post_id => $single_slide ){
 
 
-													# Grid Sliders
+													// Grid Sliders
 														if( ! empty( $posts_per_slide ) ){
 
 															if( $grid_count == 0 ){
@@ -627,7 +626,7 @@ if( ! empty( $slider_settings ) ){
 																echo '<div class="thumb-meta">'. $slide_meta .'</div>';
 															}
 
-															printf( $slide_title_html, $slide_link, $slide_title_attr, $slide_title );
+															printf( $slide_title_html, $slide_link, $slide_title );
 
 															if( $slider != 6 && ! empty( $slide_caption ) ){
 																echo ( $slide_caption );
@@ -637,7 +636,7 @@ if( ! empty( $slider_settings ) ){
 
 													echo ( $after_slider );
 
-													# Grid Sliders
+													// Grid Sliders
 													if( ! empty( $posts_per_slide ) ){
 
 														if( $grid_count == $posts_per_slide || $number_of_posts == 0 ){
@@ -649,7 +648,7 @@ if( ! empty( $slider_settings ) ){
 													//------------
 
 
-													#  Reset the posts count after 6 posts
+													// Reset the posts count after 6 posts
 													$count = ( $count == 6 ) ? 0 : $count;
 												}
 											}
@@ -665,7 +664,7 @@ if( ! empty( $slider_settings ) ){
 
 					<?php
 
-					# Navigation of Slider 4
+					// Navigation of Slider 4
 					if( $slider == 4 || $slider == 50 ):
 
 						$nav_slider_class = 'wide-slider-nav-wrapper';
@@ -705,8 +704,9 @@ if( ! empty( $slider_settings ) ){
 													</div><!-- slide /-->
 
 													<?php
-													# Reset the posts count after 6 posts
-													 $count = ( $count == 6 ) ? 0 : $count;
+
+													// Reset the posts count after 6 posts
+													$count = ( $count == 6 ) ? 0 : $count;
 
 												endforeach;
 											?>
@@ -719,7 +719,7 @@ if( ! empty( $slider_settings ) ){
 						<?php
 					endif;
 
-				} # else of the video playlist
+				} // else of the video playlist
 			?>
 
 		</section><!-- .slider-area -->
@@ -728,7 +728,7 @@ if( ! empty( $slider_settings ) ){
 
 			$cached_slider = ob_get_clean();
 
-			if( tie_get_option( 'cache' ) &&  ! empty( $cache_key ) ){
+			if( tie_get_option( 'jso_cache' ) &&  ! empty( $cache_key ) ){
 				set_transient( $cache_key, $cached_slider, 5 * HOUR_IN_SECONDS );
 			}
 

@@ -13,8 +13,10 @@ if( ! function_exists( 'tie_get_time' )){
 
 	function tie_get_time( $return = false ){
 
+		$time_format = tie_get_option( 'time_format' );
+
 		// Date is disabled globally
-		if( tie_get_option( 'time_format' ) == 'none' ){
+		if( $time_format == 'none' ){
 			return false;
 		}
 
@@ -24,7 +26,7 @@ if( ! function_exists( 'tie_get_time' )){
 		$modified_time = tie_get_option( 'time_type' ) == 'modified' ? true : false;
 
 		// Human Readable Post Dates
-		if( tie_get_option( 'time_format' ) == 'modern' ){
+		if( $time_format == 'modern' ){
 
 			$time_now  = current_time( 'timestamp' );
 			$post_time = $modified_time ? get_the_modified_time( 'U' ) : get_the_time( 'U' );
@@ -45,7 +47,7 @@ if( ! function_exists( 'tie_get_time' )){
 		$since = apply_filters( 'TieLabs/post_date', $since );
 
 		// The date markup
-		$post_time = '<span class="date meta-item"><span class="fa fa-clock-o" aria-hidden="true"></span> <span>'. $since .'</span></span>';
+		$post_time = '<span class="date meta-item fa-before">'. $since .'</span>';
 
 		if( $return ){
 			return $post_time;
@@ -73,15 +75,15 @@ if( ! function_exists( 'tie_get_score' )){
 
 		$image_style = taqyeem_get_option( 'rating_image' ) ? taqyeem_get_option( 'rating_image' ) : 'stars';
 
-		# Show the stars
+		// Show the stars
 		if( $style == 'stars' ){
 
-			# Small stars size
+			// Small stars size
 			if( $size != 'small' ){
 				$review_output .= '
-					<div data-rate-val="'. $total_score. '%" class="post-rating image-'. $image_style .'">
+					<div class="post-rating image-'. $image_style .'">
 						<div class="stars-rating-bg"></div><!-- .stars-rating-bg -->
-						<div class="stars-rating-active">
+						<div class="stars-rating-active" data-rate-val="'. $total_score. '%" data-lazy-percent="1">
 							<div class="stars-rating-active-inner">
 							</div><!--.stars-rating-active-inner /-->
 						</div><!--.stars-rating-active /-->
@@ -90,20 +92,19 @@ if( ! function_exists( 'tie_get_score' )){
 			}
 		}
 
-		# Percentage and point style
+		// Percentage and point style
 		else{
-
 			$review_class = '';
 			$percentage   = '';
 
-			# Percentage
+			// Percentage
 			if( $style == 'percentage' ){
 				$review_class = ' review-percentage';
 				$post_score   = round( $total_score, 0 );
 				$percentage   = '%';
 			}
 
-			# Points
+			// Points
 			else{
 				$post_score = 0;
 				if( $total_score != 0 ){
@@ -111,17 +112,16 @@ if( ! function_exists( 'tie_get_score' )){
 				}
 			}
 
-
 			if( $size != 'stars' ){
 
 				if( $size == 'small' ){
-					$review_output .= '<div class="digital-rating-static" data-rate-val="'. $total_score .'"><strong>'. $post_score . $percentage .'</strong></div>';
+					$review_output .= '<div class="digital-rating-static" data-lazy-percent="1" data-rate-val="'. $total_score .'%"><strong>'. $post_score . $percentage .'</strong></div>';
 				}
 
 				else{
 					$review_output .= '
 						<div class="digital-rating">
-							<div data-score="'. $post_score .'" data-pct="'. $total_score .'" class="pie-wrap'. $review_class .'">
+							<div data-score="'. $post_score .'" data-pct="'. $total_score .'" data-lazy-pie="1" class="pie-wrap'. $review_class .'">
 								<svg width="40" height="40" class="pie-svg">
 									<circle r="19" cx="20" cy="20" fill="transparent" stroke-dasharray="119.38" stroke-dashoffset="0" class="circle_base"></circle>
 									<circle r="19" cx="20" cy="20" fill="transparent" stroke-dasharray="119.38" stroke-dashoffset="0" class="circle_bar"></circle>
@@ -149,20 +149,47 @@ if( ! function_exists( 'tie_the_score' )){
 }
 
 
-/*
+/**
+ * Get The Taxonomy Slug
+ */
+if( ! function_exists( 'tie_get_taxonomy_slug' )){
+
+	function tie_get_taxonomy_slug(){
+
+		$current_post_type = get_post_type();
+
+		// Standard Post
+		if( $current_post_type == 'post' ){
+			return 'category';
+		}
+
+		// Custom Post type
+		$taxonomies = get_object_taxonomies( $current_post_type );
+		if( ! empty( $taxonomies ) && is_array( $taxonomies ) ){
+			return $taxonomies[0];
+		}
+
+		return false;
+	}
+}
+
+
+/**
  * Get the Primary category object
  */
 if( ! function_exists( 'tie_get_primary_category' )){
 
 	function tie_get_primary_category(){
 
-		if( get_post_type() != 'post' ) return;
+		if( get_post_type() != 'post' ){
+			return;
+		}
 
 		// Get the primary category
 		$category = (int) tie_get_postdata( 'tie_primary_category' );
 
-		if( ! empty( $category ) &&TIELABS_WP_HELPER::term_exists( $category, 'category' ) ){
-			$get_the_category =TIELABS_WP_HELPER::get_term_by( 'id', $category, 'category' );
+		if( ! empty( $category ) && TIELABS_WP_HELPER::term_exists( $category, 'category' ) ){
+			$get_the_category = TIELABS_WP_HELPER::get_term_by( 'id', $category, 'category' );
 			$primary_category = array( $get_the_category );
 		}
 
@@ -200,26 +227,37 @@ if( ! function_exists( 'tie_get_primary_category_id' )){
 }
 
 
-/*
+/**
  * Get the Post Category HTML
  */
 if( ! function_exists( 'tie_get_category' )){
 
-	function tie_get_category( $before = '<h5 class="post-cat-wrap">', $after = '</h5>', $primary = true, $plain = false ){
+	function tie_get_category( $before = '<span class="post-cat-wrap">', $after = '</span>', $primary = true, $plain = false ){
 
-		if( get_post_type() != 'post' ) return;
+		// Return if it is not a Supported Post Type
+		/*
+		if( ! TIELABS_HELPER::is_supported_post_type() ){
+			return;
+		}
+		*/
 
 		$output  = '';
 		$output .= $before;
 
-		// If the primary is true
-		if( ! empty( $primary )){
+		// Get Taxonomy
+		$taxonomy_slug = tie_get_taxonomy_slug();
+
+		// If the primary is true || This will return false if the Post type != post
+		if( ! empty( $primary ) ){
 			$categories = tie_get_primary_category();
 		}
 
 		// Show all post's categories
-		else{
-			$categories = get_the_category();
+		if( empty( $categories ) ){
+
+			if( ! empty( $taxonomy_slug ) ){
+				$categories = get_the_terms( get_the_id(), $taxonomy_slug );
+			}
 		}
 
 		// Display the categories
@@ -230,7 +268,7 @@ if( ! function_exists( 'tie_get_category' )){
 					$output .= '<span class="post-cat tie-cat-'.$category->term_id.'">' . $category->name.'</span>';
 				}
 				else{
-					$output .= '<a class="post-cat tie-cat-'.$category->term_id.'" href="' . esc_url(TIELABS_WP_HELPER::get_term_link( $category->term_id, 'category' )) . '">' . $category->name.'</a>';
+					$output .= '<a class="post-cat tie-cat-'.$category->term_id.'" href="' . TIELABS_WP_HELPER::get_term_link( $category->term_id, $taxonomy_slug ) . '">' . $category->name.'</a>';
 				}
 			}
 		}
@@ -240,7 +278,7 @@ if( ! function_exists( 'tie_get_category' )){
 }
 
 
-/*
+/**
  * Print the post category HTML
  */
 if( ! function_exists( 'tie_the_category' )){
@@ -298,7 +336,7 @@ if( ! function_exists( 'tie_the_excerpt' )){
 }
 
 
-/*
+/**
  * Change The Title Length
  */
 if( ! function_exists( 'tie_get_title' )){
@@ -335,7 +373,7 @@ if( ! function_exists( 'tie_get_title' )){
 }
 
 
-/*
+/**
  * Print the modified title
  */
 if( ! function_exists( 'tie_the_title' )){
@@ -346,7 +384,7 @@ if( ! function_exists( 'tie_the_title' )){
 }
 
 
-/*
+/**
  * Get Post info section
  */
 if( ! function_exists( 'tie_get_post_meta' )){
@@ -379,7 +417,14 @@ if( ! function_exists( 'tie_get_post_meta' )){
 
 		// If this is not a singular page -> Check the global disable meta options
 		if( ! is_single() ){
-			$meta_prefix_slug = ( is_archive() || is_search() ) ? 'archives' : 'blocks';
+
+			$meta_prefix_slug = 'blocks';
+
+			// TIE_IS_ARCHIVE for the Ajax requests | defined in archive_load_more();
+			if( is_archive() || is_search() || ( defined( 'TIE_IS_ARCHIVE' ) && TIE_IS_ARCHIVE ) ){
+				$meta_prefix_slug = 'archives';
+			}
+
 			$args['author']   = tie_get_option( $meta_prefix_slug .'_disable_author_meta' )   ? false : $args['author'];
 			$args['comments'] = tie_get_option( $meta_prefix_slug .'_disable_comments_meta' ) ? false : $args['comments'];
 			$args['views']    = tie_get_option( $meta_prefix_slug .'_disable_views_meta' )    ? false : $args['views'];
@@ -391,13 +436,7 @@ if( ! function_exists( 'tie_get_post_meta' )){
 		extract( $args );
 
 		// Prepare the post info section
-		$post_meta = $before.'<div class="post-meta">';
-
-		global $post;
-
-		if( !empty( get_post_meta( $post->ID, 'byline', true ) ) ) {
-			$post_meta .= "<span>". get_post_meta( $post->ID, 'byline', true ) ."</span>";
-		}
+		$post_meta = $before.'<div class="post-meta clearfix">';
 
 		// Trending
 		if( ! empty( $trending ) ){
@@ -411,53 +450,7 @@ if( ! function_exists( 'tie_get_post_meta' )){
 
 		// Author
 		if( ! empty( $author ) ){
-
-			$user_id = get_the_author_meta( 'ID' );
-
-			# Show the author's avatar
-			if( ! empty( $avatar ) && get_option( 'show_avatars' ) ){
-				$author_icon = '';
-
-				$post_meta .= '
-					<span class="meta-author-avatar">
-						<a href="'. tie_get_author_profile_url( $user_id ) .'">'.
-							get_avatar( get_the_author_meta( 'user_email', $user_id ), 140 ).'
-						</a>
-					</span>
-				';
-			}
-
-			// Show the author's default icon
-			else{
-				$author_icon = '<span class="fa fa-user" aria-hidden="true"></span> ';
-			}
-
-			$post_meta .= '
-				<span class="meta-author meta-item">'.
-					'<a href="'. tie_get_author_profile_url( $user_id ). '" class="author-name" title="'. get_the_author() .'">'. $author_icon . get_the_author() .'</a>
-				</span>
-			';
-
-			// Twitter and Email Buttons
-			$author_twitter = get_the_author_meta( 'twitter', $user_id );
-			if( ! empty( $twitter ) && ! empty( $author_twitter )){
-				$post_meta .= '
-					<a href="'. esc_url( $author_twitter ) .'" class="author-twitter-link" target="_blank" rel="nofollow noopener">
-						<span class="fa fa-twitter" aria-hidden="true"></span>
-						<span class="screen-reader-text"></span>
-					</a>
-				';
-			}
-
-			$author_email = get_the_author_meta( 'email', $user_id );
-			if( ! empty( $email ) && ! empty( $author_email ) ){
-				$post_meta .= '
-					<a href="mailto:'. $author_email .'" class="author-email-link" target="_blank" rel="nofollow noopener">
-						<span class="fa fa-envelope" aria-hidden="true"></span>
-						<span class="screen-reader-text"></span>
-					</a>
-				';
-			}
+			$post_meta .= tie_get_author( $args );
 		}
 
 		// Date
@@ -472,7 +465,12 @@ if( ! function_exists( 'tie_get_post_meta' )){
 
 			// Comments
 			if( ! empty( $comments ) && ( get_comments_number() || comments_open() ) ){
-				$post_meta .= '<span class="meta-comment meta-item"><a href="'.get_comments_link().'"><span class="fa fa-comments" aria-hidden="true"></span> '. get_comments_number_text( '0', '1', '%' ) .'</a></span>';
+
+				// With Link
+				//$post_meta .= '<span class="meta-comment meta-item"><a href="'.get_comments_link().'"><span class="fa fa-comments" aria-hidden="true"></span> '. get_comments_number_text( '0', '1', '%' ) .'</a></span>';
+
+				// Without Link - Fix Accessability issues
+				$post_meta .= '<span class="meta-comment meta-item fa-before">'. get_comments_number_text( '0', '1', '%' ) .'</span>';
 			}
 
 			// Number of views
@@ -488,14 +486,165 @@ if( ! function_exists( 'tie_get_post_meta' )){
 			$post_meta .= apply_filters( 'TieLabs/post_meta_after_extra_info', '</div>' );
 		}
 
-		$post_meta .= '<div class="clearfix"></div></div><!-- .post-meta -->'.$after;
+		$post_meta .= '</div><!-- .post-meta -->'.$after;
 
 		return $post_meta;
 	}
 }
 
 
-/*
+/**
+ * Create the list of authors
+ */
+if( ! function_exists( 'tie_get_post_authors' ) ){
+
+	function tie_get_post_authors(){
+
+		// Co-Authors Plus
+		if( function_exists( 'get_coauthors' ) ){
+			return $post_authors = get_coauthors( get_the_ID() );
+		}
+
+		// Standard Authors
+		return array( get_userdata( get_the_author_meta( 'ID' ) ) );
+	}
+}
+
+
+/**
+ * We need to call the get_the_author as it contains the the_author filter which is used by some plugins such as the WPML plugin.
+ * get_the_author function get the data from the global $authordata
+ */
+if( ! function_exists( 'tie_get_the_author' ) ){
+
+	function tie_get_the_author( $author = false ){
+		global $authordata;
+		$authordata_old = $authordata;
+		$authordata     = $author;
+		$display_name   = get_the_author();
+		$authordata     = $authordata_old;
+
+		return $display_name;
+	}
+}
+
+
+/**
+ * Get the authors of the post
+ */
+if( ! function_exists( 'tie_get_author' ) ){
+
+	function tie_get_author( $args ){
+
+		// Holds the return data
+		$post_meta = '';
+
+		// Authors count increment var
+		$authors_count = 0;
+
+		// Get the Authors IDs
+		$post_authors = tie_get_post_authors();
+
+		// Number of Authors
+		$authors_number = count( $post_authors );
+
+		// Class for the meta
+		$author_meta_class = ( $authors_number > 1 ) ? 'multiple-authors' : 'single-author';
+
+		// Show Avatars ?
+		if( ! empty( $args['avatar'] ) && get_option( 'show_avatars' ) ){
+			$show_avatars = true;
+			$author_icon = '';
+			$author_meta_class .= ' with-avatars';
+		}
+		else{
+			$show_avatars = false;
+			$author_icon = '<span class="fa fa-user" aria-hidden="true"></span> ';
+			$author_meta_class .= ' no-avatars';
+		}
+
+		// We have authors list
+		if ( is_array( $post_authors ) && ! empty( $post_authors ) ) {
+
+			$post_meta .= '<span class="'.$author_meta_class.'">';
+
+			// Authors Loop
+			foreach ( $post_authors as $author ) {
+
+				// Profile URL
+				$profile = tie_get_author_profile_url( $author );
+
+				// Author name
+				$display_name = tie_get_the_author( $author );
+
+				// Authors count increment
+				$authors_count++;
+
+				//
+				$post_meta .= '<span class="meta-item meta-author-wrapper">';
+
+				// Show the author's avatar
+				if( $show_avatars ){
+					$post_meta .= '
+						<span class="meta-author-avatar">
+							<a href="'. $profile .'">'. get_avatar( $author->user_email, 140, '', sprintf( esc_html__( 'Photo of %s', TIELABS_TEXTDOMAIN ), $display_name ) ) .'</a>
+						</span>
+					';
+				}
+
+				// Author Name
+				$post_meta .= '
+					<span class="meta-author">'.
+						'<a href="'. $profile .'" class="author-name" title="'. $display_name .'">'. $author_icon . $display_name .'</a>
+					</span>
+				';
+
+				// Twitter icon
+				$author_twitter = get_the_author_meta( 'twitter', $author->ID );
+				if( ! empty( $args['twitter'] ) && ! empty( $author_twitter )){
+					$post_meta .= '
+						<a href="'. esc_url( $author_twitter ) .'" class="author-twitter-link" target="_blank" rel="nofollow noopener" title="'. esc_html__( 'Follow on Twitter', TIELABS_TEXTDOMAIN ) .'">
+							<span class="fa fa-twitter" aria-hidden="true"></span>
+							<span class="screen-reader-text">'. esc_html__( 'Follow on Twitter', TIELABS_TEXTDOMAIN ) .'</span>
+						</a>
+					';
+				}
+
+				// Email icon
+				if( ! empty( $args['email'] ) && ! empty( $author->user_email ) ){
+					$post_meta .= '
+						<a href="mailto:'. $author->user_email .'" class="author-email-link" target="_blank" rel="nofollow noopener" title="'. esc_html__( 'Send an email', TIELABS_TEXTDOMAIN ) .'">
+							<span class="fa fa-envelope" aria-hidden="true"></span>
+							<span class="screen-reader-text">'. esc_html__( 'Send an email', TIELABS_TEXTDOMAIN ) .'</span>
+						</a>
+					';
+				}
+
+				// Display the seprator in the single Post Page only
+				if( is_singular( 'post' ) && ! $show_avatars ){
+					if( $authors_count != $authors_number && $authors_count != $authors_number - 1 ){
+						$post_meta .= '<span class="co-plus-sep">,</span>';
+					}
+				}
+
+				$post_meta .= '</span>';
+
+				if( is_singular( 'post' ) && ! $show_avatars ){
+					if( $authors_count == $authors_number - 1 ){
+						$post_meta .= '<span class="co-plus-and-sep meta-item">'. esc_html__( 'and', TIELABS_TEXTDOMAIN ) .'</span>';
+					}
+				}
+			}
+
+			$post_meta .= '</span>';
+		}
+
+		return $post_meta;
+	}
+}
+
+
+/**
  * Print the Post info section
  */
 if( ! function_exists( 'tie_the_post_meta' )){
@@ -506,7 +655,7 @@ if( ! function_exists( 'tie_the_post_meta' )){
 }
 
 
-/*
+/**
  * Get the Trending Icon
  */
 if( ! function_exists( 'tie_get_trending_icon' )){
@@ -514,7 +663,9 @@ if( ! function_exists( 'tie_get_trending_icon' )){
 	function tie_get_trending_icon( $class = false, $before = false, $after = false ){
 
 		// Check if it is not trending
-		if( ! tie_get_postdata( 'tie_trending_post' ) ) return;
+		if( ! tie_get_postdata( 'tie_trending_post' ) ){
+			return;
+		}
 
 		return $before . '<span class="trending-post fa fa-bolt '.$class.'" aria-hidden="true"></span>' . $after;
 	}
@@ -532,7 +683,7 @@ if( ! function_exists( 'tie_the_trending_icon' )){
 }
 
 
-/*
+/**
  * Previous Post
  */
 if( ! function_exists( 'tie_prev_post' )){
@@ -543,7 +694,7 @@ if( ! function_exists( 'tie_prev_post' )){
 }
 
 
-/*
+/**
  * Next Post
  */
 if( ! function_exists( 'tie_next_post' )){
@@ -554,7 +705,7 @@ if( ! function_exists( 'tie_next_post' )){
 }
 
 
-/*
+/**
  * Custom Next and prev posts
  */
 if( ! function_exists( 'tie_adjacent_post' )){
@@ -573,10 +724,12 @@ if( ! function_exists( 'tie_adjacent_post' )){
 
 			if( ! empty( $image_data[0] )){
 				$image_path = $image_data[0];
-			} ?>
+			}
+
+			?>
 
 			<div class="tie-col-xs-6 <?php echo esc_attr( $adjacent ) ?>-post">
-				<a href="<?php the_permalink( $adjacent_post->ID ); ?>" style="background-image: url(<?php echo esc_url( $image_path ) ?>)" class="post-thumb">
+				<a href="<?php the_permalink( $adjacent_post->ID ); ?>" style="background-image: url(<?php echo esc_url( $image_path ) ?>)" class="post-thumb" rel="<?php echo esc_attr( $adjacent ) ?>">
 					<div class="post-thumb-overlay-wrap">
 						<div class="post-thumb-overlay">
 							<span class="icon"></span>
@@ -595,7 +748,7 @@ if( ! function_exists( 'tie_adjacent_post' )){
 }
 
 
-/*
+/**
  * Get Post reading time
  */
 if( ! function_exists( 'tie_reading_time' )){
@@ -630,120 +783,156 @@ if( ! function_exists( 'tie_reading_time' )){
 }
 
 
-/*
+/**
  * Get terms as plain text seprated with commas
  */
-function tie_get_plain_terms( $post_id, $term ){
+if( ! function_exists( 'tie_get_plain_terms' )){
 
-	$post_terms = get_the_terms( $post_id, $term );
+	function tie_get_plain_terms( $post_id, $term ){
 
-	$terms = array();
+		$post_terms = get_the_terms( $post_id, $term );
 
-	if( ! empty( $post_terms ) && is_array( $post_terms ) ){
-		foreach ( $post_terms as $term ) {
-			$terms[] = $term->name;
-		}
+		$terms = array();
 
-		$terms = implode( ',', $terms );
-	}
-
-	return $terms;
-}
-
-
-/*
- * Build Related Posts Query Args
- */
-function tie_get_related_posts_args( $query_type = false, $order = false, $number, $do_not_duplicate = false ){
-
-	$post_id = get_the_id();
-
-	$do_not_duplicate = ! empty( $GLOBALS['tie_do_not_duplicate'] ) ? $GLOBALS['tie_do_not_duplicate'] : array( $post_id );
-
-	$args = array(
-		'post__not_in'           => $do_not_duplicate,
-		'posts_per_page'         => $number,
-		'no_found_rows'          => true,
-		'post_status'            => 'publish',
-		'ignore_sticky_posts'    => true,
-		'update_post_term_cache' => false,
-	);
-
-	// Posts order
-	if( $order == 'rand' ){
-
-		$args['orderby'] = 'rand';
-	}
-	elseif( $order == 'views' && tie_get_option( 'tie_post_views' )){
-
-		$args['orderby']  = 'meta_value_num';
-		$args['meta_key'] = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
-	}
-	elseif( $order == 'popular' ){
-
-		$args['orderby'] = 'comment_count';
-	}
-	elseif( $order == 'modified' ){
-
-		$args['orderby'] = 'modified';
-		$args['order']   = 'ASC';
-	}
-
-	// Get related posts by author
-	if( $query_type == 'author' ){
-		$args['author'] = get_the_author_meta( 'ID' );
-	}
-
-	// Get related posts by tags
-	elseif( $query_type == 'tag' ){
-		$tags_ids  = array();
-		$post_tags = get_the_terms( $post_id, 'post_tag' );
-
-		if( ! empty( $post_tags ) ){
-			foreach( $post_tags as $individual_tag ){
-				$tags_ids[] = $individual_tag->term_id;
+		if( ! empty( $post_terms ) && is_array( $post_terms ) ){
+			foreach ( $post_terms as $term ) {
+				$terms[] = $term->name;
 			}
 
-			$args['tag__in'] = $tags_ids;
-		}
-	}
-
-	// Get related posts by categories
-	else{
-		$category_ids = array();
-		$categories   = get_the_category( $post_id );
-
-		foreach( $categories as $individual_category ){
-			$category_ids[] = $individual_category->term_id;
+			$terms = implode( ',', $terms );
 		}
 
-		$args['category__in'] = $category_ids;
+		return $terms;
 	}
-
-	return $args;
-
 }
 
 
-/*
+/**
+ * Build Related Posts Query Args
+ */
+if( ! function_exists( 'tie_get_related_posts_args' )){
+
+	function tie_get_related_posts_args( $query_type = false, $order = false, $number, $do_not_duplicate = false ){
+
+		$post_id = get_the_id();
+
+		$do_not_duplicate = ! empty( $GLOBALS['tie_single_do_not_duplicate'] ) ? $GLOBALS['tie_single_do_not_duplicate'] : array( $post_id );
+
+		$args = array(
+			'post__not_in'           => $do_not_duplicate,
+			'posts_per_page'         => $number,
+			'no_found_rows'          => true,
+			'post_status'            => 'publish',
+			'ignore_sticky_posts'    => true,
+			'update_post_term_cache' => false,
+		);
+
+		// Posts order
+		if( $order == 'rand' ){
+
+			$args['orderby'] = 'rand';
+		}
+		elseif( $order == 'views' && tie_get_option( 'tie_post_views' )){
+
+			$args['orderby']  = 'meta_value_num';
+			$args['meta_key'] = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
+		}
+		elseif( $order == 'popular' ){
+
+			$args['orderby'] = 'comment_count';
+		}
+		elseif( $order == 'modified' ){
+
+			$args['orderby'] = 'modified';
+			$args['order']   = 'ASC';
+		}
+
+		// Get related posts by author
+		if( $query_type == 'author' ){
+			$args['author'] = get_the_author_meta( 'ID' );
+		}
+
+		// Get related posts by tags
+		elseif( $query_type == 'tag' ){
+			$tags_ids  = array();
+			$post_tags = get_the_terms( $post_id, 'post_tag' );
+
+			if( ! empty( $post_tags ) ){
+				foreach( $post_tags as $individual_tag ){
+					$tags_ids[] = $individual_tag->term_id;
+				}
+
+				$args['tag__in'] = $tags_ids;
+			}
+		}
+
+		// Get related posts by categories
+		else{
+			$category_ids = array();
+			$categories   = get_the_category( $post_id );
+
+			foreach( $categories as $individual_category ){
+				$category_ids[] = $individual_category->term_id;
+			}
+
+			$args['category__in'] = $category_ids;
+		}
+
+		return $args;
+	}
+}
+
+
+/**
  * Update the single Post page do not duplicate array
  */
-function tie_single_post_do_not_dublicate( $post_id = false ){
+if( ! function_exists( 'tie_single_post_do_not_dublicate' )){
 
-	if( empty( $post_id ) ){
-		$post_id = get_the_id();
-	}
+	function tie_single_post_do_not_dublicate( $post_id = false ){
 
-	if( empty( $GLOBALS['tie_do_not_duplicate'] ) ){
-		$GLOBALS['tie_do_not_duplicate'] = array();
-	}
+		if( empty( $post_id ) ){
+			$post_id = get_the_id();
+		}
 
-	if( is_array( $post_id ) ){
-		foreach ( $post_id as $id ){
-			$GLOBALS['tie_do_not_duplicate'][ $id ] = $id;
+		if( empty( $GLOBALS['tie_single_do_not_duplicate'] ) ){
+			$GLOBALS['tie_single_do_not_duplicate'] = array();
+		}
+
+		if( is_array( $post_id ) ){
+			foreach ( $post_id as $id ){
+				$GLOBALS['tie_single_do_not_duplicate'][ $id ] = $id;
+			}
+		}
+		else{
+			$GLOBALS['tie_single_do_not_duplicate'][ $post_id ] = $post_id;
 		}
 	}
-	else{
-		$GLOBALS['tie_do_not_duplicate'][ $post_id ] = $post_id;
+}
+
+
+/**
+ * Read More button
+ */
+if( ! function_exists( 'tie_get_more_button' )){
+
+	add_filter( 'the_content_more_link', 'tie_get_more_button' );
+	function tie_get_more_button(){
+
+		// Check if the Read More button is hidden on mobile
+		if( TIELABS_HELPER::is_mobile_and_hidden( 'read_more_buttons' ) ){
+			return;
+		}
+
+		return apply_filters( 'TieLabs/more_link_button', '<a class="more-link button" href="' . get_permalink() . '">'. esc_html__( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) .'</a>' );
+	}
+}
+
+
+/**
+ * Print the Read More button
+ */
+if( ! function_exists( 'tie_the_more_button' )){
+	function tie_the_more_button(){
+		echo tie_get_more_button();
 	}
 }

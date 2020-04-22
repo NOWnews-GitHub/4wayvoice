@@ -249,6 +249,13 @@
 
 	tie_build_theme_option(
 		array(
+			'name' => esc_html__( 'Hide Read More Buttons', TIELABS_TEXTDOMAIN ),
+			'id'   => 'mobile_hide_read_more_buttons',
+			'type' => 'checkbox',
+		));
+
+	tie_build_theme_option(
+		array(
 			'name' => esc_html__( 'Hide Above Post share Buttons', TIELABS_TEXTDOMAIN ),
 			'id'   => 'mobile_hide_share_post_top',
 			'type' => 'checkbox',

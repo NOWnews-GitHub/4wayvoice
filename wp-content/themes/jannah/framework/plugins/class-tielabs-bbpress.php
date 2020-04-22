@@ -20,7 +20,9 @@ if( ! class_exists( 'TIELABS_BBPRESS' )){
 		function __construct(){
 
 			// Disable if the BBPRESS plugin is not active
-			if( ! TIELABS_BBPRESS_IS_ACTIVE ) return;
+			if( ! TIELABS_BBPRESS_IS_ACTIVE ){
+				return;
+			}
 
 			// Disable the default bbpress breadcrumb
 			add_filter( 'bbp_no_breadcrumb', '__return_true' );
@@ -36,7 +38,7 @@ if( ! class_exists( 'TIELABS_BBPRESS' )){
 		function enqueue_styles(){
 
 			// Enqueue bbPress Custom Css file
-			wp_enqueue_style( 'tie-css-bbpress', TIELABS_TEMPLATE_URL.'/assets/css/bbpress'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION, 'all' );
+			wp_enqueue_style( 'tie-css-bbpress', TIELABS_TEMPLATE_URL.'/assets/css/plugins/bbpress'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION, 'all' );
 
 			// Dequeue bbPress Default Css files
 			wp_dequeue_style( 'bbp-default' );

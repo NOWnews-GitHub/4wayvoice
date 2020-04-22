@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (C) 2014-2019 ServMask Inc.
+ * Copyright (C) 2014-2020 ServMask Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,13 @@ class Ai1wm_File {
 			return false;
 		}
 
+		// No changes were added
+		if ( function_exists( 'md5_file' ) ) {
+			if ( @md5_file( $path ) === md5( $content ) ) {
+				return true;
+			}
+		}
+
 		$is_written = false;
 		if ( ( $handle = @fopen( $path, 'w' ) ) !== false ) {
 			if ( @fwrite( $handle, $content ) !== false ) {
@@ -71,5 +78,19 @@ class Ai1wm_File {
 	 */
 	public static function create_with_markers( $path, $marker, $content ) {
 		return @insert_with_markers( $path, $marker, $content );
+	}
+
+	/**
+	 * Delete a file by path
+	 *
+	 * @param  string  $path Path to the file
+	 * @return boolean
+	 */
+	public static function delete( $path ) {
+		if ( ! @file_exists( $path ) ) {
+			return false;
+		}
+
+		return @unlink( $path );
 	}
 }

@@ -58,8 +58,8 @@ if( ! class_exists( 'TIE_TEXT_HTML' )){
 			$instance              = $old_instance;
 			$instance['title']     = sanitize_text_field( $new_instance['title'] );
 			$instance['text_code'] = $new_instance['text_code'];
-			$instance['tran_bg']   = $new_instance['tran_bg'];
-			$instance['center']    = $new_instance['center'];
+			$instance['tran_bg']   = ! empty( $new_instance['tran_bg'] ) ? 'true' : false;
+			$instance['center']    = ! empty( $new_instance['center'] )  ? 'true' : false;
 
 			# WPML
 			do_action( 'wpml_register_single_string', TIELABS_THEME_SLUG, 'widget_content_'.$this->id, $new_instance['text_code'] );
@@ -74,10 +74,10 @@ if( ! class_exists( 'TIE_TEXT_HTML' )){
 			$defaults = array( 'title' => esc_html__('Text', TIELABS_TEXTDOMAIN)  );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title      = isset( $instance['title'] )     ? $instance['title'] : '';
+			$title      = isset( $instance['title'] )     ? $instance['title']     : '';
 			$text_code  = isset( $instance['text_code'] ) ? $instance['text_code'] : '';
-			$tran_bg    = isset( $instance['tran_bg'] )   ? $instance['tran_bg'] : '';
-			$center     = isset( $instance['center'] )    ? $instance['center'] : ''; ?>
+			$tran_bg    = isset( $instance['tran_bg'] )   ? $instance['tran_bg']   : '';
+			$center     = isset( $instance['center'] )    ? $instance['center']    : ''; ?>
 
 			<p>
 				<label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_html_e( 'Title', TIELABS_TEXTDOMAIN) ?></label>

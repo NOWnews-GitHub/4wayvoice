@@ -8,14 +8,14 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.0.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
-$post_format = tie_get_postdata( 'tie_post_head' ) ? tie_get_postdata( 'tie_post_head' ) : 'standard';
+$post_format = tie_get_postdata( 'tie_post_head', 'standard' );
 
-if( $post_format ){ // $post_format == 'standard' and no feature image
+if( $post_format ){ // $post_format == 'standard' and no featured image
 
 	$featured_id = ( $post_format == 'video' && tie_get_option( 'sticky_featured_video' ) ) ? 'id="the-sticky-video"' : '';
 
@@ -27,11 +27,14 @@ if( $post_format ){ // $post_format == 'standard' and no feature image
 	$post_layout = ! empty( $post_layout ) ? $post_layout : 1;
 
 	// Get the post thumbnail size
-	$image_size = ( tie_get_object_option( 'sidebar_pos', 'cat_posts_sidebar_pos', 'tie_sidebar_pos' ) == 'full' ) ? TIELABS_THEME_SLUG.'-image-full' : TIELABS_THEME_SLUG.'-image-post';
-
 	if( $post_layout == 6 || $post_layout == 7 ){
-		$image_size = TIELABS_THEME_SLUG.'-image-full';
+		$image_size = 'full';
 	}
+	else{
+		$image_size = ( tie_get_object_option( 'sidebar_pos', 'cat_posts_sidebar_pos', 'tie_sidebar_pos' ) == 'full' ) ? 'full' : TIELABS_THEME_SLUG.'-image-post';
+	}
+
+	$image_size = apply_filters( 'TieLabs/post_featured_area/image_size', $image_size, $post_format, $post_layout );
 
 	/**
 	 * Get the post video
@@ -91,6 +94,9 @@ if( $post_format ){ // $post_format == 'standard' and no feature image
 			$lightbox_url    = tie_thumb_src( 'full' );
 			$lightbox_before = '<a href="'. $lightbox_url .'" class="lightbox-enabled">';
 			$lightbox_after  = '</a><!-- .lightbox-enabled /-->';
+
+			// Enqueue the LightBox Js file
+			wp_enqueue_script( 'tie-js-ilightbox' );
 		}
 
 		// Display the featured image
@@ -124,10 +130,10 @@ if( $post_format ){ // $post_format == 'standard' and no feature image
 		wp_enqueue_script( 'tie-js-sliders' );
 
 		if( $post_layout == 6 || $post_layout == 7 ){
-			$image_size      = 'full';
-			$slider_id = 'tie-post-fullwidth-gallery';
-			$class     = '';
-			$data_attr = '';
+			$image_size = 'full';
+			$slider_id  = 'tie-post-fullwidth-gallery';
+			$class      = '';
+			$data_attr  = '';
 
 			$post_slider = "
 				jQuery(document).ready(function(){
@@ -236,11 +242,10 @@ if( $post_format ){ // $post_format == 'standard' and no feature image
 									$link_after  = '</a>';
 								}
 
-
 								if( tie_get_option( 'lazy_load' ) ){
 
 									$img_attrs[] = 'data-lazy="'. esc_attr( $image[0] ) .'"';
-									$img_attrs[] = 'src="'. TIELABS_TEMPLATE_URL .'/assets/images/tie-empty.png"';
+									$img_attrs[] = 'src="'. tie_lazyload_placeholder() .'"';
 
 									$link_after = '<div class="slide-bg lazy-bg"></div>'.$link_after;
 

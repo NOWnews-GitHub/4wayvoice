@@ -24,8 +24,31 @@
 		array(
 			'name'   => esc_html__( 'Ad Blocker Detector', TIELABS_TEXTDOMAIN ),
 			'id'     => 'ad_blocker_detector',
+			'toggle' => '#adblock_title-item, #adblock_message-item, #adblock_background-item',
 			'type'   => 'checkbox',
 			'hint'   => esc_html__( 'Block the adblockers from browsing the site, till they turnoff the Ad Blocker', TIELABS_TEXTDOMAIN ),
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'Title', TIELABS_TEXTDOMAIN ),
+			'id'   => 'adblock_title',
+			'type' => 'text',
+			'placeholder' => esc_html__( 'Adblock Detected', TIELABS_TEXTDOMAIN ),
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'Message', TIELABS_TEXTDOMAIN ),
+			'id'   => 'adblock_message',
+			'type' => 'textarea',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'Background Color', TIELABS_TEXTDOMAIN ),
+			'id'   => 'adblock_background',
+			'type' => 'color',
 		));
 
 	tie_build_theme_option(
@@ -74,6 +97,13 @@
 		'banner_above_content' => esc_html__( 'Above Article Content Ad', TIELABS_TEXTDOMAIN ),
 		'banner_below_content' => esc_html__( 'Below Article Content Ad', TIELABS_TEXTDOMAIN ),
 		'banner_below'         => esc_html__( 'Below Article Ad', TIELABS_TEXTDOMAIN ),
+
+		'banner_category_below_slider' => esc_html__( 'Category Pages: Below the slider', TIELABS_TEXTDOMAIN ),
+		'banner_category_above_title'  => esc_html__( 'Category Pages: Above the title', TIELABS_TEXTDOMAIN ),
+		'banner_category_below_title'  => esc_html__( 'Category Pages: Below the title', TIELABS_TEXTDOMAIN ),
+
+		'banner_category_below_posts'      => esc_html__( 'Category Pages: Below Posts', TIELABS_TEXTDOMAIN ),
+		'banner_category_below_pagination' => esc_html__( 'Category Pages: Below Pagination', TIELABS_TEXTDOMAIN ),
 
 		'between_posts_1'      => sprintf( esc_html__( 'Between Posts in Archives #%s', TIELABS_TEXTDOMAIN ), 1 ),
 		'between_posts_2'      => sprintf( esc_html__( 'Between Posts in Archives #%s', TIELABS_TEXTDOMAIN ), 2 ),

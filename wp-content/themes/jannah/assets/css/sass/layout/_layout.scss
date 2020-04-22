@@ -1,3 +1,10 @@
+// Bootstrap Grid System ---------------------------------------
+// License - http://getbootstrap.com
+@import "vendors/bootstrap-grid/grid-framework";
+@import "vendors/bootstrap-grid/grid-mixins";
+@import "vendors/bootstrap-grid/grid";
+
+
 .tie-alignleft{
 	float: left;
 }
@@ -39,12 +46,16 @@
 }
 
 @include breakpoint(max_min_sm){
-	.alignright,
-	.alignleft{
-		float: none;
-		clear: both;
-		display: block;
-		margin: 0 auto 1.75em;
+	.entry .alignright,
+	.entry .alignleft{
+
+		&,
+		& img{
+			float: none;
+			clear: both;
+			display: block;
+			margin: 0 auto 1.75em;
+		}
 	}
 }
 
@@ -64,7 +75,6 @@
 .clearfix{
 	zoom: 1;
 }
-
 
 .tie-container,
 #tie-wrapper{
@@ -90,10 +100,6 @@
 	border: $primary-border;
 	border-radius: $base-border-radius;
 	padding: $container-padding;
-}
-
-.container-wrapper-without-wrapper{
-	border: 0 solid $base-border-color;
 }
 
 #content{
@@ -176,64 +182,6 @@
 		  left: 25px;
 		  right: 25px;
 		  width: calc(100% - 50px);
-		}
-	}
-}
-
-
-// COLUMNS LAYOUT
-.sidebar-right{
-	.main-content{
-		float: left;
-	}
-
-	.sidebar{
-		float: right;
-	}
-}
-
-.sidebar-left{
-	.main-content{
-		float: right;
-	}
-
-	.sidebar{
-		float: left;
-	}
-}
-
-.full-width {
-	.main-content{
-		width: 100%;
-	}
-}
-
-// One Column
-.one-column-no-sidebar{
-	.main-content{
-		margin-right: auto;
-		margin-left: auto;
-		float: none;
-
-		@include breakpoint(md){
-			max-width: 780px;
-			width: 100%;
-		}
-	}
-}
-
-//Magazine1 | none-homepages | wider in responsive
-@include breakpoint(max_min_sm){
-	.magazine1:not(.has-builder){
-		.main-content,
-		.related-posts-full-width .tie-col-md-12,
-		.sidebar{
-			padding-left: 0;
-			padding-right: 0;
-		}
-
-		.social-icons-widget.widget-content-only{
-			padding: 0 20px;
 		}
 	}
 }

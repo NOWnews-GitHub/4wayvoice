@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Save Theme Settings
  */
-function tie_save_theme_options ( $data, $refresh = 0 ){
+function tie_save_theme_options( $data, $refresh = 0 ){
 
 	if( ! empty( $data['tie_options'] )){
 
@@ -19,6 +19,7 @@ function tie_save_theme_options ( $data, $refresh = 0 ){
 
 		// Remove all empty keys
 		$data['tie_options'] = TIELABS_ADMIN_HELPER::array_filter( $data['tie_options'] );
+		$data['tie_options'] = str_replace( 'tie-open-tag', '', $data['tie_options'] ); //issue in saving any code with meta tag on some servers
 
 		// Remove the Logo Text if it is the same as the site title
 		if( ! empty( $data['tie_options']['logo_text'] ) && $data['tie_options']['logo_text'] == get_bloginfo() ){
@@ -46,10 +47,10 @@ function tie_save_theme_options ( $data, $refresh = 0 ){
 		}
 	}
 
-	# After updating the theme options action
+	// After updating the theme options action
 	do_action( 'TieLabs/Options/updated' );
 
-	# Refresh the page?
+	// Refresh the page?
 	$refresh = apply_filters( 'TieLabs/options_refresh', $refresh );
 
 	if( ! empty( $refresh ) ){
@@ -57,7 +58,6 @@ function tie_save_theme_options ( $data, $refresh = 0 ){
 		die();
 	}
 }
-
 
 
 /**
@@ -68,17 +68,8 @@ function tie_save_theme_options_ajax(){
 
 	check_ajax_referer( 'tie-theme-data', 'tie-security' );
 
-	$data    = stripslashes_deep( $_POST );
-	$refresh = 1;
-
-	if( ! empty( $data['tie_import'] )){
-		$refresh = 2;
-		$data    = maybe_unserialize( $data['tie_import'] );
-	}
-
-	tie_save_theme_options( $data, $refresh );
+	tie_save_theme_options( stripslashes_deep( $_POST ), 1 );
 }
-
 
 
 /**
@@ -94,7 +85,6 @@ function tie_about_tabs_options( $tabs ){
 
 	return $tabs;
 }
-
 
 
 /**
@@ -142,7 +132,6 @@ function tie_admin_menus(){
 		return;
 	}
 
-
 	// Reset settings
 	if( isset( $_REQUEST['reset-settings'] ) && check_admin_referer( 'reset-theme-settings', 'reset_nonce' ) ){
 
@@ -165,7 +154,7 @@ function tie_admin_menus(){
 		header( 'Pragma: hack' );
 		header( 'Content-Type: text/plain' );
 		header( 'Content-Disposition: attachment; filename="'. TIELABS_THEME_SLUG .'-options-'.date("dMy").'.dat"');
-		echo serialize( $stored_options );
+		echo json_encode( unserialize( $stored_options[0]->option_value ) );
 		die();
 	}
 
@@ -175,12 +164,10 @@ function tie_admin_menus(){
 			// error
 		}
 		else {
-			$options = unserialize( file_get_contents( $_FILES['tie_import_file']['tmp_name'] ) );
+			$options = json_decode( file_get_contents( $_FILES['tie_import_file']['tmp_name'] ), true );
 
 			if ( ! empty( $options ) && is_array( $options ) ) {
-				foreach ( $options as $option) {
-					update_option($option->option_name, unserialize($option->option_value));
-				}
+				update_option( apply_filters( 'TieLabs/theme_options', '' ), $options );
 			}
 		}
 
@@ -221,6 +208,29 @@ function tie_save_options_button(){ ?>
 		<button name="save" class="tie-save-button tie-primary-button button button-primary button-hero" type="submit"><?php esc_html_e( 'Save Changes', TIELABS_TEXTDOMAIN ) ?></button>
 	</div>
 	<?php
+}
+
+
+
+/**
+ * Add Extra Mimes Types
+ */
+add_filter( 'upload_mimes', 'tie_fonts_mimes_types', 1, 1 );
+function tie_fonts_mimes_types( $mime_types ) {
+
+	// Allow this for Administrators and in the backend only.
+	if( ! is_admin() || ! current_user_can( 'manage_options' ) ){
+		return $mime_types;
+	}
+
+	$mime_types['html']  = 'text/html';
+	$mime_types['svg']   = 'image/svg+xml';
+	$mime_types['eot']   = 'application/vnd.ms-fontobject';
+	$mime_types['ttf']   = 'application/x-font-ttf';
+	$mime_types['woff']  = 'application/x-font-woff';
+	$mime_types['woff2'] = 'application/x-font-woff2';
+
+	return $mime_types;
 }
 
 
@@ -336,17 +346,23 @@ function tie_show_theme_options(){
 
 	// HelpSout Beacon
 	if( get_option( 'tie_token_'.TIELABS_THEME_ID ) ){ ?>
-		<script>
-			!function(e,o,n){window.HSCW=o,window.HS=n,n.beacon=n.beacon||{};var t=n.beacon;t.userConfig={},t.readyQueue=[],t.config=function(e){this.userConfig=e},t.ready=function(e){this.readyQueue.push(e)},o.config={docs:{enabled:!0,baseUrl:"//jannah.helpscoutdocs.com/"},contact:{enabled:!1,formId:"55a3a495-00d8-11e8-b466-0ec85169275a"}};var r=e.getElementsByTagName("script")[0],c=e.createElement("script");c.type="text/javascript",c.async=!0,c.src="https://djtflbt20bdde.cloudfront.net/",r.parentNode.insertBefore(c,r)}(document,window.HSCW||{},window.HS||{});
-			HS.beacon.config({
-				position:'left',
-				color: '#006799',
-				zIndex: 9989,
-				poweredBy: false,
-				translation: {
-		      searchLabel: '<?php esc_html_e( 'Need Help? Search the knowledge base', TIELABS_TEXTDOMAIN ) ?>',
-		    }
-		  });
+		<script type="text/javascript">!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
+		<script type="text/javascript">
+			window.Beacon('init', 'e9254113-3842-4968-97fa-13dee4551b96');
+			window.Beacon('config', {
+				display: {
+					style: 'iconAndText',
+					iconImage: 'help',
+					text: '<?php esc_html_e( 'Need Help?', TIELABS_TEXTDOMAIN ) ?>',
+					textAlign: '<?php echo is_rtl() ? 'left'  : 'right'; ?>',
+					position:  '<?php echo is_rtl() ? 'right' : 'left'; ?>',
+					zIndex: 9991,
+				},
+				labels: {
+					suggestedForYou: '<?php esc_html_e( 'Knowledge Base', TIELABS_TEXTDOMAIN ) ?>',
+					searchLabel: '<?php esc_html_e( 'Need Help? Search the knowledge base', TIELABS_TEXTDOMAIN ) ?>',
+				}
+			})
 		</script>
 		<?php
 	}
@@ -378,22 +394,8 @@ function tie_get_share_buttons_options( $share_position = '' ){
 
 	tie_build_theme_option(
 		array(
-			'name' => esc_html__( 'Google+', TIELABS_TEXTDOMAIN ),
-			'id'   => 'share_google'.$position,
-			'type' => 'checkbox',
-		));
-
-	tie_build_theme_option(
-		array(
 			'name' => esc_html__( 'LinkedIn', TIELABS_TEXTDOMAIN ),
 			'id'   => 'share_linkedin'.$position,
-			'type' => 'checkbox',
-		));
-
-	tie_build_theme_option(
-		array(
-			'name' => esc_html__( 'StumbleUpon', TIELABS_TEXTDOMAIN ),
-			'id'   => 'share_stumbleupon'.$position,
 			'type' => 'checkbox',
 		));
 
@@ -436,6 +438,13 @@ function tie_get_share_buttons_options( $share_position = '' ){
 		array(
 			'name' => esc_html__( 'Pocket', TIELABS_TEXTDOMAIN ),
 			'id'   => 'share_pocket'.$position,
+			'type' => 'checkbox',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'Skype', TIELABS_TEXTDOMAIN ),
+			'id'   => 'share_skype'.$position,
 			'type' => 'checkbox',
 		));
 

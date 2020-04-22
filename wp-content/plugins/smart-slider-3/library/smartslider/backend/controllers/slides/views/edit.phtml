@@ -125,112 +125,113 @@ if (empty($thumbnail)) {
 <?php echo $slidesOuterHTML; ?>
 
     <div class="n2-ss-edit-slide-top">
-    <div class="n2-ss-edit-slide-top-thumbnail" onclick="N2Classes.$('.n2-ss-tab-background').trigger('click');"><img src="<?php echo n2_esc_attr($thumbnail); ?>"/></div>
-    <div class="n2-ss-edit-slide-top-details">
-        <div class="n2-h1" onclick="N2Classes.$('.n2-ss-tab-settings').trigger('click');N2Classes.$('#slidetitle').trigger('focus');N2Classes.$(window).scrollTop(N2Classes.$('#slidetitle').offset().top - 200);">
-            <?php
-            echo n2_esc_html($renderedSlide->getTitle(true));
-            ?>
-        </div>
-        <div class="n2-h4"><a class="n2-ss-back-to" href="<?php echo $this->appType->router->createUrl(array(
-                "slider/edit",
-                array('sliderid' => $sliderId)
-            )) ?>"><?php n2_e('Back to slider'); ?></a></div>
-        <div id="n2-form-matrix-slide-settings-external-tab" class="n2-ss-edit-slide-top-tabs">
-            <?php
-            $tab = 0;
-            if (!$slider->isStaticEdited) {
-                echo N2Html::tag('a', array(
-                    'href'     => '#',
-                    'data-tab' => $tab++,
-                    'class'    => 'n2-ss-tab-background n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
-                ), n2_('Background'));
-            }
+        <div class="n2-ss-edit-slide-top-thumbnail" onclick="N2Classes.$('.n2-ss-tab-background').trigger('click');">
+            <img src="<?php echo n2_esc_attr($thumbnail); ?>"/></div>
+        <div class="n2-ss-edit-slide-top-details">
+            <div class="n2-h1" onclick="N2Classes.$('.n2-ss-tab-settings').trigger('click');N2Classes.$('#slidetitle').trigger('focus');N2Classes.$(window).scrollTop(N2Classes.$('#slidetitle').offset().top - 200);">
+                <?php
+                echo n2_esc_html($renderedSlide->getTitle(true));
+                ?>
+            </div>
+            <div class="n2-h4"><a class="n2-ss-back-to" href="<?php echo $this->appType->router->createUrl(array(
+                    "slider/edit",
+                    array('sliderid' => $sliderId)
+                )) ?>"><?php n2_e('Back to slider'); ?></a></div>
+            <div id="n2-form-matrix-slide-settings-external-tab" class="n2-ss-edit-slide-top-tabs">
+                <?php
+                $tab = 0;
+                if (!$slider->isStaticEdited) {
+                    echo N2Html::tag('a', array(
+                        'href'     => '#',
+                        'data-tab' => $tab++,
+                        'class'    => 'n2-ss-tab-background n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
+                    ), n2_('Background'));
+                }
 
-            if (!$slider->isStaticEdited) {
-                switch ($slider->data->get('type')) {
-                    case 'simple':
-                    case 'block':
-                        echo N2Html::tag('a', array(
-                            'href'     => '#',
-                            'data-tab' => $tab++,
-                            'class'    => 'n2-ss-tab-animation n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
-                        ), n2_('Animation'));
-                        break;
+                if (!$slider->isStaticEdited) {
+                    switch ($slider->data->get('type')) {
+                        case 'simple':
+                        case 'block':
+                            echo N2Html::tag('a', array(
+                                'href'     => '#',
+                                'data-tab' => $tab++,
+                                'class'    => 'n2-ss-tab-animation n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
+                            ), n2_('Animation'));
+                            break;
+                    }
+                }
+
+                if ($slide && $slide['generator_id'] > 0) {
+                    echo N2Html::tag('a', array(
+                        'href'     => '#',
+                        'data-tab' => $tab++,
+                        'class'    => 'n2-ss-tab-settings n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
+                    ), n2_('Settings'));
+                    echo N2Html::tag('a', array(
+                        'href'     => '#',
+                        'data-tab' => $tab++,
+                        'class'    => 'n2-ss-tab-generator n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4 n2-last' . ($tab == 1 ? ' n2-first' : '')
+                    ), n2_('Generator'));
+                } else {
+                    echo N2Html::tag('a', array(
+                        'href'     => '#',
+                        'data-tab' => $tab++,
+                        'class'    => 'n2-ss-tab-settings n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4 n2-last' . ($tab == 1 ? ' n2-first' : '')
+                    ), n2_('Settings'));
+                }
+                ?>
+            </div>
+        </div>
+        <div class="n2-heading-actions">
+            <span class="n2-heading-actions-label n2-h4"></span>
+            <?php
+            if ($slide && $slide['id'] > 0) {
+                $app          = N2Base::getApplication('smartslider');
+                $accessEdit   = N2Acl::canDo('smartslider_edit', $app->info);
+                $accessDelete = N2Acl::canDo('smartslider_delete', $app->info);
+                if ($accessEdit) {
+                    echo N2Html::tag('a', array(
+                        'data-label' => n2_('Duplicate slide'),
+                        'href'       => $this->appType->router->createUrl(array(
+                            'slides/duplicate',
+                            array(
+                                'sliderid' => $sliderId,
+                                'slideid'  => $slide['id']
+                            ) + N2Form::tokenizeUrl()
+                        ))
+                    ), N2Html::tag('i', array('class' => 'n2-i n2-i-a-duplicate')));
+                }
+
+                if ($accessDelete) {
+                    echo N2Html::tag('a', array(
+                        'data-label' => n2_('Delete slide'),
+                        "onclick"    => "return N2Classes.NextendModal.deleteModalLink(this, 'slide-delete', " . json_encode($slide['title']) . ");",
+                        'href'       => $this->appType->router->createUrl(array(
+                            'slides/delete',
+                            array(
+                                'sliderid' => $sliderId,
+                                'slideid'  => $slide['id']
+                            ) + N2Form::tokenizeUrl()
+                        ))
+                    ), N2Html::tag('i', array('class' => 'n2-i n2-i-a-delete')));
                 }
             }
-
-            if ($slide['generator_id'] > 0) {
-                echo N2Html::tag('a', array(
-                    'href'     => '#',
-                    'data-tab' => $tab++,
-                    'class'    => 'n2-ss-tab-settings n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4' . ($tab == 1 ? ' n2-first' : '')
-                ), n2_('Settings'));
-                echo N2Html::tag('a', array(
-                    'href'     => '#',
-                    'data-tab' => $tab++,
-                    'class'    => 'n2-ss-tab-generator n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4 n2-last' . ($tab == 1 ? ' n2-first' : '')
-                ), n2_('Generator'));
-            } else {
-                echo N2Html::tag('a', array(
-                    'href'     => '#',
-                    'data-tab' => $tab++,
-                    'class'    => 'n2-ss-tab-settings n2-button n2-button-l n2-radius-s n2-button-with-icon n2-h4 n2-last' . ($tab == 1 ? ' n2-first' : '')
-                ), n2_('Settings'));
-            }
             ?>
+            <script type="text/javascript">
+                N2R('documentReady', function ($) {
+                    var label = $('.n2-heading-actions-label');
+                    $('.n2-heading-actions > a').on({
+                        mouseenter: function () {
+                            label.html($(this).data('label'));
+                        },
+                        mouseleave: function () {
+                            label.html('');
+                        }
+                    });
+                });
+            </script>
         </div>
     </div>
-    <div class="n2-heading-actions">
-        <span class="n2-heading-actions-label n2-h4"></span>
-        <?php
-        if ($slide['id'] > 0) {
-            $app          = N2Base::getApplication('smartslider');
-            $accessEdit   = N2Acl::canDo('smartslider_edit', $app->info);
-            $accessDelete = N2Acl::canDo('smartslider_delete', $app->info);
-            if ($accessEdit) {
-                echo N2Html::tag('a', array(
-                    'data-label' => n2_('Duplicate slide'),
-                    'href'       => $this->appType->router->createUrl(array(
-                        'slides/duplicate',
-                        array(
-                            'sliderid' => $sliderId,
-                            'slideid'  => $slide['id']
-                        ) + N2Form::tokenizeUrl()
-                    ))
-                ), N2Html::tag('i', array('class' => 'n2-i n2-i-a-duplicate')));
-            }
-
-            if ($accessDelete) {
-                echo N2Html::tag('a', array(
-                    'data-label' => n2_('Delete slide'),
-                    "onclick"    => "return N2Classes.NextendModal.deleteModalLink(this, 'slide-delete', " . json_encode($slide['title']) . ");",
-                    'href'       => $this->appType->router->createUrl(array(
-                        'slides/delete',
-                        array(
-                            'sliderid' => $sliderId,
-                            'slideid'  => $slide['id']
-                        ) + N2Form::tokenizeUrl()
-                    ))
-                ), N2Html::tag('i', array('class' => 'n2-i n2-i-a-delete')));
-            }
-        }
-        ?>
-        <script type="text/javascript">
-            N2R('documentReady', function ($) {
-                var label = $('.n2-heading-actions-label');
-                $('.n2-heading-actions > a').on({
-                    mouseenter: function () {
-                        label.html($(this).data('label'));
-                    },
-                    mouseleave: function () {
-                        label.html('');
-                    }
-                });
-            });
-        </script>
-    </div>
-</div>
 
 <?php
 if ($isAddSample):
@@ -298,11 +299,11 @@ if ($isAddSample):
 <?php endif; ?>
 
     <form id="smartslider-form" action="#" method="post">
-    <?php
-    $slideData = $slidesModel->renderEditForm($slider, $slide);
-    ?>
+        <?php
+        $slideData = $slidesModel->renderEditForm($slider, $slide);
+        ?>
         <input name="save" value="1" type="hidden"/>
-</form>
+    </form>
 
 <?php
 if (!$isAddSample && !N2Base::getApplication('smartslider')->storage->get('tutorial', 'hideContentMode')) {

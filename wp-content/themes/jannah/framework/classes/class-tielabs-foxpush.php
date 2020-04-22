@@ -28,7 +28,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 		 */
 		function run(){
 
-			# Actions
+			// Actions
 			add_action( 'wp_ajax_tie-foxpush-send-campaign', array( $this, 'create_campaign' ) );
 			add_action( 'wp_ajax_tie-foxpush-show-campaign', array( $this, 'show_campaigns' ) );
 			add_action( 'wp_footer',                         array( $this, 'get_embed_code' ) );
@@ -43,18 +43,17 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 		 */
 		function get_embed_code(){
 
-			# If the Web notificatiosn is enabled
+			// If the Web notificatiosn is enabled
 			if( ! tie_get_option( 'web_notifications' ) || TIELABS_HELPER::is_bot() ){
 
 				return false;
 			}
 
-			# Get codes and data
+			// Get codes and data
 			$foxpush_domain = tie_get_option( 'foxpush_domain' );
 			$foxpush_apikey = tie_get_option( 'foxpush_api' );
 
 			if( empty( $foxpush_domain ) || empty( $foxpush_apikey ) ){
-
 				return false;
 			}
 
@@ -84,10 +83,10 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 		 */
 		function post_meta_boxes(){
 
-			# Make some checks on before showing the boxes
+			// Make some checks on before showing the boxes
 			if( tie_get_option( 'web_notifications' ) && tie_get_option( 'foxpush_domain' ) && tie_get_option( 'foxpush_api' ) ){
 
-				# Campagins States
+				// Campagins States
 				if( 'publish' === get_post_status( get_the_ID() ) ){
 
 					$get_campaigns = get_post_meta( get_the_ID(), 'foxpush_campaigns_data', true );
@@ -104,8 +103,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 					}
 				}
 
-
-				# Send notifications meta box
+				// Send notifications meta box
 				add_meta_box(
 					'foxpush-create-campaign',
 					esc_html__( 'Send a Web Notification', TIELABS_TEXTDOMAIN ),
@@ -126,7 +124,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 
 			$post_id = ! empty( $post_id->ID ) ? $post_id->ID : $post_id;
 
-			# Show the Campaigns
+			// Show the Campaigns
 			$get_campaigns = get_post_meta( $post_id, 'foxpush_campaigns_data', true );
 
 			if( $get_campaigns && is_array( $get_campaigns ) ){
@@ -287,7 +285,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				return false;
 			}
 
-			# Get stored data
+			// Get stored data
 			if( $type == 'stats' ){
 				$data = get_transient( 'tie_foxpush_stats' );
 				$api_path = 'stats';
@@ -297,7 +295,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				$api_path = 'daily_chart';
 			}
 
-			# Get New data
+			// Get New data
 			if( empty( $data )){
 
 				$args = array(
@@ -324,7 +322,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				}
 				else{
 					if( ! empty( $request['chart'] )){
-						$data =  $request['chart'];
+						$data = $request['chart'];
 						set_transient( 'tie_foxpush_chart', $data, HOUR_IN_SECONDS );
 					}
 				}
@@ -344,7 +342,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 			$domain  = tie_get_option( 'foxpush_domain' );
 			$api_key = tie_get_option( 'foxpush_api' );
 
-			# check
+			// check
 			if( ! $domain || ! $api_key || empty( $_REQUEST['title'] ) || empty( $_REQUEST['message'] ) || empty( $_REQUEST['id'] ) ){
 
 				tie_build_theme_option(
@@ -356,7 +354,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				die;
 			}
 
-			# Prepare the request data
+			// Prepare the request data
 			$args = array(
 				'headers' => array(
 					'FOXPUSH_DOMAIN' => $domain,
@@ -370,18 +368,18 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				),
 			);
 
-			# Attach the image if it exists
+			// Attach the image if it exists
 			if( ! empty( $_REQUEST['image'] ) ){
 
 				$args['body']['icon'] =	$_REQUEST['image'];
 				$args['body']['check_image'] = 1;
 			}
 
-			# Go
+			// Go
 			$api_url = 'https://api.foxpush.com/v1/campaigns/create/';
 			$request = wp_remote_post( $api_url, $args );
 
-			# Check if there is an error
+			// Check if there is an error
 			if ( is_wp_error( $request ) ) {
 
 				tie_build_theme_option(
@@ -393,7 +391,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				die;
 			}
 
-			# No? then get the body response
+			// No? then get the body response
 			$request = wp_remote_retrieve_body( $request );
 			$request = json_decode( $request, true );
 
@@ -413,14 +411,14 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 
 					$campaign_id = $request['campaign_id'];
 
-					# Get All Stored Campaigns
+					// Get All Stored Campaigns
 					$get_campaigns = get_post_meta( $_REQUEST['id'], 'foxpush_campaigns_data', true );
 					$get_campaigns = ( empty( $get_campaigns ) || ! array( $get_campaigns ) ) ? array() : $get_campaigns;
 
-					# Store the data of the new Campaign
+					// Store the data of the new Campaign
 					$get_campaigns[ $campaign_id ] = '';
 
-					# Update the Stored Campaigns
+					// Update the Stored Campaigns
 					$update_campaigns = update_post_meta( $_REQUEST['id'], 'foxpush_campaigns_data', $get_campaigns );
 
 					tie_build_theme_option(
@@ -443,7 +441,6 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 		function show_campaigns(){
 
 			if( empty( $_REQUEST['id'] ) ){
-
 				return false;
 			}
 
@@ -458,7 +455,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 		 */
 		function get_campaign_data( $campaign_id ){
 
-			# Request the campaign data
+			// Request the campaign data
 			$args = array(
 				'headers' => array(
 					'FOXPUSH_DOMAIN' => tie_get_option( 'foxpush_domain' ),
@@ -466,13 +463,12 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 				)
 			);
 
-			# Go
+			// Go
 			$api_url = 'https://api.foxpush.com/v1/campaigns/get/'. $campaign_id;
 			$request = wp_remote_get( $api_url, $args );
 
 			# Check if there is an error
 			if ( is_wp_error( $request ) ) {
-
 				echo esc_html( $request->get_error_message() );
 				die;
 			}
@@ -484,7 +480,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 
 				$campaign = $request['campaign'];
 
-				# Remove the unwanted data
+				// Remove the unwanted data
 				unset( $campaign['message'] );
 				unset( $campaign['name'] );
 				unset( $campaign['image'] );
@@ -496,7 +492,7 @@ if( ! class_exists( 'TIELABS_FOXPUSH' )){
 
 	}
 
-	# Instantiate the class
+	// Instantiate the class
 	$foxpush = new TIELABS_FOXPUSH();
 	$foxpush->run();
 }

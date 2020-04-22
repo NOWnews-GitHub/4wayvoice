@@ -155,8 +155,9 @@ input.taqyeem-reset-button {
     overflow: hidden;
 }
 
-.taqyeem-option-item input[type=text], .taqyeem-option-item textarea {
-    padding: 3px 5px;
+.taqyeem-option-item input[type=text],
+.taqyeem-option-item textarea {
+    padding: 8px 10px;
 
 }
 .taqyeem-option-item input[type=text]:focus, .taqyeem-option-item textarea:focus {border: solid 1px #c2c2c2;}
@@ -611,3 +612,121 @@ body.admin-color-ocean #taq-reviews-options .ui-slider-handle{background: #9ebaa
 body.admin-color-sunrise .taqyeem-panel-tabs {background: #cf4944;}
 body.admin-color-sunrise .taqyeem-panel-tabs li.active a, body.admin-color-sunrise .taqyeem-panel-tabs li a:hover,
 body.admin-color-sunrise #taq-reviews-options .ui-slider-handle{background: #dd823b;color: #fff;}
+
+
+
+/* ---------------------------------------------
+ Panel Messages
+------------------------------------------------ */
+.taqyeem-notice {
+  background: #ffffff;
+  margin: 10px 20px 10px 0;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+  clear: both;
+  border: none;
+}
+
+.taqyeem-notice p {
+  font-size: 14px;
+}
+
+.taqyeem-notice-content > p {
+	margin-top: 0;
+}
+
+.taqyeem-notice .notice-dismiss {
+  padding: 15px 10px;
+}
+
+.taqyeem-notice .notice-dismiss:before {
+  float: right;
+}
+
+.taqyeem-notice .notice-dismiss .screen-reader-text {
+  clip: auto;
+  -webkit-clip-path: unset;
+          clip-path: unset;
+  height: auto;
+  width: auto;
+  margin: 0;
+  position: relative;
+  color: #ffffff;
+}
+
+.taqyeem-notice .notice-dismiss:not(:hover):before {
+  color: #ffffff;
+}
+
+.taqyeem-notice.notice.is-dismissible {
+  padding: 0;
+}
+
+.taqyeem-notice h3 {
+  position: relative;
+  margin: 0;
+  padding: 15px 20px;
+  border: none;
+  line-height: 1.4em;
+  font-size: 14px;
+  color: #ffffff;
+  background: #0073aa;
+}
+
+.taqyeem-notice-content {
+  padding: 15px;
+  overflow: hidden;
+}
+
+.taqyeem-notice-img {
+  float: left;
+  max-width: 120px;
+  padding-right: 15px;
+}
+
+.taqyeem-notice.taq-success h3 {
+  background: #65b70e !important;
+}
+
+.taqyeem-notice.taq-warning h3 {
+  background: #ff9e00 !important;
+}
+
+.taqyeem-notice.taq-error h3 {
+  background: #f44336 !important;
+}
+
+
+.wp-core-ui .taq-primary-button.button.taq-button-green {
+  background: #65b70e !important;
+  border-color: #569c0c !important;
+  text-shadow: 0 -1px 1px #569c0c,1px 0 1px #569c0c,0 1px 1px #569c0c,-1px 0 1px #569c0c;
+}
+
+.wp-core-ui .taq-primary-button.button.taq-button-green:hover {
+  opacity: 0.9;
+}
+
+
+.wp-core-ui .taq-primary-button.button.taq-button-orange {
+  background: #ff9e00 !important;
+  border-color: #ea9100 !important;
+  text-shadow: 0 -1px 1px #ea9100,1px 0 1px #ea9100,0 1px 1px #ea9100,-1px 0 1px #ea9100;
+}
+
+.wp-core-ui .taq-primary-button.button.taq-button-orange:hover {
+  opacity: 0.9;
+}
+
+.wp-core-ui .taq-primary-button.button.taq-button-red {
+  background: #ff574a !important;
+  border-color: #d63327 !important;
+  text-shadow: 0 -1px 1px #d63327,1px 0 1px #d63327,0 1px 1px #d63327,-1px 0 1px #d63327;
+}
+
+.wp-core-ui .taq-primary-button.button.taq-button-red:hover {
+  opacity: 0.9;
+}
+
+.wp-core-ui .taqyeem-notice .taq-primary-button.button {
+  clear: both;
+}

@@ -91,7 +91,7 @@ if( ! class_exists( 'TIELABS_MENU_LIMIT_DETECTOR' )){
 					}
 				}
 
-				update_option( 'tie-post-var-count', $count );
+				update_option( 'tie-post-var-count', $count, false );
 			}
 		}
 

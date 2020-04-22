@@ -154,17 +154,21 @@ body[class*="click-demo-import"]{
 			width: 30.6%;
 			margin: 0 4% 4% 0 !important;
 
-			.rtl &{
-				margin: 0 0 4% 4% !important;
-			}
-
 			&:nth-child(3n) {
 				margin-right: 0 !important;
+			}
+		}
 
-				.rtl &{
+		&.rtl{
+			#wpwrap .theme-browser .theme {
+				margin: 0 0 4% 4% !important;
+
+				&:nth-child(3n) {
 					margin-left: 0 !important;
 				}
 			}
 		}
 	}
+
+
 }

@@ -49,23 +49,6 @@
 	}
 }
 
-@include breakpoint(lg){
-	.tie-col-lg-1,
-	.tie-col-lg-10,
-	.tie-col-lg-11,
-	.tie-col-lg-12,
-	.tie-col-lg-2,
-	.tie-col-lg-3,
-	.tie-col-lg-4,
-	.tie-col-lg-5,
-	.tie-col-lg-6,
-	.tie-col-lg-7,
-	.tie-col-lg-8,
-	.tie-col-lg-9 {
-		float: right
-	}
-}
-
 .pull-right {
 	float: right!important
 }

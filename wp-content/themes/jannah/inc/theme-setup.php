@@ -43,9 +43,7 @@ function jannah_theme_setup(){
 
 	add_image_size( TIELABS_THEME_SLUG.'-image-small', 220, 150, true );
 	add_image_size( TIELABS_THEME_SLUG.'-image-large', 390, 220, true );
-	add_image_size( TIELABS_THEME_SLUG.'-image-post',  780, 405, true );
-	add_image_size( TIELABS_THEME_SLUG.'-image-grid',  780, 500, true );
-	add_image_size( TIELABS_THEME_SLUG.'-image-full',  1170, 610,true );
+	add_image_size( TIELABS_THEME_SLUG.'-image-post',  780, 470, true );
 
 	// Add Support for the Arqam Lite plugin.
 	add_theme_support( 'Arqam_Lite' );
@@ -70,7 +68,7 @@ function jannah_theme_setup(){
 
 	// The theme uses wp_nav_menu() in multiple locations.
 	register_nav_menus( array(
-		'top-menu'    => esc_html__( 'Secondry Nav Menu', TIELABS_TEXTDOMAIN ),
+		'top-menu'    => esc_html__( '​Secondary Nav Menu', TIELABS_TEXTDOMAIN ),
 		'primary'     => esc_html__( 'Main Nav Menu',     TIELABS_TEXTDOMAIN ),
 		'404-menu'    => esc_html__( '404 Page menu',     TIELABS_TEXTDOMAIN ),
 		'footer-menu' => esc_html__( 'Footer Navigation', TIELABS_TEXTDOMAIN ),
@@ -78,8 +76,7 @@ function jannah_theme_setup(){
 }
 
 
-
-/*
+/**
  * Enqueue IE Scripts and Styles
  */
 add_action( 'wp_enqueue_scripts', 'jannah_enqueue_IE_assets' );
@@ -105,60 +102,171 @@ function jannah_enqueue_IE_assets(){
 
 	// IE 10 && IE 11
 	if( $version <= 11 ){
-		wp_enqueue_style( 'tie-css-ie-11', TIELABS_TEMPLATE_URL .'/assets/css/ie-lte-11.css', array(), TIELABS_DB_VERSION );
+		wp_enqueue_style( 'tie-css-ie-11', TIELABS_TEMPLATE_URL .'/assets/css/ie/ie-lte-11.css', array(), TIELABS_DB_VERSION );
 		wp_enqueue_script( 'tie-js-ie',    TIELABS_TEMPLATE_URL . '/assets/js/ie.js', array( 'jquery' ), TIELABS_DB_VERSION, true );
 	}
 
 	// IE 10
 	if ( $version == 10 ) {
-		wp_enqueue_style( 'tie-css-ie-10-only', TIELABS_TEMPLATE_URL.'/assets/css/ie-10.css', array(), TIELABS_DB_VERSION );
+		wp_enqueue_style( 'tie-css-ie-10-only', TIELABS_TEMPLATE_URL.'/assets/css/ie/ie-10.css', array(), TIELABS_DB_VERSION );
 	}
 	// < IE 10
 	elseif ( $version < 10 ) {
-		wp_enqueue_style( 'tie-css-ie-10', TIELABS_TEMPLATE_URL.'/assets/css/ie-lt-10.css', array(), TIELABS_DB_VERSION );
+		wp_enqueue_style( 'tie-css-ie-10', TIELABS_TEMPLATE_URL.'/assets/css/ie/ie-lt-10.css', array(), TIELABS_DB_VERSION );
 	}
 }
-
 
 
 /*
  * Register Main Scripts and Styles
  */
-add_action( 'wp_enqueue_scripts', 'jannah_enqueue_scripts', 20 );
-function jannah_enqueue_scripts(){
+add_action( 'wp_enqueue_scripts', 'jannah_register_assets', 20 );
+function jannah_register_assets(){
 
 	$min = TIELABS_STYLES::is_minified();
+	$ver = current_user_can( 'switch_themes' ) ? time() : TIELABS_DB_VERSION; // Always avoid browser cache for admins
 
-	// Main Scripts file
-	wp_enqueue_script( 'tie-scripts', TIELABS_TEMPLATE_URL . '/assets/js/scripts'. $min .'.js', array( 'jquery' ), TIELABS_DB_VERSION, true );
+	/**
+	 * Scripts
+	 */
 
+	/*
+	 * Main Scripts file
+	 */
+	wp_register_script( 'tie-scripts', TIELABS_TEMPLATE_URL . '/assets/js/scripts'. $min .'.js', array( 'jquery' ), $ver, true );
+
+	/*
+	 * Scripts requrie tie-scripts
+	 */
 	// Sliders
-	wp_register_script( 'tie-js-sliders', TIELABS_TEMPLATE_URL . '/assets/js/sliders'. $min .'.js', array( 'jquery' ), TIELABS_DB_VERSION, true );
+	wp_register_script( 'tie-js-sliders', TIELABS_TEMPLATE_URL . '/assets/js/sliders'. $min .'.js', array( 'jquery', 'tie-scripts' ), $ver, true );
+	// Desktop only JS
+	wp_register_script( 'tie-js-desktop', TIELABS_TEMPLATE_URL . '/assets/js/desktop'. $min .'.js', array( 'jquery', 'tie-scripts' ), $ver, true );
+	// single
+	wp_register_script( 'tie-js-single', TIELABS_TEMPLATE_URL . '/assets/js/single'. $min .'.js',  array( 'jquery', 'tie-scripts' ), $ver, true );
+	// ViewPort
+	wp_register_script( 'tie-js-viewport', TIELABS_TEMPLATE_URL . '/assets/js/viewport-scripts.js',  array( 'jquery', 'tie-scripts' ), $ver, true );
+
+	// Breaking News
+	wp_register_script( 'tie-js-breaking', TIELABS_TEMPLATE_URL . '/assets/js/br-news.js', array( 'jquery' ), $ver, true );
+	// Live Search
+	wp_register_script( 'tie-js-livesearch', TIELABS_TEMPLATE_URL . '/assets/js/live-search.js', array( 'jquery' ), $ver, true );
+	// iLightBox
+	wp_register_script( 'tie-js-ilightbox', TIELABS_TEMPLATE_URL . '/assets/ilightbox/lightbox.js', array( 'jquery' ), $ver, true );
+	// Videos Playlist
+	wp_register_script( 'tie-js-videoslist', TIELABS_TEMPLATE_URL . '/assets/js/videos-playlist.js', array( 'jquery' ), $ver, true );
+	// Velocity
+	wp_register_script( 'tie-js-velocity', TIELABS_TEMPLATE_URL . '/assets/js/velocity.js', array( 'jquery' ), $ver, true );
 
 	// Parallax
-	wp_register_script( 'tie-js-parallax', TIELABS_TEMPLATE_URL . '/assets/js/parallax.js', array( 'jquery', 'imagesloaded' ), TIELABS_DB_VERSION, true );
+	wp_register_script( 'tie-js-parallax', TIELABS_TEMPLATE_URL . '/assets/js/parallax.js', array( 'jquery', 'imagesloaded' ), $ver, true );
+
+	/**
+	 * Styles
+	 */
+	// base.css file
+	wp_register_style( 'tie-css-base', TIELABS_TEMPLATE_URL . '/assets/css/base'. $min .'.css', array(), $ver );
 
 	// Main style.css file
-	wp_enqueue_style( 'tie-css-styles',  TIELABS_TEMPLATE_URL.'/assets/css/style'. $min .'.css', array(), TIELABS_DB_VERSION );
+	wp_register_style( 'tie-css-styles', TIELABS_TEMPLATE_URL . '/assets/css/style'. $min .'.css', array(), $ver );
 
-	// iLightBox css file
-	wp_enqueue_style( 'tie-css-ilightbox', TIELABS_TEMPLATE_URL . '/assets/css/ilightbox/'. tie_get_option( 'lightbox_skin', 'dark' ) .'-skin/skin.css', array(), TIELABS_DB_VERSION );
+	// Single Post CSS file
+	wp_register_style( 'tie-css-single', TIELABS_TEMPLATE_URL . '/assets/css/single'. $min .'.css', array(), $ver );
+
+	// Widgets
+	wp_register_style( 'tie-css-widgets', TIELABS_TEMPLATE_URL . '/assets/css/widgets'. $min .'.css', array(), $ver );
+
+	// Widgets
+	wp_register_style( 'tie-css-helpers', TIELABS_TEMPLATE_URL . '/assets/css/helpers'. $min .'.css', array(), $ver );
+
+	// Print
+	wp_register_style( 'tie-css-print', TIELABS_TEMPLATE_URL . '/assets/css/print.css', array(), $ver, 'print' );
+
+	// LightBox
+	wp_register_style( 'tie-css-ilightbox', TIELABS_TEMPLATE_URL . '/assets/ilightbox/'. tie_get_option( 'lightbox_skin', 'dark' ) .'-skin/skin.css', array(), $ver );
 
 	// Mp-Timetable css file
 	if ( TIELABS_MPTIMETABLE_IS_ACTIVE ){
-		wp_enqueue_style( 'tie-css-mptt', TIELABS_TEMPLATE_URL.'/assets/css/mptt'. $min .'.css', array(), TIELABS_DB_VERSION );
+		wp_enqueue_style( 'tie-css-mptt', TIELABS_TEMPLATE_URL.'/assets/css/plugins/mptt'. $min .'.css', array(), $ver );
 	}
 
-  // Reading Position Indicator
-  if( is_singular() && tie_get_option( 'reading_indicator' ) ){
-  	wp_enqueue_script( 'imagesloaded' );
-  }
-
-	// Queue Comments reply js
-	if ( is_singular() && comments_open() && get_option('thread_comments') ){
-		wp_enqueue_script( 'comment-reply' );
+	// Shortcodes
+	if( TIELABS_EXTENSIONS_IS_ACTIVE ){
+		wp_register_style( 'tie-css-shortcodes', TIELABS_TEMPLATE_URL . '/assets/css/plugins/shortcodes'. $min .'.css', array(), $ver );
+		wp_register_script('tie-js-shortcodes',  TIELABS_TEMPLATE_URL . '/assets/js/shortcodes.js', array( 'tie-js-sliders' ), $ver, true );
 	}
 
 	// Prevent TieLabs shortcodes plugin from loading its js and Css files
 	add_filter( 'tie_plugin_shortcodes_enqueue_assets', '__return_false' );
+}
+
+
+/*
+ * Enqueue Main Scripts
+ */
+add_action( 'wp_enqueue_scripts', 'jannah_enqueue_scripts', 20 );
+function jannah_enqueue_scripts(){
+
+	// Scripts
+	wp_enqueue_script( 'tie-scripts' );
+
+	// LightBox
+	wp_enqueue_script( 'tie-js-ilightbox' );
+
+	// Shortcodes
+	if( TIELABS_EXTENSIONS_IS_ACTIVE ){
+		wp_enqueue_script( 'tie-js-shortcodes' );
+	}
+
+	// Desktop only scripts
+	if( ! tie_is_mobile() ){
+
+		// Custom Scroller
+		wp_enqueue_script( 'tie-js-desktop' );
+
+		// Live search
+		if( tie_menu_has_search( 'top_nav', true ) || tie_menu_has_search( 'main_nav', true ) ){
+			wp_enqueue_script( 'tie-js-livesearch' );
+		}
+	}
+
+	// Single pages with no builder
+	if( is_singular() && ! TIELABS_HELPER::has_builder() ){
+
+		// Single.js
+		wp_enqueue_script( 'tie-js-single' );
+
+		// Queue Comments reply js
+		if ( comments_open() && get_option('thread_comments') ){
+			wp_enqueue_script( 'comment-reply' );
+		}
+	}
+}
+
+
+/*
+ * Enqueue Styles
+ */
+add_action( 'wp_enqueue_scripts', 'jannah_enqueue_styles', 20 );
+function jannah_enqueue_styles(){
+
+	wp_enqueue_style( 'tie-css-base' );
+	wp_enqueue_style( 'tie-css-styles' );
+	wp_enqueue_style( 'tie-css-widgets' );
+	wp_enqueue_style( 'tie-css-helpers' );
+	wp_enqueue_style( 'tie-css-ilightbox' );
+
+	if( TIELABS_EXTENSIONS_IS_ACTIVE ){
+		wp_enqueue_style( 'tie-css-shortcodes' );
+	}
+
+	// Single pages with no builder
+	if( is_singular() && ! TIELABS_HELPER::has_builder() ){
+
+		// Single page styling
+		wp_enqueue_style( 'tie-css-single' );
+
+		// Print File
+		wp_enqueue_style( 'tie-css-print' );
+	}
 }

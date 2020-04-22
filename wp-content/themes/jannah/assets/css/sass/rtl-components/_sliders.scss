@@ -19,7 +19,7 @@
   float: left;
 }
 
-.slider-area .post-cat-wrap,
+//.slider-area .post-cat-wrap,
 .slick-slide,
 .fullwidth-slider-wrapper .tie-slick-dots li,
 .tie-slider-nav li,
@@ -154,11 +154,11 @@
 // Slider #18 & Read Next Slider
 .read-next-block-title{
 	right: 40px;
-	left: auto; 
+	left: auto;
 
-	&:after{ 
-		right: 0; 
-		left: auto; 
+	&:after{
+		right: 0;
+		left: auto;
 	}
 
 	.layout-1 &{
@@ -178,15 +178,15 @@
 		@include breakpoint(sm){
 			.thumb-overlay {
 				.container{
-					margin-right: 0; 
-					}
+					margin-right: 0;
+				}
 			}
-		} 
-	} 
+		}
+	}
 
 	// In Two column layout
 	.has-sidebar &{
-		.wide-slider-nav-wrapper{ 
+		.wide-slider-nav-wrapper{
 			padding: 0 0 0 15px;
 		}
 	}

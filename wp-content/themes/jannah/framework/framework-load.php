@@ -6,53 +6,56 @@
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
-
 /*
  * Main Helper Class
  */
-locate_template( 'framework/classes/class-tielabs-helper.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-helper.php';
+
+/*
+ * Logging Class
+ */
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-logging.php';
 
 /**
  * Framework Functions
  */
-locate_template( 'framework/functions/general-functions.php', true, true );
-locate_template( 'framework/functions/media-functions.php',   true, true );
-locate_template( 'framework/functions/post-functions.php',    true, true );
-locate_template( 'framework/functions/breadcrumbs.php',       true, true );
-locate_template( 'framework/functions/formatting.php',        true, true );
-locate_template( 'framework/functions/post-actions.php',      true, true );
-locate_template( 'framework/functions/page-templates.php',    true, true );
+
+require TIELABS_TEMPLATE_PATH . '/framework/functions/general-functions.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/media-functions.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/post-functions.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/breadcrumbs.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/formatting.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/post-actions.php';
+require TIELABS_TEMPLATE_PATH . '/framework/functions/page-templates.php';
 
 /**
  * Framework Classes
  */
-locate_template( 'framework/classes/class-tielabs-filters.php',       true, true );
-locate_template( 'framework/classes/class-tielabs-advertisment.php',  true, true );
-locate_template( 'framework/classes/class-tielabs-ajax.php',          true, true );
-locate_template( 'framework/classes/class-tielabs-foxpush.php',       true, true );
-locate_template( 'framework/classes/class-tielabs-speeder.php',       true, true );
-locate_template( 'framework/classes/class-tielabs-styles-footer.php', true, true );
-locate_template( 'framework/classes/class-tielabs-postviews.php',     true, true );
-locate_template( 'framework/classes/class-tielabs-mega-menu.php',     true, true );
-locate_template( 'framework/classes/class-tielabs-videos-list.php',   true, true );
-locate_template( 'framework/classes/class-tielabs-pagination.php',    true, true );
-locate_template( 'framework/classes/class-tielabs-opengraph.php',     true, true );
-locate_template( 'framework/classes/class-tielabs-wp-helper.php',     true, true );
-locate_template( 'framework/classes/class-tielabs-styles.php',        true, true );
-locate_template( 'framework/classes/class-tielabs-weather.php',       true, true );
-locate_template( 'framework/classes/class-tielabs-instagram.php',     true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-filters.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-advertisment.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-ajax.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-foxpush.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-styles-footer.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-postviews.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-mega-menu.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-videos-list.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-pagination.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-opengraph.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-wp-helper.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-styles.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-weather.php';
+require TIELABS_TEMPLATE_PATH . '/framework/classes/class-tielabs-instagram.php';
 
 /**
  * Mobile Detector
  */
-locate_template( 'framework/vendor/Mobile_Detect/devices.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/vendor/Mobile_Detect/devices.php';
 
 /**
  * Backend Loader
  */
-locate_template( 'inc/updates.php', true, true );
-
-locate_template( 'framework/admin/framework-admin.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/admin/classes/class-tielabs-admin-helper.php';
+require TIELABS_TEMPLATE_PATH . '/framework/admin/framework-admin.php';
 
 
 /**
@@ -60,7 +63,7 @@ locate_template( 'framework/admin/framework-admin.php', true, true );
  *
  * By: TieLabs
  */
-locate_template( 'framework/plugins/class-tielabs-extensions.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-extensions.php';
 
 /**
  * AMP
@@ -68,7 +71,7 @@ locate_template( 'framework/plugins/class-tielabs-extensions.php', true, true );
  * By: Automattic
  * https://wordpress.org/plugins/amp/
  */
-locate_template( 'framework/plugins/class-tielabs-amp.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-amp.php';
 
 /**
  * WooCommerce
@@ -76,7 +79,7 @@ locate_template( 'framework/plugins/class-tielabs-amp.php', true, true );
  * By: Automattic
  * https://wordpress.org/plugins/woocommerce/
  */
-locate_template( 'framework/plugins/class-tielabs-woocommerce.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-woocommerce.php';
 
 /**
  * Sensei
@@ -84,7 +87,7 @@ locate_template( 'framework/plugins/class-tielabs-woocommerce.php', true, true )
  * By: Automattic
  * https://woocommerce.com/products/sensei/
  */
-locate_template( 'framework/plugins/class-tielabs-sensei.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-sensei.php';
 
 /**
  * BuddyPress
@@ -92,7 +95,7 @@ locate_template( 'framework/plugins/class-tielabs-sensei.php', true, true );
  * By: Multiple Authors
  * https://wordpress.org/plugins/buddypress/
  */
-locate_template( 'framework/plugins/class-tielabs-buddypress.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-buddypress.php';
 
 /**
  * bbPress
@@ -100,7 +103,7 @@ locate_template( 'framework/plugins/class-tielabs-buddypress.php', true, true );
  * By: Multiple Authors
  * https://wordpress.org/plugins/buddypress/
  */
-locate_template( 'framework/plugins/class-tielabs-bbpress.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-bbpress.php';
 
 /**
  * Jetpack
@@ -108,14 +111,14 @@ locate_template( 'framework/plugins/class-tielabs-bbpress.php', true, true );
  * By: Automattic
  * https://wordpress.org/plugins/jetpack/
  */
-locate_template( 'framework/plugins/class-tielabs-jetpack.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-jetpack.php';
 
 /**
  * Taqyeem
  *
  * By: TieLabs
  */
-locate_template( 'framework/plugins/class-tielabs-taqyeem.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-taqyeem.php';
 
  /**
   * Instant Articles for WP
@@ -123,11 +126,11 @@ locate_template( 'framework/plugins/class-tielabs-taqyeem.php', true, true );
   * By: Automattic, Dekode, Facebook
   * https://wordpress.org/plugins/fb-instant-articles/
   */
-locate_template( 'framework/plugins/class-tielabs-fbinstant-articles.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/class-tielabs-fbinstant-articles.php';
 
  /**
   * Cryptocurrency All-in-One
   * WP Ultimate Crypto
   *
   */
-locate_template( 'framework/plugins/crypto.php', true, true );
+require TIELABS_TEMPLATE_PATH . '/framework/plugins/crypto.php';

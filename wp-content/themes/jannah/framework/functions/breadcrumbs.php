@@ -72,7 +72,7 @@ if( ! function_exists( 'tie_breadcrumbs' )){
 
 					foreach ( $parent_categories as $parent_category ) {
 						$breadcrumbs[] = array(
-							'url'  =>TIELABS_WP_HELPER::get_term_link( $parent_category, 'category' ),
+							'url'  => TIELABS_WP_HELPER::get_term_link( $parent_category, 'category' ),
 							'name' => get_cat_name( $parent_category ),
 						);
 					}
@@ -133,8 +133,7 @@ if( ! function_exists( 'tie_breadcrumbs' )){
 			// Author
 			elseif ( is_author() ){
 
-				$author = get_query_var( 'author' );
-				$author = get_userdata($author);
+				$author = get_queried_object();
 
 				$breadcrumbs[] = array(
 					'name' => $author->display_name,
@@ -233,14 +232,14 @@ if( ! function_exists( 'tie_breadcrumbs' )){
 
 							foreach ( $parent_categories as $parent_category ) {
 								$breadcrumbs[] = array(
-									'url'  =>TIELABS_WP_HELPER::get_term_link( $parent_category, 'category' ),
+									'url'  => TIELABS_WP_HELPER::get_term_link( $parent_category, 'category' ),
 									'name' => get_cat_name( $parent_category ),
 								);
 							}
 						}
 
 						$breadcrumbs[] = array(
-							'url'  =>TIELABS_WP_HELPER::get_term_link( $category->term_id, 'category' ),
+							'url'  => TIELABS_WP_HELPER::get_term_link( $category->term_id, 'category' ),
 							'name' => get_cat_name( $category->term_id ),
 						);
 					}
@@ -301,7 +300,7 @@ if( ! function_exists( 'tie_breadcrumbs' )){
 
 				$counter = 0;
 				$item_list_elements = array();
- 				$breadcrumbs_schema = array(
+				$breadcrumbs_schema = array(
 					'@context' => 'http://schema.org',
 					'@type'    => 'BreadcrumbList',
 					'@id'      => '#Breadcrumb',

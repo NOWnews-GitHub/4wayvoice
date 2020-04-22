@@ -22,12 +22,6 @@ tie_build_theme_option(
 		'type' => 'checkbox',
 	));
 
-tie_build_theme_option(
-	array(
-		'name' => esc_html__( 'Lazy Load For Images', TIELABS_TEXTDOMAIN ),
-		'id'   => 'lazy_load',
-		'type' => 'checkbox',
-	));
 
 tie_build_theme_option(
 	array(
@@ -360,6 +354,7 @@ tie_build_theme_option(
 
 
 <?php
+
 tie_build_theme_option(
 	array(
 		'name' => esc_html__( 'Custom Primary Color', TIELABS_TEXTDOMAIN ),

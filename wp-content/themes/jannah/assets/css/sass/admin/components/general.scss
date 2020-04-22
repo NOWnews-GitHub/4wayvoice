@@ -66,3 +66,11 @@
 	top: 0;
 	width: 25px;
 }
+
+
+/* Code Mirror */
+// There is a bug in the code section in the post edit page.
+// Temp Fix add extra padding
+body.post-php .CodeMirror-code{
+	padding-left: 20px;
+}

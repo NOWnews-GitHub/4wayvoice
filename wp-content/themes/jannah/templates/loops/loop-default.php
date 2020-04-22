@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.0.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -25,10 +25,8 @@ $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] ) ) ? 'no-s
 
 		// Get the post thumbnail
 		if ( has_post_thumbnail() && empty( $block['thumb_all'] ) ){
-
-			tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', 'large', true );
+			tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', 'large', true, true, $block['media_overlay'] );
 		}
-
 	?>
 
 	<div class="post-details">
@@ -39,10 +37,9 @@ $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] ) ) ? 'no-s
 			if( ! empty( $block['post_meta'] )){
 				tie_the_post_meta();
 			}
-
 		?>
 
-		<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+		<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 
 		<?php
 
@@ -51,12 +48,9 @@ $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] ) ) ? 'no-s
 				<?php
 			}
 
-			if( ! empty( $block['read_more'] )){ ?>
-				<a class="more-link button" href="<?php the_permalink() ?>"><?php esc_html_e( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) ?></a>
-				<?php
+			if( ! empty( $block['read_more'] )){
+				tie_the_more_button();
 			}
-
 		?>
-
 	</div>
 </li>

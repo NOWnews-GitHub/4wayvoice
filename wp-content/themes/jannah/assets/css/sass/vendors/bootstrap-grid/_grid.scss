@@ -14,22 +14,14 @@
 	@media (min-width: $screen-sm-min){
 		width: $container-sm;
 	}
-	@media (min-width: $screen-md-min){
-		width: $container-md;
-	}
+
+	//@media (min-width: $screen-md-min){
+		//width: $container-md;
+	//}
+
 	@media (min-width: $screen-lg-min){
 		max-width: $container-lg;
 	}
-}
-
-
-// Fluid container
-//
-// Utilizes the mixin meant for fixed width containers, but without any defined
-// width for fluid, full width layouts.
-
-.container-fluid{
-	@include container-fixed;
 }
 
 
@@ -73,13 +65,4 @@
 
 @media (min-width: $screen-md-min){
 	@include make-grid(md);
-}
-
-
-// Large grid
-//
-// Columns, offsets, pushes, and pulls for the large desktop device range.
-
-@media (min-width: $screen-lg-min){
-	@include make-grid(lg);
 }

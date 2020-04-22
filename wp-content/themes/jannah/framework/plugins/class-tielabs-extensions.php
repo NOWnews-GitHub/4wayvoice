@@ -48,21 +48,27 @@ if( ! class_exists( 'TIELABS_EXTENSIONS' )){
 					<div id="story-index">
 						<div class="theiaStickySidebar">
 						<span id="story-index-icon" class="fa fa-list" aria-hidden="true"></span>
-							<ul>';
+							<div class="story-index-content">
+								<ul>';
 
-								foreach ( $matches[5] as $title ){
+									foreach ( $matches[5] as $title ){
 
-									$index_id = sanitize_title( $title );
-									$index_id = preg_replace( '/[^A-Za-z0-9\-]/', '', $index_id ); // Remove all special characters to fix an issue with non-latin languages
+										$index_id = sanitize_title( $title );
+										$index_id = preg_replace( '/[^A-Za-z0-9\-]/', '', $index_id ); // Remove all special characters to fix an issue with non-latin languages
 
-									echo '<li><a id="trigger-'. $index_id .'" href="#go-to-'. $index_id .'">'. $title .'</a></li>';
-								}
+										echo '<li><a id="trigger-'. $index_id .'" href="#go-to-'. $index_id .'">'. $title .'</a></li>';
+									}
 
-								echo '
-							</ul>
+									echo '
+								</ul>
+							</div>
 						</div>
 					</div>
 				';
+
+				// Load the file contains the requrired js codes
+				wp_enqueue_script( 'tie-js-viewport' );
+
 			}
 		}
 

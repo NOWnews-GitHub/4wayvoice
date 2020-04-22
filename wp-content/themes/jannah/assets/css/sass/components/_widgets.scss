@@ -27,7 +27,7 @@
 .widget-title {
 	position: relative;
 
-	h4 {
+	.the-subtitle {
 		@include font-size(15px);
 		min-height: 15px;
 	}
@@ -450,14 +450,33 @@
 		content: "\f007";
 	}
 
-	.author-name{
-		display: none;
+	.multiple-authors{
+
+		.about-author{
+			border-width: 0;
+			border-bottom-width: 1px;
+			padding: 0 0 10px;
+			margin-bottom: 20px;
+
+			&:last-child{
+				margin-bottom: 0;
+				padding: 0;
+				border-bottom-width: 0;
+			}
+		}
 	}
 
-	.about-author {
-		padding: 0;
-		border: 0;
-		margin: 0;
+	.single-author{
+
+		.about-author{
+			padding: 0;
+			border: 0;
+			margin: 0;
+		}
+
+		.author-name{
+			display: none;
+		}
 	}
 
 	@include breakpoint(md){
@@ -528,7 +547,7 @@
 		width: auto;
 		height: auto;
 
-		&.lazy-img[src*="tie-empty"]{
+		&.lazy-img[data-src]{
 			width: 100px;
 			height: 100px;
 		}
@@ -1313,17 +1332,6 @@ form {
 	}
 }
 
-.author-avatar {
-	display: block;
-	img {
-		border-radius: 50%;
-		max-width: 111px;
-	}
-}
-
-a.author-avatar:hover {
-	opacity: 0.8;
-}
 
 // Flickr Widget------------------------------------------------
 .flickr-widget {
@@ -1493,7 +1501,7 @@ a.author-avatar:hover {
 			padding-bottom: 0;
 			margin-bottom: 20px;
 
-			h4{
+			.the-subtitle{
    			font-weight: 700;
    			font-size: 32px;
 			}
@@ -1574,17 +1582,6 @@ li.widget-post-list,
 
 
 //Social widgets------------------------------------------------
-// Google+
-.google-widget {
-	.widget-title-icon:before {
-		content: "\f0d5";
-	}
-
-	.google-box{
-		text-align: center;
-	}
-}
-
 // Soundcloud
 .soundcloud-widget {
 	.widget-title-icon:before {
@@ -1600,15 +1597,16 @@ li.widget-post-list,
 
 	.fb_iframe_widget{
 		margin: 0 auto;
+		max-width: 100%;
 		display: table !important;
 	}
 }
 
 
-// Youtube
+// YouTube
 .widget_youtube-widget {
 	.widget-title-icon:before {
-		content: "\f167";
+		content: "\f16a";
 	}
 
 	.youtube-box{
@@ -1879,7 +1877,7 @@ div.tie-widget-categories .children li{ // override the rtl padding
 			display: none;
 		}
 
-		h4 {
+		.the-subtitle {
 			@include font-size(18px);
 			color: color-contrast($brand-color);
 			margin: 0;
@@ -1981,7 +1979,6 @@ div.tie-widget-categories .children li{ // override the rtl padding
 
 .weather-desc {
 	margin-top: 5px;
-	text-transform: capitalize;
 }
 
 .weather-forecast {
@@ -2071,6 +2068,7 @@ div.tie-widget-categories .children li{ // override the rtl padding
 	font-weight: bold;
 	font-size: 0.8em;
 	margin-top: 3px;
+	line-height: 1.4;
 }
 
 .weather-forecast-day-temp {
@@ -3037,5 +3035,20 @@ $lines-to-show: 2;
 
 	.widget-title-icon {
 		transform: rotate(90deg);
+	}
+}
+
+/* WPCOVID-19 */
+.container-wrapper{
+	.wpcv-global-updates,
+	.wpcv-chart,
+	.wpcv-map{
+		margin: 0;
+	}
+}
+
+.entry{
+	.wpcv-widget{
+		margin-bottom: 30px;
 	}
 }

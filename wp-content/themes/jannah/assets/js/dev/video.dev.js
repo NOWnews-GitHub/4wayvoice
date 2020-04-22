@@ -19,7 +19,7 @@
 	  return false;
 	}
 
-	// Youtube iframe api ready callback
+	// YouTube iframe api ready callback
 	function onYouTubeIframeAPIReady() {
 		if(typeof jQuery.video != 'undefined') {
 			for(callback_index in jQuery.video.global.youtube_api_ready_callbacks) {
@@ -136,7 +136,7 @@
 
 	/* PRIVATE FUNCTIONS */
 
-	// Youtube player action
+	// YouTube player action
 	var youtube_player_action = function($video, callback) {
 		var video_config = $video.data('video').config;
 

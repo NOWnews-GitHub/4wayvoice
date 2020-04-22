@@ -16,21 +16,6 @@
 
 	tie_build_theme_option(
 		array(
-			'name' => esc_html__( 'Cache', TIELABS_TEXTDOMAIN ),
-			'id'   => 'cache',
-			'type' => 'checkbox',
-			'hint' => esc_html__( 'If enabled, some static parts like widgets, main menu and breaking news will be cached to reduce MySQL queries. Saving the theme settings, adding/editing/removing posts, adding comments, updating menus, activating/deactivating plugins, adding/editing/removing terms or updating WordPress, will flush the cache.', TIELABS_TEXTDOMAIN ),
-		));
-
-	tie_build_theme_option(
-		array(
-			'name' => esc_html__( 'Minified CSS and JS files', TIELABS_TEXTDOMAIN ),
-			'id'   => 'minified_files',
-			'type' => 'checkbox',
-		));
-
-	tie_build_theme_option(
-		array(
 			'name' => esc_html__( 'Add a link to the theme options page to the Toolbar', TIELABS_TEXTDOMAIN ),
 			'id'   => 'theme_toolbar',
 			'type' => 'checkbox',

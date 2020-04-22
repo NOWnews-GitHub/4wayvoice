@@ -5,7 +5,7 @@
 	Author:       TieLabs
 	Author URI:   https://tielabs.com
 	Template:     jannah
-	Version:      1.0.1
+	Version:      1.0.4
 	License:      license purchased
 	License URI:  http://themeforest.net/licenses/regular_extended
 	Tags:         Tags: two-columns, buddypress, left-sidebar, right-sidebar, custom-menu, editor-style, featured-images, full-width-template, microformats, rtl-language-support, sticky-post, threaded-comments, translation-ready
@@ -14,3 +14,42 @@
 
 
 /* write custom css after this line */
+
+#top-nav .container {
+
+	padding-left: 0px;
+	padding-right: 0px;
+
+}
+#lang_sel_list {
+	padding-top: 10px;
+}
+
+.breaking {
+	//width: 85%;
+}
+
+@media screen and (max-width: 1023px) and (min-width: 577px) {
+	//.breaking {
+		//width: 80%;
+	//}
+}
+
+@media screen and (max-width: 576px) {
+//	.breaking {
+		//width: 70%;
+	//}
+
+	.breaking .ticker-wrapper {
+		//padding-right: 10px;
+	}
+
+	#lang_sel_list img.iclflag {
+		width: 15px;
+		height: 10px;;
+	}
+}
+
+.line-banner {
+	margin: 10px auto;
+}

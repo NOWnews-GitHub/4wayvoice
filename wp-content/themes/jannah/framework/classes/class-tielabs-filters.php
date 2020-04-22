@@ -17,15 +17,20 @@ class TIELABS_FILTERS {
 		// Add Support for Shortcodes in the terms descriptions
 		add_filter( 'term_description', 'do_shortcode' );
 
+		add_action( 'init',                  array( $this, 'init_hook' ) );
 		add_action( 'init',                  array( $this, 'redirect_random_post' ) );
+
+		add_action( 'wp_head',               array( $this, 'meta_description' ) );
+		add_action( 'wp_head',               array( $this, 'x_ua_compatible' ) );
+
 		add_action( 'wp_footer',             array( $this, 'footer_inline_scripts' ), 999 );
 		add_action( 'wp_footer',             array( $this, 'footer_misc'  ) );
 		add_action( 'wp_footer',             array( $this, 'popup_module' ) );
-		add_filter( 'gettext',               array( $this, 'theme_translation' ), 10, 3 );
-		add_action( 'enqueue_embed_scripts', array( $this, 'lazyload_embed_iframe' ) );
 
+		add_action( 'comment_class',         array( $this, 'is_avatar_enabled' ) );
+
+		add_filter( 'gettext',               array( $this, 'theme_translation' ), 10, 3 );
 		add_filter( 'pre_get_posts',         array( $this, 'search_filters' ) );
-		add_filter( 'get_avatar',            array( $this, 'lazyload_avatar' ) );
 		add_filter( 'TieLabs/cache_key',     array( $this, 'cache_key' ) );
 		add_filter( 'widget_tag_cloud_args', array( $this, 'tag_widget_limit' ) );
 		add_filter( 'widget_title',          array( $this, 'tagcloud_widget_title' ), 10, 3 );
@@ -34,17 +39,22 @@ class TIELABS_FILTERS {
 		add_filter( 'get_the_archive_title', array( $this, 'archive_title' ), 15 );
 		add_filter( 'wp_link_pages_args',    array( $this, 'pages_next_and_number' ) );
 		add_filter( 'excerpt_more',          array( $this, 'excerpt_more' ) );
-		add_filter( 'the_content_more_link', array( $this, 'read_more_button' ) );
-		add_filter( 'the_content',           array( $this, 'shortcodes_notice' ) );
 		add_filter( 'get_the_excerpt',       array( $this, 'post_excerpt' ), 9 );
-		add_filter( 'upload_mimes',          array( $this, 'mimes_types' ), 1, 1 );
-		add_filter( 'wp_kses_allowed_html',  array( $this, 'lazy_load_allow_attrs' ), 10, 2 );
 
 		add_filter( 'TieLabs/exclude_content',            'TIELABS_HELPER::strip_shortcodes' );
 		add_filter( 'wp_get_attachment_image_src',        array( $this, 'gif_image' ), 10, 4 );
-		add_filter( 'wp_get_attachment_image_attributes', array( $this, 'lazyload_image_attributes' ), 8, 3 );
 		add_filter( 'wp_get_attachment_image_attributes', array( $this, 'small_thumb_image_class' ), 10, 3 );
+	}
 
+
+	/**
+	 * init_hook
+	 */
+	function init_hook(){
+
+		if( current_user_can( 'manage_options' ) ){
+			add_filter( 'the_content', array( $this, 'shortcodes_notice' ) );
+		}
 	}
 
 
@@ -57,7 +67,7 @@ class TIELABS_FILTERS {
 		if(
 				is_admin() ||
 				( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) ||
-				in_array( 'parse_request', $GLOBALS['wp_current_filter'] ) ||
+				in_array( 'parse_request',   $GLOBALS['wp_current_filter'] ) ||
 				in_array( 'get_the_excerpt', $GLOBALS['wp_current_filter'] ) ){
 			return $content;
 		}
@@ -97,18 +107,65 @@ class TIELABS_FILTERS {
 	}
 
 
-	/*
+	/**
+	 * x_ua_compatible
+	 */
+	function x_ua_compatible(){
+		echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+	}
+
+
+	/**
+	 * meta_escription
+	 */
+	function meta_description(){
+
+		// Return if the description option is disabled or the Yoast SEO plugin is active
+		if( ! tie_get_option( 'post_meta_escription' ) || class_exists( 'WPSEO_Frontend' ) ){
+			return;
+		}
+
+		// Single Page doesn't have a builder
+		if( is_singular() && ! TIELABS_HELPER::has_builder() ){
+
+			$post = get_post();
+
+			if( ! empty( $post->post_content ) ){
+				$description = apply_filters( 'TieLabs/exclude_content', $post->post_content );
+			}
+		}
+		// Archives
+		elseif( get_the_archive_description() ){
+			$description = get_the_archive_description();
+		}
+
+		// Default
+		if( empty( $description ) ){
+			$description = get_bloginfo( 'description' );
+		}
+
+		if( ! empty( $description ) ){
+			$description = strip_tags( strip_shortcodes( $description ) );
+			echo ' <meta name="description" content="'. esc_attr( wp_html_excerpt( $description, 150 ) ) .'" />';
+		}
+	}
+
+
+	/**
 	 * Theme translations
 	 */
 	function theme_translation( $translation, $text, $domain ){
 
-		if( $domain == TIELABS_TEXTDOMAIN ){
+		if( $domain == TIELABS_TEXTDOMAIN || $domain == 'amp' ){
 
-			$theme_options = get_option( apply_filters( 'TieLabs/theme_options', '' ) );
-			$sanitize_text = sanitize_title( htmlspecialchars( $text ) );
+			$translations = tie_get_option( 'translations' );
 
-			if( ! empty( $theme_options['translations'][ $sanitize_text ] ) ){
-				return htmlspecialchars_decode( $theme_options['translations'][ $sanitize_text ] );
+			if( ! empty( $translations ) ){  // To minimize the calls of sanitize_title
+				$sanitize_text = sanitize_title( htmlspecialchars( $text ) );
+
+				if( ! empty( $translations[ $sanitize_text ] ) ){
+					return htmlspecialchars_decode( $translations[ $sanitize_text ] );
+				}
 			}
 		}
 
@@ -116,7 +173,7 @@ class TIELABS_FILTERS {
 	}
 
 
-	/*
+	/**
 	 * Add the inline scripts to the Footer
 	 */
 	function footer_inline_scripts(){
@@ -133,7 +190,7 @@ class TIELABS_FILTERS {
 	}
 
 
-	/*
+	/**
 	 * Add Misc Footer Conetnt
 	 */
 	function footer_misc(){
@@ -145,20 +202,28 @@ class TIELABS_FILTERS {
 
 		// Custom Footer Code
 		if ( tie_get_option( 'footer_code' ) ){
-			echo do_shortcode( tie_get_option( 'footer_code' ) );
-		}
+			echo do_shortcode( apply_filters( 'TieLabs/footer_code', tie_get_option( 'footer_code' ) ) );
+ 		}
 
 		// Reading Position Indicator
 		if ( tie_get_option( 'reading_indicator' ) && is_single() ){
 			echo '<div id="reading-position-indicator"></div>';
 		}
 
+		// Live Search
+		if( tie_menu_has_search( 'top_nav', true ) || tie_menu_has_search( 'main_nav', true ) ){
+			echo '<div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>';
+		}
+
+		// Scrollbar - Used to get the default scrollbar width.
+		echo '<div id="is-scroller-outer"><div id="is-scroller"></div></div>';
+
 		// Facebook buttons
 		echo '<div id="fb-root"></div>';
 	}
 
 
-	/*
+	/**
 	 * Add the Popup module to the footer
 	 */
 	function popup_module(){
@@ -173,11 +238,26 @@ class TIELABS_FILTERS {
 
 
 	/**
+	 * Add an extra class to the comment item if the avatar is active
+	 */
+	function is_avatar_enabled( $classes ){
+
+		if( is_array( $classes ) && get_option( 'show_avatars' ) ){
+			$classes[] = 'has-avatar';
+		}
+
+		return $classes;
+	}
+
+
+	/**
 	 * Exclude post types and categories From Search results
 	 */
 	function search_filters( $query ){
 
-		if( is_admin() || isset($_GET['post_type']) ) return $query;
+		if( is_admin() || isset( $_GET['post_type'] ) ){
+			return $query;
+		}
 
 		if( is_search() && $query->is_main_query() ){
 
@@ -251,105 +331,19 @@ class TIELABS_FILTERS {
 
 
 	/**
-	 * Lazyload images
-	 */
-	function lazyload_image_attributes( $attr, $attachment, $size = false ) {
-
-		/*
-		 * Check lazyLoad option, Admin page, Feed Page, AMP page
-		 * Check if the JetPack Plugin is active & the Photon option is enabled & Current images displayed in the post content
-		 */
-		if( ! tie_get_option( 'lazy_load' ) || is_admin() || is_feed() ||
-			  ( function_exists( 'is_amp_endpoint' ) && is_amp_endpoint() ) ||
-			  ( TIELABS_JETPACK_IS_ACTIVE && in_array( 'photon', Jetpack::get_active_modules() ) && in_array( 'the_content', $GLOBALS['wp_current_filter'] ) ) ){
-
-			return $attr;
-		}
-
-		$blank_size  = ( $size == TIELABS_THEME_SLUG.'-image-small' ) ? '-small' : '';
-		$blank_image = TIELABS_TEMPLATE_URL.'/assets/images/tie-empty'. $blank_size .'.png';
-
-		$attr['class']   .= ' lazy-img';
-		$attr['data-src'] = $attr['src'];
-		$attr['src']      = $blank_image;
-
-		unset( $attr['srcset'] );
-		unset( $attr['sizes'] );
-
-		return $attr;
-	}
-
-
-	/**
-	 * Allow the data-src in the wp_kses function
-	 * WooCommerce uses the wp_kses to output the products thumbs.
-	 */
-	function lazy_load_allow_attrs( $allowedtags, $context ){
-
-		if( tie_get_option( 'lazy_load' ) ){
-			$allowedtags['img']['data-src'] = true;
-		}
-
-		return $allowedtags;
-	}
-
-
-	/**
-	 * Run the lazy load on the embed iframe
-	 */
-	function lazyload_embed_iframe(){
-
-		if( ! tie_get_option( 'lazy_load' ) ){
-			return;
-		}
-
-		echo '
-			<script>
-				document.addEventListener("DOMContentLoaded", function(){
-					var x = document.getElementsByClassName("lazy-img"), i;
-					for (i = 0; i < x.length; i++) {
-						x[i].setAttribute("src", x[i].getAttribute("data-src"));
-					}
-				});
-			</script>
-		';
-	}
-
-
-	/**
-	 * Avatar Lazyload
-	 */
-	function lazyload_avatar( $avatar ){
-
-		if( tie_get_option( 'lazy_load' ) && ! is_admin() && ! is_feed() && ! in_array( 'the_content', $GLOBALS['wp_current_filter'] ) && ! in_array( 'woocommerce_review_before', $GLOBALS['wp_current_filter'] ) ){
-
-			// Check if the data-src is added before
-			if( strpos( $avatar, 'data-src' ) === false ){
-				$avatar = str_replace( '"', "'", $avatar );
-				$avatar = str_replace( 'srcset=', 'data-2x=', $avatar );
-				$avatar = str_replace( "src='", "src='". TIELABS_TEMPLATE_URL."/assets/images/tie-empty-square.png' data-src='", $avatar );
-				$avatar = str_replace( "class='", "class='lazy-img ", $avatar );
-			}
-		}
-
-		return $avatar;
-	}
-
-
-	/**
 	 * Gif images
 	 */
 	function gif_image( $image, $attachment_id, $size, $icon ){
 
 		if( ! tie_get_option( 'disable_featured_gif' ) ){
 
-			$file_type = wp_check_filetype( $image[0] );
+			$file_type = ! empty( $image[0] ) ? wp_check_filetype( $image[0] ) : false;
 
 			if( ! empty( $file_type ) && $file_type['ext'] == 'gif' && $size != 'full' ){
 
 				$full_image = wp_get_attachment_image_src( $attachment_id, $size = 'full', $icon );
 
-				# For the avatars we need to keep the original width and height
+				// For the avatars we need to keep the original width and height
 				if( ! empty( $full_image ) && in_array( 'get_avatar', $GLOBALS['wp_current_filter'] ) ){
 					$full_image[1] = $image[1];
 					$full_image[2] = $image[2];
@@ -394,7 +388,7 @@ class TIELABS_FILTERS {
 	}
 
 
-	/*
+	/**
 	 * Change the number of tags in the cloud tags
 	 */
 	function tag_widget_limit( $args ){
@@ -431,10 +425,9 @@ class TIELABS_FILTERS {
 	}
 
 
-	/*
+	/**
 	 * Custom Dashboard login page logo
 	 */
-
 	function dashboard_login_logo(){
 
 		if( tie_get_option( 'dashboard_logo' ) ){
@@ -444,7 +437,7 @@ class TIELABS_FILTERS {
 
 
 
-	/*
+	/**
 	 * Remove anything that looks like an archive title prefix ("Archive:", "Foo:", "Bar:").
 	 */
 	function archive_title( $title ){
@@ -498,6 +491,7 @@ class TIELABS_FILTERS {
 			$args['before'] = $args['before'].$prev;
 			$args['after'] = $next.$args['after'];
 		}
+
 		return $args;
 	}
 
@@ -507,34 +501,6 @@ class TIELABS_FILTERS {
 	 */
 	function excerpt_more( $more ){
 		return ' &hellip;';
-	}
-
-
-	/**
-	 * Modify the Read More button text and classes
-	 */
-	function read_more_button() {
-		return '<a class="more-link button" href="' . get_permalink() . '">'. esc_html__( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) .'</a>';
-	}
-
-
-	/**
-	 * Add Extra Mimes Types
-	 */
-	function mimes_types( $mime_types ) {
-
-		// Allow this for Administrators and in the backend only.
-		if( ! is_admin() || ! current_user_can( 'manage_options' ) ){
-			return $mime_types;
-		}
-
-		$mime_types['svg']   = 'image/svg+xml';
-		$mime_types['eot']   = 'application/vnd.ms-fontobject';
-		$mime_types['ttf']   = 'application/x-font-ttf';
-		$mime_types['woff']  = 'application/x-font-woff';
-		$mime_types['woff2'] = 'application/x-font-woff2';
-
-		return $mime_types;
 	}
 
 }

@@ -20,10 +20,16 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		function __construct(){
 
 			// Disable if the Taqyeem plugin is not active
-			if( ! TIELABS_TAQYEEM_IS_ACTIVE ) return;
+			if( ! TIELABS_TAQYEEM_IS_ACTIVE ){
+				return;
+			}
 
 			// Disable the Custom Styles and Typofraphy options
 			add_filter( 'taqyeem_custom_styles', '__return_false' );
+
+			// Disable Updater and Verification
+			add_filter( 'Taqyeem/Updater/disable',      '__return_true' );
+			add_filter( 'Taqyeem/Verification/disable', '__return_true' );
 
 			// Disable the plugin Rich Snippets
 			add_filter( 'tie_taqyeem_rich_snippets', '__return_false' );
@@ -32,7 +38,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 			add_filter( 'taqyeem_exclude_content', 'TIELABS_HELPER::strip_shortcodes' );
 
 			// Enqueue Scripts and Styles
-			add_filter( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
+			add_filter( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 50 );
 
 			// Change the reviews head box class
 			add_filter( 'taqyeem_reviews_head_classes', array( $this, 'review_head_class' ) );
@@ -68,7 +74,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Allow the Rview Rich Snippet on Pages
 		 */
 		function rich_snippet_for_page(){
@@ -79,59 +85,40 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Change the Review Rich Snippet
 		 */
 		function review_rich_snippet( $schema ){
 
-			// Check if the current post has review
-			if( ! tie_get_postdata( 'taq_review_position' ) ){
+			// Check if the Taqyeem Structured Data is active, current post has review and the Taqyeem version is >= 2.3.0
+			if( ! taqyeem_get_option( 'structured_data' ) || ! tie_get_postdata( 'taq_review_position' ) || ! function_exists( 'taqyeem_review_get_rich_snippet' ) ){
 				return $schema;
-			}
-
-			// Get he total score and convert it to 0 ~ 5
-			$total_score = (int) get_post_meta( get_the_ID(), 'taq_review_score', true );
-
-			if( ! empty( $total_score ) && $total_score > 0 ){
-				$total_score = round( ($total_score*5)/100, 1 );
-			}
-
-			// Review type
-			$schema['@type'] = 'review';
-
-			// Set the post title as the item reviewd title
-			$schema['itemReviewed'] = array(
-				'@type' => 'Thing',
-				'name'  => get_the_title(),
-			);
-
-			// Set the rating
-			$schema['reviewRating'] = array(
-				'@type'       => 'Rating',
-				'worstRating' => 1,
-				'bestRating'  => 5,
-				'ratingValue' => $total_score,
-				'description' => get_post_meta( get_the_ID(), 'taq_review_summary', true ),
-			);
-
-			// Set the post description as the review body text
-			$schema['reviewBody'] = $schema['description'];
-
-			// Set the post featured image as the item image if it exists
-			if( ! empty( $schema['image']['url'] ) ){
-				$schema['itemReviewed']['image'] = $schema['image']['url'];
 			}
 
 			// Unset some data
 			unset( $schema['articleBody'] );
 			unset( $schema['articleSection'] );
 
+			// Get the Review structure data
+			$review_rich_snippet = taqyeem_review_get_rich_snippet();
+
+			if( $review_rich_snippet['@type'] == 'product' ){
+				$schema = $review_rich_snippet;
+			}
+			else{
+				// Add the data to the post structure data
+				$schema['@type']        = 'review';
+				$schema['itemReviewed'] = $review_rich_snippet['itemReviewed'];
+				$schema['reviewBody']   = $review_rich_snippet['reviewBody'];
+				$schema['reviewRating'] = $review_rich_snippet['reviewRating'];
+			}
+
 			// return the modefied data
 			return $schema;
 		}
 
 
-		/*
+		/**
 		 * Change the reviews head box class
 		 */
 		function review_head_class( $class ){
@@ -139,7 +126,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Alter the query for the best reviews
 		 */
 		function best_reviews_query( $args, $block ){
@@ -153,7 +140,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Alter the Related Posts Query
 		 */
 		function related_posts_query( $args ){
@@ -167,7 +154,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Alter the Check Also Query
 		 */
 		function checkalso_query( $args ){
@@ -181,7 +168,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Add Best Reviews to the post order option menu.
 		 */
 		function posts_order_args( $args ){
@@ -192,7 +179,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Add Best Reviews to the post order option menu.
 		 */
 		function posts_order_args_2( $args ){
@@ -203,7 +190,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Default Widgets Posts Thumb Size
 		 */
 		function reviews_thumb_size(){
@@ -211,7 +198,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Prevent Taqyeem from displaying the review box in the content block in the builder
 		 */
 		function remove_review_block(){
@@ -219,7 +206,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 		}
 
 
-		/*
+		/**
 		 * Enqueue Scripts and Styles
 		 */
 		function enqueue_scripts(){
@@ -227,7 +214,7 @@ if( ! class_exists( 'TIELABS_TAQYEEM' )){
 			wp_dequeue_script( 'taqyeem-main' );
 			wp_dequeue_style( 'taqyeem-style' );
 
-			wp_enqueue_style( 'taqyeem-styles', TIELABS_TEMPLATE_URL.'/assets/css/taqyeem'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION, 'all' );
+			wp_enqueue_style( 'taqyeem-styles', TIELABS_TEMPLATE_URL.'/assets/css/plugins/taqyeem'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION, 'all' );
 
 			if( ! is_admin() ){
 				wp_dequeue_style( 'taqyeem-fontawesome' );

@@ -37,11 +37,11 @@ if( ! function_exists( 'tie_template_get_masonry' )){
 
 		$after = '';
 
-		if( tie_get_postdata( 'tie_builder_active' ) ){
+		if( TIELABS_HELPER::has_builder() ){
 
 			echo '
 				<div class="section-item container full-width">
-					<div class="tie-row main-content-row">
+					<div class="main-content-row">
 						<div class="main-content tie-col-md-12">';
 
 			$after = '
@@ -57,7 +57,7 @@ if( ! function_exists( 'tie_template_get_masonry' )){
 		$excerpt         = tie_get_postdata( 'tie_blog_excerpt' )         ? 'true' : '';
 		$post_meta       = tie_get_postdata( 'tie_blog_meta' )            ? 'true' : '';
 		$category_meta   = tie_get_postdata( 'tie_blog_category_meta' )   ? 'true' : '';
-		$uncropped_image = tie_get_postdata( 'tie_blog_uncropped_image' ) ? 'full' : TIELABS_THEME_SLUG.'-image-grid';
+		$uncropped_image = tie_get_postdata( 'tie_blog_uncropped_image' ) ? 'full' : TIELABS_THEME_SLUG.'-image-post';
 		$excerpt_length  = tie_get_postdata( 'tie_blog_length' )          ? tie_get_postdata( 'tie_blog_length' ) : '';
 		$layout          = tie_get_postdata( 'tie_blog_layout' )          ? tie_get_postdata( 'tie_blog_layout' ) : 'masonry';
 		$pagination      = tie_get_object_option( 'blog_pagination', false, 'tie_blog_pagination' );
@@ -87,6 +87,11 @@ if( ! function_exists( 'tie_template_get_masonry' )){
 		// Number of Posts
 		if( tie_get_postdata( 'tie_posts_num' ) ){
 			$args['posts_per_page'] = tie_get_postdata( 'tie_posts_num' );
+		}
+
+		// Do not duplicate posts
+		if( ! empty( $GLOBALS['tie_do_not_duplicate'] ) && is_array( $GLOBALS['tie_do_not_duplicate'] )){
+			$args['post__not_in'] = $GLOBALS['tie_do_not_duplicate'];
 		}
 
 		// Run The Query
@@ -122,7 +127,7 @@ if( ! function_exists( 'tie_template_get_authors' )){
 
 	function tie_template_get_authors(){
 
-		$users_args = array( 'fields' => array( 'ID', 'display_name' ) );
+		$users_args = array();
 		$users_role = maybe_unserialize( tie_get_postdata( 'tie_authors') );
 
 		if( ! empty( $users_role ) && is_array( $users_role ) ){
@@ -131,12 +136,14 @@ if( ! function_exists( 'tie_template_get_authors' )){
 
 		$get_users = get_users( apply_filters( 'TieLabs/Page_Template/Authors/args', $users_args ) );
 
-		if ( empty( $get_users ) ) return;
+		if ( empty( $get_users ) ){
+			return;
+		}
 
 		echo'<ul class="authors-wrap">';
 			foreach ( $get_users as $user ){
 				echo '<li>';
-					tie_author_box( $user->display_name, $user->ID );
+					tie_author_box( $user );
 				echo '</li>';
 			}
 		echo'</ul>';

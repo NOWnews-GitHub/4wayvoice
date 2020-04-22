@@ -13,7 +13,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 	class TIELABS_SETTINGS_CATEGORY{
 
 
-
 		/**
 		 * __construct
 		 *
@@ -24,6 +23,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 			add_action( 'edited_category',           array( $this, 'save' ) );
 			add_action( 'edit_category_form_fields', array( $this, 'custom_options' ) );
 
+
 			// Category Settings
 			add_filter( 'TieLabs/Settings/Category/category-layout', array( $this, 'category_layout_settings' ), 10, 2 );
 			add_filter( 'TieLabs/Settings/Category/posts-settings',  array( $this, 'posts_layout_settings' ),    10, 2 );
@@ -32,9 +32,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 			add_filter( 'TieLabs/Settings/Category/menu',            array( $this, 'menu_settings' ),            10, 2 );
 			add_filter( 'TieLabs/Settings/Category/sidebar',         array( $this, 'sidebar_settings'),          10, 2 );
 			add_filter( 'TieLabs/Settings/Category/styles',          array( $this, 'styles_settings' ),          10, 2 );
-
 		}
-
 
 
 		/**
@@ -47,7 +45,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 
 			tie_build_option( $option, 'tie_cat['. $id .']', $data );
 		}
-
 
 
 		/**
@@ -67,7 +64,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 		}
 
 
-
 		/**
 		 * Category Custom Options
 		 */
@@ -75,7 +71,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 
 			wp_enqueue_media();
 			wp_enqueue_script( 'wp-color-picker' );
-
 			?>
 
 			<tr class="form-field">
@@ -190,7 +185,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 		}
 
 
-
 		/**
 		 * Category Layout Settings
 		 */
@@ -246,6 +240,18 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 				),
 
 				array(
+					'title' => esc_html__( 'Don\'t duplicate posts', TIELABS_TEXTDOMAIN ),
+					'type'  => 'header',
+				),
+
+				array(
+					'name' => esc_html__( 'Don\'t duplicate posts', TIELABS_TEXTDOMAIN ),
+					'id'   => 'do_not_dublicate',
+					'type' => 'checkbox',
+					'hint' => esc_html__( 'Note: This option doesn\'t work with the AJAX pagination.', TIELABS_TEXTDOMAIN ),
+				),
+
+				array(
 					'title' => esc_html__( 'Category Page Layout', TIELABS_TEXTDOMAIN ),
 					'type'  => 'header',
 				),
@@ -260,6 +266,39 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 						'framed' => array( esc_html__( 'Framed',     TIELABS_TEXTDOMAIN ) => 'layouts/layout-framed.png' ),
 						'border' => array( esc_html__( 'Bordered',   TIELABS_TEXTDOMAIN ) => 'layouts/layout-border.png' ),
 				)),
+
+				array(
+					'title' => esc_html__( 'Footer Description', TIELABS_TEXTDOMAIN ),
+					'type'  => 'header',
+				),
+
+				array(
+					'name'   => esc_html__( 'Footer Description', TIELABS_TEXTDOMAIN ),
+					'id'     => 'footer_description',
+					'type'   => 'checkbox',
+					'toggle' => '#secondary_description_title-item, #secondary_description-item',
+				),
+
+				array(
+					'name'  => esc_html__( 'Footer Description Title', TIELABS_TEXTDOMAIN ),
+					'id'    => 'secondary_description_title',
+					'type'	=> 'text',
+				),
+
+				array(
+					'name'   => esc_html__( 'Footer Description', TIELABS_TEXTDOMAIN ),
+					'id'     => 'secondary_description',
+					'type'	 => 'editor',
+					'hint'   => esc_html__( 'This Description will appear at the end of the category page below the posts list.', TIELABS_TEXTDOMAIN ),
+					'editor' => array(
+						'media_buttons' => true,
+						'quicktags'     => true,
+						'textarea_rows' => '15',
+						'editor_height' => '300px'
+					),
+					'kses'   => true,
+				),
+
 			);
 
 
@@ -269,7 +308,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 
 			return apply_filters( 'TieLabs/Settings/Category/category-layout/defaults', $settings );
 		}
-
 
 
 		/**
@@ -383,6 +421,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'id'      => 'cat_schema_type',
 					'type'    => 'radio',
 					'options' => array(
+						''             => esc_html__( 'Default',      TIELABS_TEXTDOMAIN ),
 						'Article'      => esc_html__( 'Article',      TIELABS_TEXTDOMAIN ),
 						'NewsArticle'  => esc_html__( 'NewsArticle',  TIELABS_TEXTDOMAIN ),
 						'BlogPosting'  => esc_html__( 'BlogPosting',  TIELABS_TEXTDOMAIN ),
@@ -391,14 +430,12 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 			);
 
 
-
 			if( ! empty( $current_settings ) && is_array( $current_settings ) ){
 				$settings = array_merge( $current_settings, $settings );
 			}
 
 			return apply_filters( 'TieLabs/Settings/Category/posts-settings/defaults', $settings );
 		}
-
 
 
 		/**
@@ -641,8 +678,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 				),
 			);
 
-
-
 			// Revolution Slider
 			if( TIELABS_REVSLIDER_IS_ACTIVE ){
 
@@ -684,10 +719,8 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 				}
 			}
 
-
-			# LayerSlider
+			// LayerSlider
 			if( TIELABS_LS_Sliders_IS_ACTIVE ){
-
 
 				$settings[] = array(
 					'title' => esc_html__( 'LayerSlider', TIELABS_TEXTDOMAIN ),
@@ -735,7 +768,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 		}
 
 
-
 		/**
 		 * Logo Settings
 		 */
@@ -766,18 +798,11 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'type'    => 'radio',
 					'toggle'  => array(
 						'logo'  => '#logo-item, #logo_retina-item, #logo_retina_width-item, #logo_retina_height-item',
-						'title' => '#logo_text-item'),
+						'title' => ''),
 					'options'	=> array(
 						'logo'  => esc_html__( 'Image', TIELABS_TEXTDOMAIN ),
 						'title' => esc_html__( 'Site Title', TIELABS_TEXTDOMAIN ),
 				)),
-
-				array(
-					'name'    => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
-					'id'      => 'logo_text',
-					'type'    => 'text',
-					'class'   => 'logo_setting',
-				),
 
 				array(
 					'name'  => esc_html__( 'Logo Image', TIELABS_TEXTDOMAIN ),
@@ -808,6 +833,13 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'type'  => 'number',
 					'class' => 'logo_setting',
 					'hint'  => esc_html__( 'If retina logo is uploaded, please enter the standard logo (1x) version height, do not enter the retina logo height.', TIELABS_TEXTDOMAIN ),
+				),
+
+				array(
+					'name'  => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
+					'id'    => 'logo_text',
+					'type'  => 'text',
+					'hint'  => esc_html__( 'In the Logo Image type this will be used as the ALT text.', TIELABS_TEXTDOMAIN ),
 				),
 
 				array(
@@ -846,7 +878,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 		}
 
 
-
 		/**
 		 * Menu Settings
 		 */
@@ -865,7 +896,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'options' => TIELABS_ADMIN_HELPER::get_menus( true ),
 				),
 			);
-
 
 			if( ! empty( $current_settings ) && is_array( $current_settings ) ){
 				$settings = array_merge( $current_settings, $settings );
@@ -893,11 +923,11 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'type'    => 'visual',
 					'columns' => 5,
 					'options' => array(
-							''           => array( esc_html__( 'Default',         TIELABS_TEXTDOMAIN ) => 'default.png' ),
-							'right'	     => array( esc_html__( 'Sidebar Right',   TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-right.png' ),
-							'left'	     => array( esc_html__( 'Sidebar Left',    TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-left.png' ),
-							'full'	     => array( esc_html__( 'Without Sidebar', TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-full-width.png' ),
-							'one-column' => array( esc_html__( 'One Column',      TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-one-column.png' ),
+						''           => array( esc_html__( 'Default',         TIELABS_TEXTDOMAIN ) => 'default.png' ),
+						'right'	     => array( esc_html__( 'Sidebar Right',   TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-right.png' ),
+						'left'	     => array( esc_html__( 'Sidebar Left',    TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-left.png' ),
+						'full'	     => array( esc_html__( 'Without Sidebar', TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-full-width.png' ),
+						'one-column' => array( esc_html__( 'One Column',      TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-one-column.png' ),
 				)),
 
 				array(
@@ -905,9 +935,9 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'id'     => 'cat_sticky_sidebar',
 					'type'   => 'select',
 					'options' => array(
-							''    => esc_html__( 'Default', TIELABS_TEXTDOMAIN ),
-							'yes' => esc_html__( 'Yes',     TIELABS_TEXTDOMAIN ),
-							'no'  => esc_html__( 'No',      TIELABS_TEXTDOMAIN ),
+						''    => esc_html__( 'Default', TIELABS_TEXTDOMAIN ),
+						'yes' => esc_html__( 'Yes',     TIELABS_TEXTDOMAIN ),
+						'no'  => esc_html__( 'No',      TIELABS_TEXTDOMAIN ),
 				)),
 
 				array(
@@ -928,11 +958,11 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'type'    => 'visual',
 					'columns' => 5,
 					'options' => array(
-							''           => array( esc_html__( 'Default',         TIELABS_TEXTDOMAIN ) => 'default.png' ),
-							'right'	     => array( esc_html__( 'Sidebar Right',   TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-right.png' ),
-							'left'	     => array( esc_html__( 'Sidebar Left',    TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-left.png' ),
-							'full'	     => array( esc_html__( 'Without Sidebar', TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-full-width.png' ),
-							'one-column' => array( esc_html__( 'One Column',      TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-one-column.png' ),
+						''           => array( esc_html__( 'Default',         TIELABS_TEXTDOMAIN ) => 'default.png' ),
+						'right'	     => array( esc_html__( 'Sidebar Right',   TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-right.png' ),
+						'left'	     => array( esc_html__( 'Sidebar Left',    TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-left.png' ),
+						'full'	     => array( esc_html__( 'Without Sidebar', TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-full-width.png' ),
+						'one-column' => array( esc_html__( 'One Column',      TIELABS_TEXTDOMAIN ) => 'sidebars/sidebar-one-column.png' ),
 				)),
 
 				array(
@@ -940,9 +970,9 @@ if( ! class_exists( 'TIELABS_SETTINGS_CATEGORY' )){
 					'id'     => 'cat_posts_sticky_sidebar',
 					'type'   => 'select',
 					'options' => array(
-							''    => esc_html__( 'Default', TIELABS_TEXTDOMAIN ),
-							'yes' => esc_html__( 'Yes',     TIELABS_TEXTDOMAIN ),
-							'no'  => esc_html__( 'No',      TIELABS_TEXTDOMAIN ),
+						''    => esc_html__( 'Default', TIELABS_TEXTDOMAIN ),
+						'yes' => esc_html__( 'Yes',     TIELABS_TEXTDOMAIN ),
+						'no'  => esc_html__( 'No',      TIELABS_TEXTDOMAIN ),
 				)),
 
 				array(

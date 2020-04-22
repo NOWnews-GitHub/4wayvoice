@@ -1,49 +1,78 @@
 jQuery(document).ready(function() {
 
-	var reviews_on = jQuery("select[name='taq_review_position'] option:selected ").val();
-	if (reviews_on != '') {	jQuery('#taq-reviews-options').show();	}
-	if (reviews_on == 'custom') {	jQuery('#taqyeem_custom_position_hint').show();	}
+	// On Page Load
+	var reviews_on = jQuery("select[name='taq_review_position'] option:selected").val();
+
+	if (reviews_on != '') {
+		jQuery('#taq-reviews-options').show();
+	}
+	else if (reviews_on == 'custom') {
+		jQuery('#taqyeem_custom_position_hint').show();
+	}
+
+	// On Change
 	jQuery("select[name='taq_review_position']").change(function(){
-		var reviews_on = jQuery("select[name='taq_review_position'] option:selected ").val();
+		var reviews_on = jQuery("select[name='taq_review_position'] option:selected").val();
+
 		if (reviews_on == '') {
 			jQuery('#taq-reviews-options').fadeOut();
 			jQuery('#taqyeem_custom_position_hint').fadeOut();
-		}else if( reviews_on == 'custom' ){
+		}
+		else if( reviews_on == 'custom' ){
 			jQuery('#taq-reviews-options').fadeIn();
 			jQuery('#taqyeem_custom_position_hint').fadeIn();
-		}else{
+		}
+		else{
 			jQuery('#taq-reviews-options').fadeIn();
 			jQuery('#taqyeem_custom_position_hint').fadeOut();
 		}
-	 });
+	});
 
-	jQuery(".taqyeem-submit .taqyeem-save").click( function() {
+
+	// Structure Data
+	var structured_data = jQuery("select[name='taq_review_structured_data'] option:selected").val();
+
+	jQuery( '.taq_structured_data_options' ).hide();
+	jQuery( '.taq_structured_data_'+ structured_data +'_options').show();
+
+	jQuery("select[name='taq_review_structured_data']").change(function(){
+		selected_val = jQuery( this ).val();
+
+		jQuery( '.taq_structured_data_options' ).slideUp('fast');
+		jQuery( '.taq_structured_data_'+ selected_val +'_options' ).slideDown('fast');
+	});
+
+
+	// Save Settings
+	jQuery('.taqyeem-submit .taqyeem-save').click( function() {
 		jQuery('#save-alert').fadeIn();
 	});
 
-
-	jQuery("#add_review_criteria").click(function() {
-		taqyeem_add_item( '' );
+	// Add review
+	jQuery('#add_review_criteria').click(function(){
+		taqyeem_add_item('');
 	});
-	
+
+	// Delete review
 	jQuery(document).on('click', '.del-review' , function () {
 		jQuery(this).parent().addClass('taq-removered').fadeOut(function() {
 			jQuery(this).remove();
 		});
 	});
 
-	jQuery(".taq-tabs-wrap").hide();
-	jQuery(".taqyeem-panel-tabs ul li:first").addClass("active").show();
-	jQuery(".taq-tabs-wrap:first").show(); 
-	jQuery("li.tie-tabs:not(.tie-not-tab)").click(function() {
-		jQuery(".taqyeem-panel-tabs ul li").removeClass("active");
-		jQuery(this).addClass("active");
-		jQuery(".taq-tabs-wrap").hide();
-		var activeTab = jQuery(this).find("a").attr("href");
+	// Theme Options
+	jQuery('.taq-tabs-wrap').hide();
+	jQuery('.taqyeem-panel-tabs ul li:first').addClass('active').show();
+	jQuery('.taq-tabs-wrap:first').show();
+	jQuery('li.tie-tabs:not(.tie-not-tab)').click(function() {
+		jQuery('.taqyeem-panel-tabs ul li').removeClass('active');
+		jQuery(this).addClass('active');
+		jQuery('.taq-tabs-wrap').hide();
+		var activeTab = jQuery(this).find('a').attr('href');
 		jQuery(activeTab).fadeIn(150);
 		return false;
 	});
-	
+
 	jQuery('.taqyeem-panel-content p:empty').remove();
 
 });

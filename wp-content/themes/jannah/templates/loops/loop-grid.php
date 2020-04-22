@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -16,30 +16,22 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 if( $block['style'] != 'row' && $count == 1 ):
 
-	$background = tie_get_option( 'lazy_load' ) ? 'data-src="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-post' ) ) .'"'; ?>
+	$background = tie_get_option( 'lazy_load' ) ? 'data-lazy-bg="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-post' ) ) .'"'; ?>
 
 	<li>
 		<a href="<?php the_permalink() ?>" <?php tie_post_class( 'post-thumb' ); ?> <?php echo ( $background ); ?>>
 			<?php tie_the_score( 'large' ); ?>
-			<div class="post-thumb-overlay-wrap">
-				<div class="post-thumb-overlay">
-					<span class="icon"></span>
-				</div>
-			</div>
+			<?php tie_post_format_icon( $block['media_overlay'] ); ?>
 		</a>
 	</li>
 
 <?php else:
 
-	$background = tie_get_option( 'lazy_load' ) ? 'data-src="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-large' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-large' ) ) .'"'; ?>
+	$background = tie_get_option( 'lazy_load' ) ? 'data-lazy-bg="'. esc_attr( tie_thumb_src( TIELABS_THEME_SLUG.'-image-large' ) ) .'"' : 'style="'. esc_attr( tie_thumb_src_bg( TIELABS_THEME_SLUG.'-image-large' ) ) .'"'; ?>
 
 	<li>
 		<a href="<?php the_permalink() ?>" <?php tie_post_class( 'post-thumb' ); ?> <?php echo ( $background ); ?>>
-			<div class="post-thumb-overlay-wrap">
-				<div class="post-thumb-overlay">
-		    	<span class="icon"></span>
-		  	</div>
-		  </div>
+			<?php tie_post_format_icon( $block['media_overlay'] ); ?>
 		</a>
 	</li>
 

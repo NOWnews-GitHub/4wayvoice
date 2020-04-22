@@ -22,8 +22,15 @@ if( ! class_exists( 'TIE_ABOUT_AUTHOR_WIDGET' )){
 				return;
 			}
 
+			// Get the Authors IDs | Co Author Plus Support
+			$post_authors  = tie_get_post_authors();
+			$authors_count = count( $post_authors );
+
+			$title = ( $authors_count > 1 ) ? esc_html__( 'Authors', TIELABS_TEXTDOMAIN ) : $post_authors[0]->display_name;
+			$class = ( $authors_count > 1 ) ? 'multiple-authors' : 'single-author';
+
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
-			$instance['title'] = apply_filters( 'widget_title', sprintf( esc_html__( 'About %s', TIELABS_TEXTDOMAIN ), get_the_author() ) , $instance, $this->id_base );
+			$instance['title'] = apply_filters( 'widget_title', sprintf( esc_html__( 'About %s', TIELABS_TEXTDOMAIN ), $title ), $instance, $this->id_base );
 
 			echo ( $args['before_widget'] );
 
@@ -31,7 +38,15 @@ if( ! class_exists( 'TIE_ABOUT_AUTHOR_WIDGET' )){
 				echo ( $args['before_title'] . $instance['title'] . $args['after_title'] );
 			}
 
-			tie_author_box();
+			if ( is_array( $post_authors ) && ! empty( $post_authors ) ) {
+
+				echo '<div class="'. $class .'">';
+					foreach ( $post_authors as $author ) {
+						tie_author_box( $author, $class );
+					}
+				echo '</div>';
+			}
+
 
 			echo ( $args['after_widget'] );
 		}
@@ -93,7 +108,7 @@ if( ! class_exists( 'TIE_AUTHOR_POSTS_WIDGET' )){
 			$instance['title'] = apply_filters( 'widget_title', sprintf( esc_html__( 'By %s', TIELABS_TEXTDOMAIN ), get_the_author() ) , $instance, $this->id_base );
 
 			$author_id   = get_the_author_meta( 'ID' );
-			$no_of_posts = isset( $instance['no_of_posts'] ) ? $instance['no_of_posts'] : 5;
+			$no_of_posts = ! empty( $instance['no_of_posts'] ) ? $instance['no_of_posts'] : 5;
 
 			echo ( $args['before_widget'] );
 
@@ -109,7 +124,7 @@ if( ! class_exists( 'TIE_AUTHOR_POSTS_WIDGET' )){
 
 
 			if( $instance['see_all'] ){
-				echo '<a class="button dark-btn fullwidth" href="'. get_author_posts_url( $author_id ). '">'. esc_html__( 'All', TIELABS_TEXTDOMAIN ) .' ('.TIELABS_WP_HELPER::count_user_posts($author_id) .')</a>';
+				echo '<a class="button dark-btn fullwidth" href="'. get_author_posts_url( $author_id ). '">'. esc_html__( 'All', TIELABS_TEXTDOMAIN ) .' ('. TIELABS_WP_HELPER::count_user_posts( $author_id ) .')</a>';
 			}
 
 			echo ( $args['after_widget'] );
@@ -121,7 +136,7 @@ if( ! class_exists( 'TIE_AUTHOR_POSTS_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance                = $old_instance;
 			$instance['no_of_posts'] = $new_instance['no_of_posts'];
-			$instance['see_all']     = $new_instance['see_all'];
+			$instance['see_all']     = ! empty( $new_instance['see_all'] ) ? 'true' : 0;
 			return $instance;
 		}
 
@@ -131,7 +146,7 @@ if( ! class_exists( 'TIE_AUTHOR_POSTS_WIDGET' )){
 		public function form( $instance ){
 
 			$no_of_posts = isset( $instance['no_of_posts'] ) ? $instance['no_of_posts'] : 5;
-			$see_all     = isset( $instance['see_all'] ) ? $instance['see_all'] : '';
+			$see_all     = isset( $instance['see_all'] )     ? $instance['see_all']     : '';
 
 			echo '<p class="tie-message-hint">'. esc_html__( 'This Widget appears in the single post page only.', TIELABS_TEXTDOMAIN) .'</p>';
 			?>
@@ -216,7 +231,7 @@ if( ! class_exists( 'TIE_AUTHOR_CUSTOM_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance            = $old_instance;
 			$instance['title']   = sanitize_text_field( $new_instance['title'] );
-			$instance['center']  = $new_instance['center'];
+			$instance['center']  = ! empty( $new_instance['center'] ) ? 'true' : 0;
 			return $instance;
 		}
 
@@ -225,7 +240,7 @@ if( ! class_exists( 'TIE_AUTHOR_CUSTOM_WIDGET' )){
 		 */
 		public function form( $instance ){
 
-			$title   = isset( $instance['title'] ) ? esc_attr( $instance['title']) : '';
+			$title   = isset( $instance['title'] )  ? esc_attr( $instance['title'])  : '';
 			$center  = isset( $instance['center'] ) ? esc_attr( $instance['center']) : '';
 
 			echo '<p class="tie-message-hint">'. esc_html__( 'This Widget appears in the single post page only.', TIELABS_TEXTDOMAIN) .'</p>';
@@ -255,4 +270,3 @@ if( ! class_exists( 'TIE_AUTHOR_CUSTOM_WIDGET' )){
 	}
 
 }
-?>

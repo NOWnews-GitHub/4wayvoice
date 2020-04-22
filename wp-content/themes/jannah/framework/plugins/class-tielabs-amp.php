@@ -20,12 +20,29 @@ if( ! class_exists( 'TIELABS_AMP' )){
 		function __construct(){
 
 			// Disable if the AMP plugin is not active or the theme option is disabled
-			if( ! TIELABS_AMP_IS_ACTIVE || ! tie_get_option( 'amp_active' ) ){
+			if( ! TIELABS_AMP_IS_ACTIVE ){
+				return;
+			}
+
+			// Plugin options
+			add_filter( 'pre_update_option_amp-options', array( $this, 'set_amp_options' ), 10, 2 );
+
+			// Back-end Notice
+			add_action( 'admin_head', array( $this, 'amp_reader_mode_notice' ) );
+
+			// Check if the AMP is active
+			if( ! tie_get_option( 'amp_active' ) ){
 				return;
 			}
 
 			// Disable the AMP Customizer menu, Control styles from the theme options page.
 			add_filter( 'amp_customizer_is_enabled', '__return_false' );
+
+			// Translations
+			add_filter( 'TieLabs/default_translation_texts', array( $this, 'amp_translation_texts' ), 99 );
+
+			// Sub title
+			add_filter( 'amp_post_article_header_meta', array( $this, 'post_subtitle_template' ) );
 
 			// Actions
 			add_action( 'pre_amp_render_post',    array( $this, 'content_filters' ) );
@@ -35,7 +52,33 @@ if( ! class_exists( 'TIELABS_AMP' )){
 			add_filter( 'amp_content_max_width',        array( $this, 'content_width' ) );
 			add_filter( 'amp_post_template_file',       array( $this, 'templates_path' ), 10, 3 );
 			add_filter( 'amp_site_icon_url',            array( $this, 'logo_path' ) );
+			add_filter( 'amp_post_template_metadata',   array( $this, 'post_template_metadata' ) );
 			add_filter( 'amp_post_article_footer_meta', array( $this, 'meta_taxonomy' ) );
+			add_filter( 'amp_post_template_data',       array( $this, 'amp_ad_script' ) );
+		}
+
+
+		/**
+		 * Include the AMP-Ad js file
+		 */
+		function amp_ad_script( $data ) {
+
+			if ( ! isset( $data['amp_component_scripts'] ) ) {
+				$data['amp_component_scripts'] = array();
+			}
+
+			$data['amp_component_scripts']['amp-ad'] = 'https://cdn.ampproject.org/v0/amp-ad-0.1.js';
+
+			return $data;
+		}
+
+
+		/**
+		 * post_subtitle_template
+		 */
+		function post_subtitle_template( $templates ){
+
+			return array_merge( array( 'sub-title' ), $templates );
 		}
 
 
@@ -59,7 +102,7 @@ if( ! class_exists( 'TIELABS_AMP' )){
 		 */
 		function post_formats( $content ){
 
-			$post_format = tie_get_postdata( 'tie_post_head' ) ? tie_get_postdata( 'tie_post_head' ) : 'standard';
+			$post_format = tie_get_postdata( 'tie_post_head', 'standard' );
 
 			ob_start();
 
@@ -138,11 +181,29 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 			if( tie_get_option( 'amp_related_posts' ) ){
 
+				// Current Post ID
+				$post_id = get_the_ID();
+
+				// Default Query Args
 				$args = array(
 					'posts_per_page' => tie_get_option( 'amp_related_posts_number', 4 ),
 					'post_status'    => 'publish',
+					'post__not_in'   => array( $post_id ),
 				);
 
+				// Get the current post categories
+				$categories   = wp_get_object_terms( $post_id, 'category' ); //get_the_category doesn't work in AMP
+				$category_ids = array();
+
+				if( ! empty( $categories ) && is_array( $categories ) ){
+					foreach( $categories as $single_category ){
+						$category_ids[] = $single_category->term_id;
+					}
+
+					$args['category__in'] = $category_ids;
+				}
+
+				// Run the Query
 				$recent_posts = new WP_Query( $args );
 
 				if( $recent_posts->have_posts() ){
@@ -168,6 +229,9 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 					$content = $content . $output;
 				}
+
+				// Reset the main Post query
+				wp_reset_postdata();
 			}
 
 			return $content;
@@ -191,10 +255,6 @@ if( ! class_exists( 'TIELABS_AMP' )){
 							data-param-app_id='. tie_get_option( 'amp_facebook_app_id' ) .'></amp-social-share>
 
 						<amp-social-share type="twitter"
-							width="60"
-							height="44"></amp-social-share>
-
-						<amp-social-share type="gplus"
 							width="60"
 							height="44"></amp-social-share>
 
@@ -234,7 +294,6 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * strip_shortcodes
-		 *
 		 */
 		function strip_shortcodes( $content ){
 
@@ -247,16 +306,15 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * ads
-		 *
 		 */
 		function ads( $content ){
 
 			if( tie_get_option( 'amp_ad_above' ) ){
-				$content = tie_get_option( 'amp_ad_above' ) . $content;
+				$content = '<div class="amp-custom-ad amp-above-content-ad amp-ad">'. tie_get_option( 'amp_ad_above' ) .'</div>'. $content;
 			}
 
 			if( tie_get_option( 'amp_ad_below' ) ){
-				$content = $content . tie_get_option( 'amp_ad_below' );
+				$content = $content . '<div class="amp-custom-ad amp-above-content-ad amp-ad">'. tie_get_option( 'amp_ad_below' ) .'</div>';
 			}
 
 			return $content;
@@ -265,7 +323,6 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * content_width
-		 *
 		 */
 		function content_width( $content_max_width ){
 
@@ -275,7 +332,6 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * remove_google_fonts
-		 *
 		 * Do not load Merriweather Google fonts on AMP pages
 		 */
 		function remove_google_fonts(){
@@ -286,14 +342,12 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * templates_path
-		 *
 		 * Set custom template path
 		 */
 		function templates_path( $file, $type, $post ){
 
-			if ( 'header-bar' === $type || 'featured-image' === $type || 'footer' === $type || 'style' === $type ) {
-
-				$file = locate_template( 'framework/plugins/amp-templates/'. $type .'.php' );
+			if ( 'header-bar' === $type || 'sub-title' === $type || 'featured-image' === $type || 'footer' === $type || 'style' === $type ) {
+				return locate_template( 'framework/plugins/amp-templates/'. $type .'.php' );
 			}
 
 			return $file;
@@ -302,7 +356,6 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * meta_taxonomy
-		 *
 		 * Show/Hide the categories and tags below the post
 		 */
 		function meta_taxonomy(){
@@ -319,17 +372,92 @@ if( ! class_exists( 'TIELABS_AMP' )){
 
 		/**
 		 * logo_path
-		 *
 		 * Add the custom logo to the AMP structure data
 		 */
 		function logo_path(){
 
-			return tie_get_option( 'amp_logo' );
+			// Custom AMP logo
+			if( tie_get_option( 'amp_logo' ) ){
+				return tie_get_option( 'amp_logo' );
+			}
+
+			// Site Logo
+			return tie_get_option( 'logo_retina' ) ? tie_get_option( 'logo_retina' ) : tie_get_option( 'logo' );
+		}
+
+
+		/**
+		 * post_template_metadata
+		 * Modify the structure data of posts
+		 */
+		function post_template_metadata( $metadata ){
+
+			if( ! empty( $metadata['publisher']['logo'] ) ){
+
+				$metadata['publisher']['logo'] = array(
+					'type' => 'ImageObject',
+					'url'  => $metadata['publisher']['logo']
+				);
+			}
+
+			return $metadata;
+		}
+
+
+		/**
+		 * set_amp_options
+		 * Force the right mode
+		 */
+		function set_amp_options( $value, $old_value ){
+			$value['theme_support'] = 'reader';
+			return $value;
+		}
+
+
+		/**
+		 * set_amp_options
+		 * Force the right mode
+		 */
+		function amp_reader_mode_notice(){
+
+			if( function_exists('get_current_screen') ){
+
+				$current_screen = get_current_screen();
+				if( $current_screen->id != 'toplevel_page_amp-options' ){
+					return;
+				}
+
+				?>
+				<script type="text/javascript">
+					jQuery(document).ready(function(){
+						var $target = jQuery('.amp-website-mode td fieldset');
+						$target.find('.notice-info').remove();
+						$target.find('dt:not(:last-of-type) input').attr('disabled','disabled');
+						$target.find('dt:not(:last-of-type), dd:not(:last-of-type)').attr('style','opacity: 0.8');
+						jQuery('#theme_support_disabled').attr('checked','checked');
+						$target.find('dd:last-child').append('\<div class="notice notice-success notice-alt inline"><p><strong>Your active theme is known to work well in the READER mode.</strong></p></div>');
+					});
+				</script>
+				<?php
+
+			}
+		}
+
+
+		/**
+		 * amp_translation_texts
+		 */
+		function amp_translation_texts( $texts ){
+
+			$texts['Tags: %s']        = 'Tags: %s';
+			$texts['Categories: %s']  = 'Categories: %s';
+			$texts['Leave a Comment'] = 'Leave a Comment';
+			return $texts;
 		}
 
 	}
 
-	# Instantiate the class
+	// Instantiate the class
 	new TIELABS_AMP();
 
 }

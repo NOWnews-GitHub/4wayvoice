@@ -34,16 +34,12 @@
 	.autocomplete-suggestions,
 	#mobile-menu-icon:not(:hover) .menu-text,
 	.about-author .social-icons li.social-icons-item a:not(:hover) span{
-		color: $dark-base-color;
+		color: $dark-base-color !important; // override the single.css file sari3
 	}
 
 	@include breakpoint_min(1600px){
 		#story-index li a:not(.is-current){
 			color: $dark-base-color;
-		}
-
-		#story-index ul{
-			background-color: $dark-bg;
 		}
 	}
 
@@ -56,7 +52,7 @@
 	.pages-nav .pages-numbers a,
 	.pages-nav .pages-numbers span.pages-nav-item,
 	.pages-nav .pages-numbers .first-last-pages .fa,
-	.multiple-post-pages span,
+	.multiple-post-pages .post-page-numbers,
 	.latest-tweets-widget .slider-links .tie-slider-nav span{
 		border-color: $base-border-color-in-white;
 	}
@@ -65,12 +61,6 @@
 	#theme-header{
 		background-color: $dark-bg;
 	}
-
-	// .one-column-no-sidebar{
-	// 	.entry-header-outer{
-	// 		border-bottom: $base-border-in-white;
-	// 	}
-	// }
 
 	.subscribe-widget .subscribe-widget-content h4:after,
 	.boxed-slider-three-slides-wrapper li:not(.slick-active) button:not(:hover),

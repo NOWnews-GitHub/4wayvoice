@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -45,7 +45,7 @@ if( ! tie_get_postdata( 'tie_hide_title' ) ){
 if( has_post_thumbnail() ){
 
 	// Get the post thumbnail size
-	$size = ( tie_get_object_option( 'sidebar_pos', '', 'tie_sidebar_pos' ) == 'full' ) ? TIELABS_THEME_SLUG.'-image-full' : TIELABS_THEME_SLUG.'-image-post';
+	$size = ( tie_get_object_option( 'sidebar_pos', '', 'tie_sidebar_pos' ) == 'full' ) ? 'full' : TIELABS_THEME_SLUG.'-image-post';
 
 	// Display the featured image
 	echo '

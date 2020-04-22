@@ -31,12 +31,16 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 		 */
 		function __construct( $atts ) {
 
-			if( empty( $atts['api_key'] ) || empty( $atts['location'] ) ){
-				return TIELABS_HELPER::notice_message( esc_html__( 'You need to set the API key and Location.', TIELABS_TEXTDOMAIN ) );
+			if( ! tie_get_option( 'api_openweather' ) ){
+				return TIELABS_HELPER::notice_message( esc_html__( 'You need to set the Weather API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ) );
+			}
+
+			if( empty( $atts['location'] ) ){
+				return TIELABS_HELPER::notice_message( esc_html__( 'You need to set the Location.', TIELABS_TEXTDOMAIN ) );
 			}
 
 			$this->atts           = $atts;
-			$this->api_key        = TIELABS_HELPER::remove_spaces( $this->atts['api_key'] );
+			$this->api_key        = TIELABS_HELPER::remove_spaces( tie_get_option( 'api_openweather' ) );
 			$this->location       = $this->atts['location'];
 			$this->locale         = $this->get_locale();
 			$this->city_slug      = is_numeric( $this->location ) ? $this->location : sanitize_title( $this->location );
@@ -88,7 +92,7 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 
 					<div class="weather-icon-and-city">
 						<?php echo $the_icon; ?>
-						<h6 class="weather-name"><?php echo $city_name; ?></h6>
+						<div class="weather-name"><?php echo $city_name; ?></div>
 						<div class="weather-desc"><?php echo $description ?></div>
 					</div>
 
@@ -307,7 +311,7 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 				}
 
 				if( $weather_data['now'] && $weather_data['forecast'] ){
-					set_transient( $this->transient_name, $weather_data, 2 * HOUR_IN_SECONDS );
+					set_transient( $this->transient_name, $weather_data, 1 * HOUR_IN_SECONDS );
 				}
 			}
 
@@ -331,6 +335,9 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 
 			// return if there is an error
 			if( is_wp_error( $api_connect ) ){
+
+				tie_debug_log( $api_connect->get_error_message() );
+
 				return array( 'error' => $api_connect->get_error_message() );
 			}
 
@@ -338,6 +345,9 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 
 			// return if there is an error
 			if( isset( $the_data->cod ) && $the_data->cod != 200 ){
+
+				tie_debug_log( $the_data->message );
+
 				return array( 'error' => $the_data->message );
 			}
 
@@ -489,7 +499,9 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 		 */
 		public static function clear_cache( $location = false ){
 
-			if( ! $location ) return;
+			if( ! $location ){
+				return;
+			}
 
 			global $wpdb;
 			$location = is_numeric( $location ) ? $location : sanitize_title( $location );
@@ -506,13 +518,8 @@ if( ! class_exists( 'TIELABS_WEATHER' )){
 
 			foreach ( $positions as $pos ){
 
-				if(
-					! empty( $options[ $pos.'-components_weather' ] )  &&
-					! empty( $options[ $pos.'-components_wz_location' ] ) &&
-					! empty( $options[ $pos.'-components_wz_api_key' ] )
-				){
-					$location = $options[ $pos.'-components_wz_location' ];
-					self::clear_cache( $location );
+				if( ! empty( $options[ $pos.'-components_weather' ] ) && ! empty( $options[ $pos.'-components_wz_location' ] ) && tie_get_option( 'api_openweather' ) ){
+					self::clear_cache( $options[ $pos.'-components_wz_location' ] );
 				}
 			}
 		}

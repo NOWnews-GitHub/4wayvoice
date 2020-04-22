@@ -45,6 +45,11 @@ if( ! class_exists( 'TIELABS_POSTVIEWS' )){
 		 */
 		function set_post_views(){
 
+			// Disable via filter
+			if( ! apply_filters( 'TieLabs/Post_Views/increment', true ) ){
+				return;
+			}
+
 			// Run only if the post views option is set to THEME's post views module
 			if( tie_get_option( 'tie_post_views' ) != 'theme' || ! is_single() || TIELABS_HELPER::is_bot() ){
 				return;
@@ -82,6 +87,11 @@ if( ! class_exists( 'TIELABS_POSTVIEWS' )){
 		 * Calculate Post Views With WP_CACHE Enabled
 		 */
 		function postview_cache_enqueue(){
+
+			// Disable via filter
+			if( ! apply_filters( 'TieLabs/Post_Views/increment', true ) ){
+				return;
+			}
 
 			// Run only if the post views option is set to THEME's post views module
 			// Single Post page
@@ -234,7 +244,7 @@ if( ! class_exists( 'TIELABS_POSTVIEWS' )){
 				$defaults['tie_post_views'] = 'tie-views';
 			}
 
-		  return $defaults;
+			return $defaults;
 		}
 
 
@@ -245,17 +255,17 @@ if( ! class_exists( 'TIELABS_POSTVIEWS' )){
 		 */
 		function sort_postviews( $query ) {
 
-		  if( ! is_admin() ){
-		  	return;
+			if( ! is_admin() ){
+				return;
 			}
 
-		  $orderby   = $query->get('orderby');
+			$orderby   = $query->get('orderby');
 			$count_key = apply_filters( 'TieLabs/views_meta_field', 'tie_views' );
 
-		  if( $orderby == 'tie-views' ) {
+			if( $orderby == 'tie-views' ) {
 				$query->set( 'meta_key', $count_key );
 				$query->set( 'orderby',  'meta_value_num' );
-		  }
+			}
 		}
 
 

@@ -15,8 +15,6 @@ class N2SmartSliderFeatureResponsive {
 
     public $type = 'auto';
 
-    public $modeObject = null;
-
     public $scaleDown = 0;
 
     public $scaleUp = 0;
@@ -44,7 +42,7 @@ class N2SmartSliderFeatureResponsive {
 
     public $maximumSlideWidthConstrainHeight = 0;
 
-    public $verticalOffsetSelectors = '';
+    public $sliderHeightBasedOn = 'real';
     public $responsiveDecreaseSliderHeight = 0;
 
     public $basedOn = 'combined';
@@ -59,7 +57,9 @@ class N2SmartSliderFeatureResponsive {
 
     public $mobileLandscapeScreenWidth = 740;
 
-    public $focusUser = 0, $focusAutoplay = 0;
+    public $focusUser = 1;
+
+    public $focusEdge = 'auto';
 
     public $orientationMode = 'width_and_height';
 
@@ -70,6 +70,10 @@ class N2SmartSliderFeatureResponsive {
         $this->desktop = intval($slider->params->get('desktop', 1));
         $this->tablet  = intval($slider->params->get('tablet', 1));
         $this->mobile  = intval($slider->params->get('mobile', 1));
+
+
+        $this->focusUser = intval($slider->params->get('responsiveFocusUser', 1));
+        $this->focusEdge = $slider->params->get('responsiveFocusEdge', 'auto');
 
         $this->type = $slider->params->get('responsive-mode', 'auto');
 
@@ -128,8 +132,8 @@ class N2SmartSliderFeatureResponsive {
             'mobileLandscape'  => 1
         );
 
-        $sliderWidth  = intval($slider->params->get('width', 1000));
-        $sliderHeight = intval($slider->params->get('height', 500));
+        $sliderWidth  = max(10, intval($slider->params->get('width', 1000)));
+        $sliderHeight = max(10, intval($slider->params->get('height', 500)));
 
         $modeSwitchWidth = array(
             'desktopPortrait'  => $sliderWidth,
@@ -416,11 +420,11 @@ class N2SmartSliderFeatureResponsive {
             'forceFullOverflowX'               => $this->forceFullOverflowX,
             'forceFullHorizontalSelector'      => $this->forceFullHorizontalSelector,
             'constrainRatio'                   => $this->constrainRatio,
-            'verticalOffsetSelectors'          => $this->verticalOffsetSelectors,
+            'sliderHeightBasedOn'              => $this->sliderHeightBasedOn,
             'decreaseSliderHeight'             => $this->responsiveDecreaseSliderHeight,
 
-            'focusUser'     => $this->focusUser,
-            'focusAutoplay' => $this->focusAutoplay,
+            'focusUser' => $this->focusUser,
+            'focusEdge' => $this->focusEdge,
 
             'deviceModes'            => $this->modes,
             'normalizedDeviceModes'  => $normalizedDeviceModes,

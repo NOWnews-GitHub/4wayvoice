@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -24,14 +24,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 			<div class="post-thumbnail">
 				<a class="post-thumb" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
 
-					<div class="post-thumb-overlay-wrap">
-						<div class="post-thumb-overlay">
-							<span class="icon"></span>
-						</div>
-					</div>
-
+					<?php tie_post_format_icon( $media_icon ); ?>
 					<?php tie_the_trending_icon( 'trending-lg' ); ?>
-
 					<?php the_post_thumbnail( TIELABS_THEME_SLUG.'-image-post' ) ?>
 
 				</a>
@@ -44,7 +38,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 	?>
 
 	<h3 class="post-box-title">
-		<a class="mega-menu-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a>
+		<a class="mega-menu-link" href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 	</h3>
 
 </div><!-- mega-recent-post -->

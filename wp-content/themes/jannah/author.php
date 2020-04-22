@@ -24,6 +24,7 @@ get_header(); ?>
 						tie_author_box();
 					}
 
+					do_action( 'TieLabs/after_archive_title' );
 				?>
 			</header><!-- .entry-header-outer /-->
 

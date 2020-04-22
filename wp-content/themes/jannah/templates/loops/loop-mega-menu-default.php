@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -25,16 +25,9 @@ $no_thumb = ! has_post_thumbnail() ? ' no-small-thumbs' : '';
 		if ( has_post_thumbnail() ){ ?>
 
 			<div class="post-thumbnail">
-				<a class="post-thumb" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>">
-
-					<div class="post-thumb-overlay-wrap">
-						<div class="post-thumb-overlay">
-							<span class="icon"></span>
-						</div>
-					</div>
-
+				<a class="post-thumb" href="<?php the_permalink(); ?>">
+					<?php tie_post_format_icon( $media_icon ); ?>
 					<?php the_post_thumbnail( $thumbnail ) ?>
-
 				</a>
 			</div><!-- .post-thumbnail /-->
 			<?php
@@ -42,13 +35,11 @@ $no_thumb = ! has_post_thumbnail() ? ' no-small-thumbs' : '';
 	?>
 
 	<div class="post-details">
-
 		<h3 class="post-box-title">
-			<a class="mega-menu-link" href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a>
+			<a class="mega-menu-link" href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
 		</h3>
 
 		<?php tie_the_post_meta( array( 'trending' => true, 'author' => false, 'comments' => false, 'views' => false ) ); ?>
-
 	</div>
 
 </li>

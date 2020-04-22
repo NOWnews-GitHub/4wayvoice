@@ -45,8 +45,8 @@ function taqyeem_post_options(){
 		taqyeem_options_items(
 			array(
 				'name'    => __('Review Box Position','taq'),
-				'id'      => "taq_review_position",
-				'type'    => "select",
+				'id'      => 'taq_review_position',
+				'type'    => 'select',
 				'options' => array(
 					''       => __( 'Disable',            'taq'),
 					'top'    => __( 'Top of the post',    'taq'),
@@ -98,6 +98,251 @@ function taqyeem_post_options(){
 					'name' => __( 'Review Summary', 'taq' ),
 					'id'   => 'taq_review_summary',
 					'type' => 'textarea',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'    => __('Structured Data Type','taq'),
+					'id'      => 'taq_review_structured_data',
+					'type'    => 'select',
+					'options' => array(
+						''               => __( 'Default',        'taq'),
+						'product'        => __( 'Product',        'taq'),
+						'book'           => __( 'Book',           'taq'),
+						'movie'          => __( 'Movie',          'taq'),
+						'game'           => __( 'Game',           'taq'),
+						'event'          => __( 'Event',          'taq'),
+						'course'         => __( 'Course',         'taq'),
+						'organization'   => __( 'Organization',   'taq'),
+						'musicrecording' => __( 'MusicRecording', 'taq'),
+						'musicplaylist'  => __( 'MusicPlaylist',  'taq'),
+						'episode'        => __( 'Episode',        'taq'),
+						'restaurant'     => __( 'Restaurant',     'taq'),
+					)));
+
+			// Product
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product Description', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_description',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'textarea',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product URL', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_url',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Brand', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_brand',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'SKU', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_sku',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'MPN Number', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_mpn',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'GTIN Number', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_gtin',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product Availability', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_availability',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'    => 'radio',
+					'options' => array(
+						'InStock'    => __( 'InStock',    'taq' ),
+						'OutOfStock' => __( 'OutOfStock', 'taq' ),
+				)));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product Price', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_price',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product Price Currency ( Three-letter ISO 4217 format )', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_currency',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Product Valid Until ( YYYY-MM-DD )', 'taq' ),
+					'id'    => 'taq_review_structured_data_product_price_date',
+					'class' => 'taq_structured_data_options taq_structured_data_product_options',
+					'type'  => 'text',
+				));
+
+			// Event
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Location Name', 'taq' ),
+					'id'    => 'taq_review_structured_data_event_location_name',
+					'class' => 'taq_structured_data_options taq_structured_data_event_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Location Address', 'taq' ),
+					'id'    => 'taq_review_structured_data_event_location_address',
+					'class' => 'taq_structured_data_options taq_structured_data_event_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Event Description', 'taq' ),
+					'id'    => 'taq_review_structured_data_event_description',
+					'class' => 'taq_structured_data_options taq_structured_data_event_options',
+					'type'  => 'textarea',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Start date ( YYYY-MM-DD )', 'taq' ),
+					'id'    => 'taq_review_structured_data_event_startdate',
+					'class' => 'taq_structured_data_options taq_structured_data_event_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'End date ( YYYY-MM-DD )', 'taq' ),
+					'id'    => 'taq_review_structured_data_event_enddate',
+					'class' => 'taq_structured_data_options taq_structured_data_event_options',
+					'type'  => 'text',
+				));
+
+			// Book
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Author', 'taq' ),
+					'id'    => 'taq_review_structured_data_author',
+					'class' => 'taq_structured_data_options taq_structured_data_book_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Author URL', 'taq' ),
+					'id'    => 'taq_review_structured_data_author_url',
+					'class' => 'taq_structured_data_options taq_structured_data_book_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'ISBN', 'taq' ),
+					'id'    => 'taq_review_structured_data_book_isbn',
+					'class' => 'taq_structured_data_options taq_structured_data_book_options',
+					'type'  => 'text',
+				));
+
+			// Movie
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Movie URL', 'taq' ),
+					'id'    => 'taq_review_structured_data_movie_url',
+					'class' => 'taq_structured_data_options taq_structured_data_movie_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Movie Date', 'taq' ),
+					'id'    => 'taq_review_structured_data_movie_date',
+					'class' => 'taq_structured_data_options taq_structured_data_movie_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Director', 'taq' ),
+					'id'    => 'taq_review_structured_data_movie_director',
+					'class' => 'taq_structured_data_options taq_structured_data_movie_options',
+					'type'  => 'text',
+				));
+
+			// Course
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Description', 'taq' ),
+					'id'    => 'taq_review_structured_data_description',
+					'class' => 'taq_structured_data_options taq_structured_data_course_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Provider', 'taq' ),
+					'id'    => 'taq_review_structured_data_course_provider',
+					'class' => 'taq_structured_data_options taq_structured_data_course_options',
+					'type'  => 'text',
+				));
+
+			// Restaurant
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Address', 'taq' ),
+					'id'    => 'taq_review_structured_data_restaurant_address',
+					'class' => 'taq_structured_data_options taq_structured_data_restaurant_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Price', 'taq' ),
+					'id'    => 'taq_review_structured_data_restaurant_price',
+					'class' => 'taq_structured_data_options taq_structured_data_restaurant_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Cuisine', 'taq' ),
+					'id'    => 'taq_review_structured_data_restaurant_cuisine',
+					'class' => 'taq_structured_data_options taq_structured_data_restaurant_options',
+					'type'  => 'text',
+				));
+
+			taqyeem_options_items(
+				array(
+					'name'  => __( 'Telephone', 'taq' ),
+					'id'    => 'taq_review_structured_data_restaurant_telephone',
+					'class' => 'taq_structured_data_options taq_structured_data_restaurant_options',
+					'type'  => 'text',
 				));
 
 			do_action( 'tie_taqyeem_after_review_options' );
@@ -171,6 +416,41 @@ function taqyeem_save_post( $post_id ){
 				'taq_review_summary',
 				'taq_review_total',
 				'taq_review_criteria',
+
+				'taq_review_structured_data',
+				'taq_review_structured_data_author',
+				'taq_review_structured_data_author_url',
+
+				'taq_review_structured_data_product_brand',
+				'taq_review_structured_data_product_sku',
+				'taq_review_structured_data_product_mpn',
+				'taq_review_structured_data_product_gtin',
+				'taq_review_structured_data_product_description',
+				'taq_review_structured_data_product_availability',
+				'taq_review_structured_data_product_price',
+				'taq_review_structured_data_product_currency',
+				'taq_review_structured_data_product_price_date',
+				'taq_review_structured_data_product_url',
+
+				'taq_review_structured_data_event_location_name',
+				'taq_review_structured_data_event_location_address',
+				'taq_review_structured_data_event_description',
+				'taq_review_structured_data_event_startdate',
+				'taq_review_structured_data_event_enddate',
+
+				'taq_review_structured_data_book_isbn',
+
+				'taq_review_structured_data_movie_url',
+				'taq_review_structured_data_movie_date',
+				'taq_review_structured_data_movie_director',
+
+				'taq_review_structured_data_description',
+				'taq_review_structured_data_course_provider',
+
+				'taq_review_structured_data_restaurant_address',
+				'taq_review_structured_data_restaurant_price',
+				'taq_review_structured_data_restaurant_cuisine',
+				'taq_review_structured_data_restaurant_telephone',
 			),
 		);
 
@@ -250,9 +530,16 @@ function taqyeem_save_post( $post_id ){
 # The Plugin Options
 /*-----------------------------------------------------------------------------------*/
 function taqyeem_options_items( $value ){
-	global $post; ?>
+	global $post;
 
-	<div class="taqyeem-option-item" id="<?php echo $value['id'] ?>-item">
+	$class = 'taqyeem-option-item';
+	if( ! empty( $value['class'] ) ){
+		$class .= ' ' . $value['class'];
+	}
+
+	?>
+
+	<div class="<?php echo $class ?>" id="<?php echo $value['id'] ?>-item">
 		<span class="label"><?php echo $value['name']  ?></span>
 
 		<?php
@@ -268,7 +555,6 @@ function taqyeem_options_items( $value ){
 					<?php
 					break;
 
-
 				case 'select': ?>
 					<select name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>">
 						<?php foreach ( $value['options'] as $key => $option ) { ?>
@@ -278,12 +564,10 @@ function taqyeem_options_items( $value ){
 					<?php
 					break;
 
-
 				case 'checkbox': ?>
 					<input <?php checked( $current_value, 'true' ) ?> class="on-of" type="checkbox" name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" value="true" />
 					<?php
 					break;
-
 
 				case 'radio': ?>
 					<div class="radio-contnet">
@@ -299,12 +583,10 @@ function taqyeem_options_items( $value ){
 					<?php
 					break;
 
-
 				case 'textarea': ?>
 					<textarea style="width:430px;" name="<?php echo $value['id']; ?>" id="<?php echo $value['id']; ?>" type="textarea" cols="100%" rows="3" tabindex="4"><?php if( !empty( $current_value ) ) echo $current_value  ?></textarea>
 					<?php
 					break;
-
 
 				case 'color': ?>
 

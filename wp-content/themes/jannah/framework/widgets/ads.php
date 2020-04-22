@@ -20,8 +20,8 @@ if( ! class_exists( 'TIE_ADS125_WIDGET' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			$new_window = isset( $instance['new_window'] ) ? ' target="_blank"' : '';
-			$nofollow   = isset( $instance['nofollow'] ) ? ' rel="nofollow noopener"' : '';
+			$new_window = ! empty( $instance['new_window'] ) ? ' target="_blank"' : '';
+			$nofollow   = ! empty( $instance['nofollow'] )   ? ' rel="nofollow noopener"' : '';
 
 			if( ! empty( $instance['tran_bg'] )){
 				$args['before_widget'] = '<div id="'. $args['widget_id'] .'" class="widget stream-item-125-widget widget-content-only">';
@@ -42,7 +42,7 @@ if( ! class_exists( 'TIE_ADS125_WIDGET' )){
 
 				if( ! empty( $instance['e3lan'.$i.'_code'] )){
 					echo'<li>';
-					echo do_shortcode( $instance['e3lan'.$i.'_code'] );
+					echo do_shortcode( apply_filters( 'TieLabs/Ad_widget/code', $instance['e3lan'.$i.'_code'] ) );
 					echo '</li>';
 				}
 
@@ -54,7 +54,7 @@ if( ! class_exists( 'TIE_ADS125_WIDGET' )){
 						echo '<a href="'. esc_url( $url ) .'"'. $new_window . $nofollow .'>';
 					}
 
-					echo '<img src="'. $instance['e3lan'.$i.'_img'] .'" width="125" height="125" alt="">';
+					echo apply_filters( 'TieLabs/Ad_widget/image', '<img class="widget-ad-image" src="'. $instance['e3lan'.$i.'_img'] .'" width="125" height="125" alt="">', $instance['e3lan'.$i.'_img'] );
 
 					if( ! empty( $instance['e3lan'.$i.'_url'] )){
 						echo '</a>';
@@ -74,9 +74,10 @@ if( ! class_exists( 'TIE_ADS125_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance               = $old_instance;
 			$instance['title']      = sanitize_text_field( $new_instance['title'] );
-			$instance['tran_bg']    = $new_instance['tran_bg'];
-			$instance['new_window'] = $new_instance['new_window'];
-			$instance['nofollow']   = $new_instance['nofollow'];
+
+			$instance['tran_bg']    = ! empty( $new_instance['tran_bg'] )    ? 'true' : false;
+			$instance['new_window'] = ! empty( $new_instance['new_window'] ) ? 'true' : false;
+			$instance['nofollow']   = ! empty( $new_instance['nofollow'] )   ? 'true' : false;
 
 			for($i=1 ; $i<11 ; $i++ ){
 				$instance['e3lan'.$i.'_img']  = $new_instance['e3lan'.$i.'_img'];
@@ -94,10 +95,10 @@ if( ! class_exists( 'TIE_ADS125_WIDGET' )){
 			$defaults = array( 'title' =>esc_html__( 'Advertisement', TIELABS_TEXTDOMAIN) );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title      = isset( $instance['title'] )      ? $instance['title'] : '';
-			$tran_bg    = isset( $instance['tran_bg'] )    ? $instance['tran_bg'] : '';
+			$title      = isset( $instance['title'] )      ? $instance['title']      : '';
+			$tran_bg    = isset( $instance['tran_bg'] )    ? $instance['tran_bg']    : '';
 			$new_window = isset( $instance['new_window'] ) ? $instance['new_window'] : '';
-			$nofollow   = isset( $instance['nofollow'] )   ? $instance['nofollow'] : '';
+			$nofollow   = isset( $instance['nofollow'] )   ? $instance['nofollow']   : '';
 
 			?>
 
@@ -177,9 +178,9 @@ if( ! class_exists( 'TIE_AD_WIDGET' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			$new_window = isset( $instance['new_window'] )  ? ' target="_blank"' : '';
-			$nofollow   = isset( $instance['nofollow'] )    ? ' rel="nofollow noopener"' : '';
-			$alt_text   = ! empty( $instance['e3lan_alt'] ) ? $instance['e3lan_alt'] : '';
+			$new_window = ! empty( $instance['new_window'] ) ? ' target="_blank"' : '';
+			$nofollow   = ! empty( $instance['nofollow'] )   ? ' rel="nofollow noopener"' : '';
+			$alt_text   = ! empty( $instance['e3lan_alt'] )  ? $instance['e3lan_alt'] : '';
 
 			if( ! empty( $instance['tran_bg'] )){
 				$args['before_widget'] = '<div id="'. $args['widget_id'] .'" class="widget stream-item-widget widget-content-only">';
@@ -206,7 +207,7 @@ if( ! class_exists( 'TIE_AD_WIDGET' )){
 
 
 			if( ! empty( $instance['e3lan_code'] )){
-				echo do_shortcode( $instance['e3lan_code'] );
+				echo do_shortcode( apply_filters( 'TieLabs/Ad_widget/code', $instance['e3lan_code'] ) );
 			}
 
 			elseif( ! empty( $instance['e3lan_img'] )){
@@ -216,7 +217,7 @@ if( ! class_exists( 'TIE_AD_WIDGET' )){
 					echo '<a href="'. esc_url( $url ) .'"'. $new_window . $nofollow .'>';
 				}
 
-				echo '<img src="'. $instance['e3lan_img'] .'" width="728" height="90" alt="'. $alt_text .'">';
+				echo apply_filters( 'TieLabs/Ad_widget/image', '<img class="widget-ad-image" src="'. $instance['e3lan_img'] .'" width="728" height="90" alt="'. $alt_text .'">', $instance['e3lan_img'] );
 
 				if( ! empty( $instance['e3lan_url'] )){
 					echo '</a>';
@@ -234,9 +235,11 @@ if( ! class_exists( 'TIE_AD_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance               = $old_instance;
 			$instance['title']      = sanitize_text_field( $new_instance['title'] );
-			$instance['tran_bg']    = $new_instance['tran_bg'];
-			$instance['new_window'] = $new_instance['new_window'];
-			$instance['nofollow']   = $new_instance['nofollow'];
+
+			$instance['tran_bg']    = ! empty( $new_instance['tran_bg'] ) ?    'true' : false;
+			$instance['new_window'] = ! empty( $new_instance['new_window'] ) ? 'true' : false;
+			$instance['nofollow']   = ! empty( $new_instance['nofollow'] ) ?   'true' : false;
+
 			$instance['e3lan_img']  = $new_instance['e3lan_img'];
 			$instance['e3lan_alt']  = $new_instance['e3lan_alt'];
 			$instance['e3lan_url']  = $new_instance['e3lan_url'];

@@ -13,7 +13,6 @@ if( ! class_exists( 'TIELABS_FBINSTANT_ARTICLES' )){
 	class TIELABS_FBINSTANT_ARTICLES{
 
 
-
 		/**
 		 * __construct
 		 *
@@ -21,23 +20,20 @@ if( ! class_exists( 'TIELABS_FBINSTANT_ARTICLES' )){
 		 */
 		function __construct(){
 
-			# Disable if the Instant Articles for WP plugin is not active
+			// Disable if the Instant Articles for WP plugin is not active
 			if( ! TIELABS_FB_INSTANT_IS_ACTIVE ){
 
 				return false;
 			}
 
-			# Filters
-			add_filter( 'instant_articles_transformer_custom_rules_loaded',  array( $this, '_transformer_custom_rules' ));
-			add_filter( 'instant_articles_subtitle',                         array( $this, '_articles_subtitle' ), 10, 2);
-
+			// Filters
+			add_filter( 'instant_articles_transformer_custom_rules_loaded', array( $this, '_transformer_custom_rules' ));
+			add_filter( 'instant_articles_subtitle',                        array( $this, '_articles_subtitle' ), 10, 2);
 		}
-
 
 
 		/**
 		 * _transformer_custom_rules
-		 *
 		 */
 		function _transformer_custom_rules( $transformer ){
 
@@ -82,7 +78,6 @@ if( ! class_exists( 'TIELABS_FBINSTANT_ARTICLES' )){
 		}
 
 
-
 		/**
 		 * _articles_subtitle
 		 *
@@ -96,12 +91,10 @@ if( ! class_exists( 'TIELABS_FBINSTANT_ARTICLES' )){
 
 			return tie_get_postdata( 'tie_post_sub_title', $sub_title, $the_post->get_the_id() );
 		}
-
-
-
 	}
 
-	# Instantiate the class
+
+	// Instantiate the class
 	new TIELABS_FBINSTANT_ARTICLES();
 
 }

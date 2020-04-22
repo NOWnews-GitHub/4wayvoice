@@ -12,13 +12,8 @@ if( ! class_exists( 'TIELABS_VIDEOS_LIST' )){
 
 	class TIELABS_VIDEOS_LIST {
 
-		// Youtube
-		static $youtube_key  = 'AIzaSyBe74H4yvvFmUy-pF2J_oympzOEkaF3FTY';
-		static $youtube_api_base = 'https://www.googleapis.com/youtube/v3/videos';
-
 		// Vimeo
 		static $vimeo_api_base = 'https://vimeo.com/api/v2/video/';
-
 
 		/**
 		 * Runs on class initialization. Adds filters and actions.
@@ -90,9 +85,13 @@ if( ! class_exists( 'TIELABS_VIDEOS_LIST' )){
 			$youtube_updated = false;
 			$vimeo_updated   = false;
 
+			// Reset the api error
+			delete_option( 'tie_youtube_api_error' );
+
+			//
 			foreach ( $videos_list as $video ){
 
-				// Youtube
+				// YouTube
 				if( preg_match( "#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v\/)[^&\n]+(?=\?)|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#", $video, $matches )){
 
 					$video_id = TIELABS_HELPER::remove_spaces( $matches[0] );
@@ -135,11 +134,11 @@ if( ! class_exists( 'TIELABS_VIDEOS_LIST' )){
 			}
 
 			if( $youtube_updated ){
-				update_option( 'tie_youtube_videos', $youtube_videos );
+				update_option( 'tie_youtube_videos', $youtube_videos, false );
 			}
 
 			if( $vimeo_updated ){
-				update_option( 'tie_vimeo_videos', $vimeo_videos );
+				update_option( 'tie_vimeo_videos', $vimeo_videos, false );
 			}
 
 			return $videos_ids;
@@ -147,27 +146,39 @@ if( ! class_exists( 'TIELABS_VIDEOS_LIST' )){
 
 
 		/*
-		 * Get Youtube Video data
+		 * Get YouTube Video data
 		 */
 		private static function get_youtube_info( $vid ){
+
+			if( ! tie_get_option( 'api_youtube' ) ){
+				return false;
+			}
 
 			// Build the Api request
 			$params = array(
 				'part' => 'snippet,contentDetails',
 				'id'   => $vid,
-				'key'  => self::$youtube_key,
+				'key'  => TIELABS_HELPER::remove_spaces( tie_get_option( 'api_youtube' ) ),
 			);
 
-			$api_url = self::$youtube_api_base . '?' . http_build_query( $params );
+			$api_url = 'https://www.googleapis.com/youtube/v3/videos?' . http_build_query( $params );
 			$request = wp_remote_get( $api_url );
 
 			// Check if there are errors
 			if( is_wp_error( $request ) ){
+				tie_debug_log( $request->get_error_message(), true );
 				return null;
 			}
 
 			// Prepare the data
 			$result = json_decode( wp_remote_retrieve_body( $request ), true );
+
+			// Check Youtube API Errors
+			if( ! empty( $result['error']['errors'][0]['message'] ) ){
+				update_option( 'tie_youtube_api_error', $result['error']['errors'][0]['message'], 'no' );
+				tie_debug_log( $result['error']['errors'][0]['message'], true );
+				return null;
+			}
 
 			// Check if the video title is exists
 			if( empty( $result['items'][0]['snippet']['title'] )){
@@ -203,6 +214,9 @@ if( ! class_exists( 'TIELABS_VIDEOS_LIST' )){
 
 			# Check if there is no any errors
 			if( is_wp_error( $request ) ){
+
+				tie_debug_log( $request->get_error_message(), true );
+
 				return null;
 			}
 

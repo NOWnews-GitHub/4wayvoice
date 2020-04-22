@@ -72,35 +72,33 @@ class URE_Capability {
      * @global WP_Roles $wp_roles
      * @return string
      */
-    public static function add() {
+    public static function add( $ure_object ) {
         global $wp_roles;
 
-        if (!current_user_can('ure_create_capabilities')) {
-            return esc_html__('Insufficient permissions to work with User Role Editor','user-role-editor');
+        if ( !current_user_can( 'ure_create_capabilities' ) ) {
+            return esc_html__( 'Insufficient permissions to work with User Role Editor', 'user-role-editor' );
         }
         
         $mess = '';
         if (!isset($_POST['capability_id']) || empty($_POST['capability_id'])) {
-            return 'Wrong Request';
+            return esc_html__( 'Wrong Request', 'user-role-editor' );
         }
         
-        $data = self::validate($_POST['capability_id']);                
-        if (!$data['result']) {
+        $data = self::validate( $_POST['capability_id'] );
+        if ( !$data['result'] ) {
             return $data['message'];
         }
         
         $cap_id = $data['cap_id'];                
         $lib = URE_Lib::get_instance();
-        $lib->get_user_roles();
-        $lib->init_full_capabilities();
-        $full_capabilities = $lib->get('full_capabilities');
-        if (!isset($full_capabilities[$cap_id])) {
+        $full_capabilities = $lib->init_full_capabilities( $ure_object );
+        if ( !isset( $full_capabilities[$cap_id] ) ) {
             $admin_role = $lib->get_admin_role();            
             $wp_roles->use_db = true;
-            $wp_roles->add_cap($admin_role, $cap_id);
-            $mess = sprintf(esc_html__('Capability %s was added successfully', 'user-role-editor'), $cap_id);
+            $wp_roles->add_cap( $admin_role, $cap_id );
+            $mess = sprintf( esc_html__( 'Capability %s was added successfully', 'user-role-editor' ), $cap_id );
         } else {
-            $mess = sprintf(esc_html__('Capability %s exists already', 'user-role-editor'), $cap_id);
+            $mess = sprintf( esc_html__( 'Capability %s exists already', 'user-role-editor' ), $cap_id );
         }
         
         return $mess;
@@ -113,14 +111,20 @@ class URE_Capability {
      * 
      * @return array
      */
-    private static function get_caps_for_deletion_from_post($caps_allowed_to_remove) {
-    
+    private static function get_caps_for_deletion_from_post( $caps_allowed_to_remove ) {
+        
+        if ( isset( $_POST['values'] ) ) {
+            $input_buff = $_POST['values'];
+        } else {
+            $input_buff = $_POST;
+        }
+        
         $caps = array();
-        foreach($_POST as $key=>$value) {
-            if (substr($key, 0, 3)!=='rm_') {
+        foreach( $input_buff as $key=>$value ) {
+            if ( substr( $key, 0, 3 )!=='rm_' ) {
                 continue;
             }
-            if (!isset($caps_allowed_to_remove[$value])) {
+            if ( !isset( $caps_allowed_to_remove[$value])  ) {
                 continue;
             }
             $caps[] = $value;
@@ -181,38 +185,35 @@ class URE_Capability {
      * @return string - information message
      */
     public static function delete() {        
-        
-        if (!isset($_POST['action']) || $_POST['action']!='delete-user-capability') {
-            return 'Wrong Request';
-        }
-        
-        if (!current_user_can('ure_delete_capabilities')) {
-            return esc_html__('Insufficient permissions to work with User Role Editor','user-role-editor');
+               
+        if ( !current_user_can( 'ure_delete_capabilities' ) ) {
+            return esc_html__( 'Insufficient permissions to work with User Role Editor','user-role-editor' );
         }
                         
-        $lib = URE_Lib::get_instance();
+        $capabilities = URE_Capabilities::get_instance();
         $mess = '';                
-        $caps_allowed_to_remove = $lib->get_caps_to_remove();
-        if (!is_array($caps_allowed_to_remove) || count($caps_allowed_to_remove) == 0) {
-            return esc_html__('There are no capabilities available for deletion!', 'user-role-editor');
+        $caps_allowed_to_remove = $capabilities->get_caps_to_remove();
+        if ( !is_array( $caps_allowed_to_remove ) || count( $caps_allowed_to_remove )==0 ) {
+            return esc_html__( 'There are no capabilities available for deletion!', 'user-role-editor' );
         }
         
-        $capabilities = self::get_caps_for_deletion_from_post($caps_allowed_to_remove);
-        if (empty($capabilities)) {
-            return esc_html__('There are no capabilities available for deletion!', 'user-role-editor');
+        $caps = self::get_caps_for_deletion_from_post( $caps_allowed_to_remove );
+        if ( empty($caps) ) {
+            return esc_html__( 'There are no capabilities available for deletion!', 'user-role-editor' );
         }
 
-        self::revoke_caps($capabilities);        
+        self::revoke_caps( $caps );
         
-        if (count($capabilities)==1) {
-            $mess = sprintf(esc_html__('Capability %s was removed successfully', 'user-role-editor'), $capabilities[0]);
+        if ( count($caps)==1 ) {
+            $mess = sprintf( esc_html__( 'Capability %s was removed successfully', 'user-role-editor' ), $caps[0] );
         } else {
-            $short_list_str = $lib->get_short_list_str($capabilities);
-            $mess = count($capabilities) .' '. esc_html__('capabilities were removed successfully', 'user-role-editor') .': '. 
+            $lib = URE_Lib::get_instance();
+            $short_list_str = $lib->get_short_list_str( $caps );
+            $mess = count( $caps ) .' '. esc_html__( 'capabilities were removed successfully', 'user-role-editor' ) .': '. 
                     $short_list_str;
         }
 
-        return $mess;
+        return array('message'=>$mess, 'deleted_caps'=>$caps);
     }
     // end of delete()
     

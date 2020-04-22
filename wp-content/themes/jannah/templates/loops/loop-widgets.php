@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -27,14 +27,14 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 					$review    = ! empty( $review_first )    ? $review_first    : $review;
 				}
 
-				tie_post_thumbnail( $thumbnail, $review, true, false );
+				tie_post_thumbnail( $thumbnail, $review, true, false, $media_icon );
 
 			?>
 		</div><!-- post-alignleft /-->
 	<?php endif; ?>
 
 	<div class="post-widget-body <?php echo ! has_post_thumbnail() ? 'no-small-thumbs' : '' ?>">
-		<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $title_length ); ?></a></h3>
+		<h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $title_length ); ?></a></h3>
 
 		<div class="post-meta">
 			<?php

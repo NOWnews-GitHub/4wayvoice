@@ -22,8 +22,7 @@ if( ! class_exists( 'TIE_COMMENTS_AVATAR' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			$no_of_comments = isset( $instance['no_of_comments'] ) ? $instance['no_of_comments'] : 5;
-
+			$no_of_comments = ! empty( $instance['no_of_comments'] ) ? $instance['no_of_comments'] : 5;
 
 			echo ( $args['before_widget'] );
 

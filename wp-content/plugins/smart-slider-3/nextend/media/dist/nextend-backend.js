@@ -3668,230 +3668,6 @@ N2D('ExpertMode', function ($, undefined) {
         return new ExpertMode(app, allowed);
     }
 });
-/*!
- * jQuery Mousewheel 3.1.12
- *
- * Copyright 2014 jQuery Foundation and other contributors
- * Released under the MIT license.
- * http://jquery.org/license
- */
-
-N2R('$', function ($) {
-    var toFix = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'],
-        toBind = ('onwheel' in document || document.documentMode >= 9) ?
-            ['wheel'] : ['mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'],
-        slice = Array.prototype.slice,
-        nullLowestDeltaTimeout, lowestDelta;
-
-    if ($.event.fixHooks) {
-        for (var i = toFix.length; i;) {
-            $.event.fixHooks[toFix[--i]] = $.event.mouseHooks;
-        }
-    }
-
-    var special = $.event.special.mousewheel = {
-        version: '3.1.12',
-
-        setup: function () {
-            if (this.addEventListener) {
-                for (var i = toBind.length; i;) {
-                    this.addEventListener(toBind[--i], handler, false);
-                }
-            } else {
-                this.onmousewheel = handler;
-            }
-            // Store the line height and page height for this particular element
-            $.data(this, 'mousewheel-line-height', special.getLineHeight(this));
-            $.data(this, 'mousewheel-page-height', special.getPageHeight(this));
-        },
-
-        teardown: function () {
-            if (this.removeEventListener) {
-                for (var i = toBind.length; i;) {
-                    this.removeEventListener(toBind[--i], handler, false);
-                }
-            } else {
-                this.onmousewheel = null;
-            }
-            // Clean up the data we added to the element
-            $.removeData(this, 'mousewheel-line-height');
-            $.removeData(this, 'mousewheel-page-height');
-        },
-
-        getLineHeight: function (elem) {
-            var $elem = $(elem),
-                $parent = $elem['offsetParent' in $.fn ? 'offsetParent' : 'parent']();
-            if (!$parent.length) {
-                $parent = $('body');
-            }
-            return parseInt($parent.css('fontSize'), 10) || parseInt($elem.css('fontSize'), 10) || 16;
-        },
-
-        getPageHeight: function (elem) {
-            return $(elem).height();
-        },
-
-        settings: {
-            adjustOldDeltas: true, // see shouldAdjustOldDeltas() below
-            normalizeOffset: true  // calls getBoundingClientRect for each event
-        }
-    };
-
-    $.fn.extend({
-        mousewheel: function (fn) {
-            return fn ? this.bind('mousewheel', fn) : this.trigger('mousewheel');
-        },
-
-        unmousewheel: function (fn) {
-            return this.unbind('mousewheel', fn);
-        }
-    });
-
-
-    function handler(event) {
-        var orgEvent = event || window.event,
-            args = slice.call(arguments, 1),
-            delta = 0,
-            deltaX = 0,
-            deltaY = 0,
-            absDelta = 0,
-            offsetX = 0,
-            offsetY = 0;
-        event = $.event.fix(orgEvent);
-        event.type = 'mousewheel';
-
-        // Old school scrollwheel delta
-        if ('detail' in orgEvent) {
-            deltaY = orgEvent.detail * -1;
-        }
-        if ('wheelDelta' in orgEvent) {
-            deltaY = orgEvent.wheelDelta;
-        }
-        if ('wheelDeltaY' in orgEvent) {
-            deltaY = orgEvent.wheelDeltaY;
-        }
-        if ('wheelDeltaX' in orgEvent) {
-            deltaX = orgEvent.wheelDeltaX * -1;
-        }
-
-        // Firefox < 17 horizontal scrolling related to DOMMouseScroll event
-        if ('axis' in orgEvent && orgEvent.axis === orgEvent.HORIZONTAL_AXIS) {
-            deltaX = deltaY * -1;
-            deltaY = 0;
-        }
-
-        // Set delta to be deltaY or deltaX if deltaY is 0 for backwards compatabilitiy
-        delta = deltaY === 0 ? deltaX : deltaY;
-
-        // New school wheel delta (wheel event)
-        if ('deltaY' in orgEvent) {
-            deltaY = orgEvent.deltaY * -1;
-            delta = deltaY;
-        }
-        if ('deltaX' in orgEvent) {
-            deltaX = orgEvent.deltaX;
-            if (deltaY === 0) {
-                delta = deltaX * -1;
-            }
-        }
-
-        // No change actually happened, no reason to go any further
-        if (deltaY === 0 && deltaX === 0) {
-            return;
-        }
-
-        // Need to convert lines and pages to pixels if we aren't already in pixels
-        // There are three delta modes:
-        //   * deltaMode 0 is by pixels, nothing to do
-        //   * deltaMode 1 is by lines
-        //   * deltaMode 2 is by pages
-        if (orgEvent.deltaMode === 1) {
-            var lineHeight = $.data(this, 'mousewheel-line-height');
-            delta *= lineHeight;
-            deltaY *= lineHeight;
-            deltaX *= lineHeight;
-        } else if (orgEvent.deltaMode === 2) {
-            var pageHeight = $.data(this, 'mousewheel-page-height');
-            delta *= pageHeight;
-            deltaY *= pageHeight;
-            deltaX *= pageHeight;
-        }
-
-        // Store lowest absolute delta to normalize the delta values
-        absDelta = Math.max(Math.abs(deltaY), Math.abs(deltaX));
-
-        if (!lowestDelta || absDelta < lowestDelta) {
-            lowestDelta = absDelta;
-
-            // Adjust older deltas if necessary
-            if (shouldAdjustOldDeltas(orgEvent, absDelta)) {
-                lowestDelta /= 40;
-            }
-        }
-
-        // Adjust older deltas if necessary
-        if (shouldAdjustOldDeltas(orgEvent, absDelta)) {
-            // Divide all the things by 40!
-            delta /= 40;
-            deltaX /= 40;
-            deltaY /= 40;
-        }
-
-        // Get a whole, normalized value for the deltas
-        delta = Math[delta >= 1 ? 'floor' : 'ceil'](delta / lowestDelta);
-        deltaX = Math[deltaX >= 1 ? 'floor' : 'ceil'](deltaX / lowestDelta);
-        deltaY = Math[deltaY >= 1 ? 'floor' : 'ceil'](deltaY / lowestDelta);
-
-        // Normalise offsetX and offsetY properties
-        if (special.settings.normalizeOffset && this.getBoundingClientRect) {
-            var boundingRect = this.getBoundingClientRect();
-            offsetX = event.clientX - boundingRect.left;
-            offsetY = event.clientY - boundingRect.top;
-        }
-
-        // Add information to the event object
-        event.deltaX = deltaX;
-        event.deltaY = deltaY;
-        event.deltaFactor = lowestDelta;
-        event.offsetX = offsetX;
-        event.offsetY = offsetY;
-        // Go ahead and set deltaMode to 0 since we converted to pixels
-        // Although this is a little odd since we overwrite the deltaX/Y
-        // properties with normalized deltas.
-        event.deltaMode = 0;
-
-        // Add event and delta to the front of the arguments
-        args.unshift(event, delta, deltaX, deltaY);
-
-        // Clearout lowestDelta after sometime to better
-        // handle multiple device types that give different
-        // a different lowestDelta
-        // Ex: trackpad = 3 and mouse wheel = 120
-        if (nullLowestDeltaTimeout) {
-            clearTimeout(nullLowestDeltaTimeout);
-        }
-        nullLowestDeltaTimeout = setTimeout(nullLowestDelta, 200);
-
-        return ($.event.dispatch || $.event.handle).apply(this, args);
-    }
-
-    function nullLowestDelta() {
-        lowestDelta = null;
-    }
-
-    function shouldAdjustOldDeltas(orgEvent, absDelta) {
-        // If this is an older event and the delta is divisable by 120,
-        // then we are assuming that the browser is treating this as an
-        // older mouse wheel event and that we should divide the deltas
-        // by 40 to try and get a more usable deltaFactor.
-        // Side note, this actually impacts the reported scroll distance
-        // in older browsers and can cause scrolling to be slower than native.
-        // Turn this off by setting $.event.special.mousewheel.settings.adjustOldDeltas to false.
-        return special.settings.adjustOldDeltas && orgEvent.type === 'mousewheel' && absDelta % 120 === 0;
-    }
-
-});
-
 N2D('Form', function ($, undefined) {
 
     $(window).ready(function () {
@@ -5778,44 +5554,6 @@ N2D('FormElementImage', ['FormElement'], function ($, undefined) {
         nextend.imageHelper.openLightbox($.proxy(this.val, this));
     };
 
-    FormElementImage.prototype.edit = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var imageSrc = nextend.imageHelper.fixed(this.element.val()),
-            image = $('<img src="' + imageSrc + '" />');
-
-        if (imageSrc.substr(0, 2) === '//') {
-            imageSrc = location.protocol + imageSrc;
-        }
-
-        window.nextend.getFeatherEditor().done($.proxy(function () {
-            nextend.featherEditor.launch({
-                image: image.get(0),
-                hiresUrl: imageSrc,
-                onSave: $.proxy(this.aviarySave, this),
-                onSaveHiRes: $.proxy(this.aviarySave, this)
-            });
-        }, this));
-    };
-
-    FormElementImage.prototype.aviarySave = function (id, src) {
-
-        N2Classes.AjaxHelper.ajax({
-            type: "POST",
-            url: N2Classes.AjaxHelper.makeAjaxUrl(window.nextend.featherEditor.ajaxUrl, {
-                nextendaction: 'saveImage'
-            }),
-            data: {
-                aviaryUrl: src
-            },
-            dataType: 'json'
-        })
-            .done($.proxy(function (response) {
-                this.val(nextend.imageHelper.make(response.data.image));
-                nextend.featherEditor.close();
-            }, this));
-    };
-
     FormElementImage.prototype.focus = function (shouldOpen) {
         if (shouldOpen) {
             this.open();
@@ -6072,17 +5810,19 @@ N2D('FormElementMixed', ['FormElement'], function ($, undefined) {
         this.triggerOutsideChange();
     };
 
-    FormElementMixed.prototype.insideChange = function (value) {
-        this.element.val(value);
+	FormElementMixed.prototype.insideChange = function (value) {
+		if (typeof value === "string" && value.indexOf(this.separator) !== -1) {
+			this.element.val(value);
 
-        var values = value.split(this.separator);
+			var values = value.split(this.separator);
 
-        for (var i = 0; i < this.elements.length; i++) {
-            this.elements[i].data('field').insideChange(values[i]);
-        }
+			for (var i = 0; i < this.elements.length; i++) {
+				this.elements[i].data('field').insideChange(values[i]);
+			}
 
-        this.triggerInsideChange();
-    };
+			this.triggerInsideChange();
+		}
+	};
 
     FormElementMixed.prototype.getValue = function () {
         var values = [];
@@ -6236,6 +5976,10 @@ N2D('FormElementNumber', ['FormElement'], function ($, undefined) {
     };
 
     FormElementNumber.prototype.validate = function (value) {
+        if (value.length > 0 && value.charAt(0) === '{') {
+            return true;
+        }
+
         var validatedValue = parseFloat(value);
         if (isNaN(validatedValue)) {
             validatedValue = 0;
@@ -6344,10 +6088,19 @@ N2D('FormElementRadio', ['FormElement'], function ($, undefined) {
      * @param values
      * @constructor
      */
-    function FormElementRadio(id, values) {
+    function FormElementRadio(id, values, relatedFields) {
         this.element = $('#' + id);
 
         this.values = values;
+        this.relatedFields = false;
+        if (relatedFields !== undefined && relatedFields.length) {
+            this.relatedFields = $('');
+            for (var i = 0; i < relatedFields.length; i++) {
+                this.relatedFields = this.relatedFields.add($('[data-field="' + relatedFields[i] + '"]'));
+            }
+
+            this.relatedFields.toggleClass('n2-hidden', this.isOff(this.element.val()));
+        }
 
         this.parent = this.element.parent();
 
@@ -6370,7 +6123,7 @@ N2D('FormElementRadio', ['FormElement'], function ($, undefined) {
     FormElementRadio.prototype.changeSelectedIndex = function (index) {
         var value = this.values[index];
 
-        this.element.val(value);
+        this.setValue(value);
 
         this.setSelected(index);
 
@@ -6388,7 +6141,7 @@ N2D('FormElementRadio', ['FormElement'], function ($, undefined) {
         }
 
         if (index != '-1') {
-            this.element.val(this.values[index]);
+            this.setValue(this.values[index]);
             this.setSelected(index);
 
             this.triggerInsideChange();
@@ -6445,6 +6198,18 @@ N2D('FormElementRadio', ['FormElement'], function ($, undefined) {
 
     FormElementRadio.prototype.moveTab = function (originalIndex, targetIndex) {
 
+    };
+
+    FormElementRadio.prototype.setValue = function (value) {
+        this.element.val(value);
+
+        if (this.relatedFields) {
+            this.relatedFields.toggleClass('n2-hidden', this.isOff(value));
+        }
+    };
+
+    FormElementRadio.prototype.isOff = function (value) {
+        return value === '' || value === '0' || value === 0 || value === 'off';
     };
 
     return FormElementRadio;
@@ -6962,7 +6727,7 @@ N2D('FormElementUrl', ['FormElement'], function ($, undefined) {
 
     /**
      * @memberOf N2Classes
-     * 
+     *
      * @param id
      * @param parameters
      * @constructor
@@ -7071,7 +6836,7 @@ N2D('FormElementUrl', ['FormElement'], function ($, undefined) {
                             .trigger('keyup').focus();
 
                         this.content.append('<hr style="margin: 0 -20px;"/>');
-                        var external = $('<div class="n2-input-button"><input placeholder="'+ n2_("External url") +'" type="text" id="external-url" name="external-url" value="" /><a href="#" class="n2-button n2-button-normal n2-button-l n2-radius-s n2-button-green n2-uc n2-h4">'+n2_("Insert")+'</a></div>')
+                        var external = $('<div class="n2-input-button"><input placeholder="' + n2_("External url") + '" type="text" id="external-url" name="external-url" value="" /><a href="#" class="n2-button n2-button-normal n2-button-l n2-radius-s n2-button-green n2-uc n2-h4">' + n2_("Insert") + '</a></div>')
                                 .css({
                                     display: 'block',
                                     textAlign: 'center'
@@ -9477,7 +9242,7 @@ N2R('$', function ($) {
                         }
                     });
 
-                timeboxparent.on('mousewheel', function (event) {
+                timeboxparent.on('wheel', function (event) {
                     var top = Math.abs(parseInt(timebox.css('marginTop'), 10));
 
                     top = top - (event.deltaY * 20);
@@ -10406,7 +10171,7 @@ N2R('$', function ($) {
 
 
             datepicker
-                .on('mousewheel.xdsoft', function (event) {
+                .on('wheel.xdsoft', function (event) {
                     if (!options.scrollMonth) {
                         return true;
                     }
@@ -10419,7 +10184,7 @@ N2R('$', function ($) {
                 });
 
             input
-                .on('mousewheel.xdsoft', function (event) {
+                .on('wheel.xdsoft', function (event) {
                     if (!options.scrollInput) {
                         return true;
                     }
@@ -11058,199 +10823,6 @@ N2R('$', function ($) {
         YearMonthPattern: "F, Y"
     };
 });
-N2R('$', function ($) {
-    "use strict";
-
-    var pluginName = "tinyscrollbar",
-        defaults = {
-            axis: 'y',    // Vertical or horizontal scrollbar? ( x || y ).
-            wheel: true,   // Enable or disable the mousewheel;
-            wheelSpeed: 40,     // How many pixels must the mouswheel scroll at a time.
-            wheelLock: true,   // Lock default scrolling window when there is no more content.
-            scrollInvert: false,  // Enable invert style scrolling
-            trackSize: false,  // Set the size of the scrollbar to auto or a fixed number.
-            thumbSize: false,  // Set the size of the thumb to auto or a fixed number
-        };
-
-    function Plugin($container, options) {
-        this.options = $.extend({}, defaults, options);
-        this._defaults = defaults;
-        this._name = pluginName;
-
-        var self = this, $viewport = $container.find(".viewport"), $overview = $container.find(".overview"),
-            $scrollbar = $container.find(".scrollbar"), $track = $scrollbar.find(".track"),
-            $thumb = $scrollbar.find(".thumb"), mousePosition = 0, isHorizontal = this.options.axis === 'x',
-            hasTouchEvents = false, wheelEvent = ("onwheel" in document || document.documentMode >= 9) ? "wheel" :
-            (document.onmousewheel !== undefined ? "mousewheel" : "DOMMouseScroll"),
-            sizeLabel = isHorizontal ? "width" : "height",
-            posiLabel = isHorizontal ? (window.n2const.isRTL() ? "right" : "left") : "top";
-
-        this.contentPosition = 0;
-        this.viewportSize = 0;
-        this.contentSize = 0;
-        this.contentRatio = 0;
-        this.trackSize = 0;
-        this.trackRatio = 0;
-        this.thumbSize = 0;
-        this.thumbPosition = 0;
-
-        function initialize() {
-            self.update();
-            setEvents();
-
-            return self;
-        }
-
-        this.update = function (scrollTo) {
-            var sizeLabelCap = sizeLabel.charAt(0).toUpperCase() + sizeLabel.slice(1).toLowerCase();
-            this.viewportSize = $viewport[0]['offset' + sizeLabelCap];
-            this.contentSize = $overview.width();
-            this.contentRatio = this.viewportSize / this.contentSize;
-            this.trackSize = $scrollbar.parent().width() || this.viewportSize;
-            this.thumbSize = Math.min(this.trackSize, Math.max(0, (this.options.thumbSize || (this.trackSize * this.contentRatio))));
-            this.trackRatio = this.options.thumbSize ? (this.contentSize - this.viewportSize) / (this.trackSize - this.thumbSize) : (this.contentSize / this.trackSize);
-            mousePosition = $track.offset().top;
-
-            $container.toggleClass("n2-scroll-disable", this.contentRatio >= 1);
-            $scrollbar.toggleClass("disable", this.contentRatio >= 1);
-            switch (scrollTo) {
-                case "bottom":
-                    this.contentPosition = this.contentSize - this.viewportSize;
-                    break;
-
-                case "relative":
-                    this.contentPosition = Math.min(Math.max(this.contentSize - this.viewportSize, 0), Math.max(0, this.contentPosition));
-                    break;
-
-                default:
-                    this.contentPosition = parseInt(scrollTo, 10) || 0;
-            }
-
-            setSize();
-
-            $container.trigger('scrollUpdate');
-
-            return self;
-        };
-
-        function setSize() {
-            $thumb.css(posiLabel, self.contentPosition / self.trackRatio);
-            $overview.css(posiLabel, -self.contentPosition);
-            $scrollbar.css(sizeLabel, self.trackSize);
-            $track.css(sizeLabel, self.trackSize);
-            $thumb.css(sizeLabel, self.thumbSize);
-        }
-
-        function setEvents() {
-            if (hasTouchEvents) {
-                $viewport[0].ontouchstart = function (event) {
-                    if (1 === event.touches.length) {
-                        event.stopPropagation();
-
-                        start(event.touches[0]);
-                    }
-                };
-            }
-            else {
-                $thumb.bind("mousedown", start);
-                $track.bind("mousedown", drag);
-            }
-
-            $(window).resize(function () {
-                self.update("relative");
-            });
-
-            if (self.options.wheel) {
-                $container.on('mousewheel', wheel);
-            }
-        }
-
-        function start(event) {
-            $("body").addClass("noSelect");
-
-            mousePosition = isHorizontal ? event.pageX : event.pageY;
-            self.thumbPosition = parseInt($thumb.css(posiLabel), 10) || 0;
-
-            if (hasTouchEvents) {
-                document.ontouchmove = function (event) {
-                    event.preventDefault();
-                    drag(event.touches[0]);
-                };
-                document.ontouchend = end;
-            }
-            else {
-                $(document).bind("mousemove", drag);
-                $(document).bind("mouseup", end);
-                $thumb.bind("mouseup", end);
-            }
-        }
-
-        function wheel(event) {
-            if (self.contentRatio < 1) {
-                var evntObj = event,
-                    deltaDir = "delta" + self.options.axis.toUpperCase(),
-                    wheelSpeedDelta = evntObj.deltaY;
-
-                self.contentPosition -= wheelSpeedDelta * self.options.wheelSpeed;
-                self.contentPosition = Math.min((self.contentSize - self.viewportSize), Math.max(0, self.contentPosition));
-
-                $container.trigger("move");
-
-                $thumb.css(posiLabel, self.contentPosition / self.trackRatio);
-                $overview.css(posiLabel, -self.contentPosition);
-
-                if (self.options.wheelLock || (self.contentPosition !== (self.contentSize - self.viewportSize) && self.contentPosition !== 0)) {
-                    evntObj = $.event.fix(evntObj);
-                    evntObj.preventDefault();
-                }
-            }
-        }
-
-        this.wheel = wheel;
-
-        function drag(event) {
-            if (self.contentRatio < 1) {
-                var mousePositionNew = isHorizontal ? event.pageX : event.pageY,
-                    thumbPositionDelta = mousePositionNew - mousePosition;
-
-                if (self.options.scrollInvert && hasTouchEvents) {
-                    thumbPositionDelta = mousePosition - mousePositionNew;
-                }
-
-                if (window.n2const.isRTL()) {
-                    thumbPositionDelta *= -1;
-                }
-
-                var thumbPositionNew = Math.min((self.trackSize - self.thumbSize), Math.max(0, self.thumbPosition + thumbPositionDelta));
-                self.contentPosition = thumbPositionNew * self.trackRatio;
-
-                $container.trigger("move");
-
-                $thumb.css(posiLabel, thumbPositionNew);
-                $overview.css(posiLabel, -self.contentPosition);
-            }
-        }
-
-        function end() {
-            $("body").removeClass("noSelect");
-            $(document).unbind("mousemove", drag);
-            $(document).unbind("mouseup", end);
-            $thumb.unbind("mouseup", end);
-            document.ontouchmove = document.ontouchend = null;
-        }
-
-        return initialize();
-    }
-
-    $.fn[pluginName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, "plugin_" + pluginName)) {
-                $.data(this, "plugin_" + pluginName, new Plugin($(this), options));
-            }
-        });
-    };
-});
-
 /**
  * jquery.unique-element-id.js
  *
@@ -11434,7 +11006,7 @@ N2D('nUIAutocomplete', ['nUIWidgetBase'], function ($, undefined) {
                 })
                 .on({
                     mousedown: $.proxy(N2Classes.WindowManager.setMouseDownArea, null, 'nUIAutocomplete'),
-                    'DOMMouseScroll mousewheel': function (e) {
+                    'wheel': function (e) {
                         e.stopPropagation();
                     }
                 });
@@ -13762,6 +13334,92 @@ N2D('nUIFileUpload', ["nUIWidgetBase"], function ($, undefined) {
     N2Classes.nUIWidgetBase.register('nUIFileUpload');
 
     return nUIFileUpload;
+});
+N2D('HorizontalScrollBar', function ($) {
+    "use strict";
+
+    /**
+     * @memberOf N2Classes
+     *
+     * @param $container
+     * @constructor
+     */
+    function HorizontalScrollBar($container) {
+        this.$container = $container;
+        this.$document = $(document);
+
+        this.currentLeft = 0;
+
+        this.$viewport = $container.find('.n2-scroll-viewport');
+        this.$content = $container.find('.n2-scroll-content');
+
+        this.$track = $container.find('.n2-scroll-track');
+        this.$grip = $container.find('.n2-scroll-grip');
+
+        this.side = window.n2const.isRTL() ? "right" : "left";
+        this.modifier = window.n2const.isRTL() ? -1 : 1;
+
+        this.$grip.on('mousedown.scrollbar', $.proxy(this.mouseDown, this));
+
+        this.update();
+
+        $(window).resize($.proxy(this.update, this));
+    }
+
+    HorizontalScrollBar.prototype.update = function () {
+        this.viewportWidth = this.$viewport.width();
+        this.contentWidth = this.$content.outerWidth();
+        this.trackWidth = this.$track.width();
+
+        this.ratio = Math.min(1, this.viewportWidth / this.contentWidth);
+
+        this.gripWidth = Math.max(20, Math.floor(this.ratio * this.trackWidth));
+
+        this.$grip.width(this.gripWidth);
+
+        this.setLeft(this.currentLeft);
+
+
+        this.$container.toggleClass("n2-scroll-disable", this.ratio === 1);
+    };
+
+    HorizontalScrollBar.prototype.setLeft = function (left) {
+        left = Math.max(0, Math.min(this.trackWidth - this.gripWidth, left));
+
+        this.$grip.css(this.side, left);
+        this.$content.css(this.side, -1 * Math.ceil(left / this.ratio));
+
+        this.currentLeft = left;
+    };
+
+    HorizontalScrollBar.prototype.mouseDown = function (e) {
+        this.context = {
+            pageX: e.pageX,
+            left: this.currentLeft
+        };
+        this.$document.on({
+            'mousemove.scrollbar': $.proxy(this.mouseMove, this),
+            'mouseup.scrollbar': $.proxy(this.mouseUp, this)
+        });
+    };
+
+    HorizontalScrollBar.prototype.mouseMove = function (e) {
+
+        this.setLeft(this.context.left + (e.pageX - this.context.pageX) * this.modifier);
+    };
+
+    HorizontalScrollBar.prototype.mouseUp = function (e) {
+
+        this.mouseMove(e);
+
+        /**
+         * Cleanup when the interaction ends.
+         */
+        this.$document.off('.scrollbar');
+        delete this.context;
+    };
+
+    return HorizontalScrollBar;
 });
 /*
  * jQuery Iframe Transport Plugin 1.8.3

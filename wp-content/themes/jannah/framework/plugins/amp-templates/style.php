@@ -3,7 +3,9 @@
 $content_max_width       = absint( $this->get( 'content_max_width' ) );
 
 // Get template colors
-$default_color           = apply_filters( 'TieLabs/default_theme_color', '#000' );
+$default_color           = tie_get_object_option( 'global_color', 'cat_color', 'post_color' );
+$default_color           = ! empty( $default_color ) ? $default_color : apply_filters( 'TieLabs/default_theme_color', '#000' );
+
 $theme_color             = tie_get_option( 'amp_bg_color', '#ffffff' );
 $text_color              = TIELABS_STYLES::light_or_dark( $theme_color );
 $post_title              = tie_get_option( 'amp_title_color', $text_color );
@@ -121,6 +123,7 @@ blockquote p:last-child {
 .amp-wp-meta,
 .amp-wp-header div,
 .amp-wp-title,
+.amp-wp-sub-title,
 .wp-caption-text,
 .amp-wp-tax-category,
 .amp-wp-tax-tag,
@@ -198,6 +201,17 @@ blockquote p:last-child {
 	line-height: 1.2;
 }
 
+.amp-wp-sub-title {
+	color: #777777;
+	display: block;
+	flex: 1 0 100%;
+	font-weight: normal;
+	margin: 0 0 .625em;
+	width: 100%;
+	font-size: 1.5em;
+	line-height: 1.2;
+}
+
 /* Article Meta */
 
 .amp-wp-meta {
@@ -255,20 +269,23 @@ blockquote p:last-child {
 
 .amp-wp-article-content ul,
 .amp-wp-article-content ol {
-	margin-left: 1em;
+ 	margin-<?php echo is_rtl() ? 'right' : 'left'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>: 1em;
 }
 
 .amp-wp-article-content amp-img {
 	margin: 0 auto;
 }
 
-.amp-wp-article-content amp-img.alignright {
+.amp-wp-article-content amp-img.alignright,
+.amp-wp-article-content .alignright amp-img{
 	margin: 0 0 1em 16px;
 }
 
-.amp-wp-article-content amp-img.alignleft {
+.amp-wp-article-content amp-img.alignleft,
+.amp-wp-article-content .alignleft amp-img{
 	margin: 0 16px 1em 0;
 }
+
 
 /* Captions */
 
@@ -383,6 +400,9 @@ amp-carousel > amp-img > img {
 	}
 <?php endif; ?>
 
+img{
+	max-width: 100%;
+}
 
 /* TieLabs AMP Footer */
 .top a{
@@ -481,6 +501,14 @@ amp-carousel > amp-img > img {
 	text-align: center;
 }
 
+.amp-custom-ad{
+	max-width: 700px;
+	margin: 1.5em auto;
+	padding: 0 16px;
+	box-sizing: border-box;
+	text-align: center;
+}
+
 /* TieLabs Share Buttons */
 .social{
 	margin: 10px 0;
@@ -537,3 +565,5 @@ blockquote {
 	clear: right;
 }
 <?php endif; ?>
+
+<?php echo tie_get_option( 'css_amp' ); ?>

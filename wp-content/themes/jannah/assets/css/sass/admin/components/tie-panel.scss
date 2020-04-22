@@ -9,6 +9,11 @@ body[class*="tie-theme-options"]{
 	.wp-pointer{
 		z-index: 999 !important;
 	}
+
+	/* Hide All notices except the related to the theme */
+	.notice:not(.tie-notice):not(#setting-error-tie_tgmpa){
+		display: none;
+	}
 }
 
 .tie-panel {
@@ -78,6 +83,19 @@ body[class*="tie-theme-options"]{
 
 body.has-overlay {
   overflow: hidden;
+
+  &.block-editor-page #wpcontent{ // Standalone Gutenberg Plugin
+  	position: relative;
+  	z-index: 9999;
+  }
+
+  .block-editor-editor-skeleton__content{
+  	overflow: hidden;
+  }
+
+	.edit-post-layout__content{
+		position: relative;
+	}
 }
 
 #tie-page-overlay{
@@ -86,7 +104,8 @@ body.has-overlay {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 9990;
+  z-index: 9992;
+
   opacity: 0;
 	transition: opacity 0.2s;
 
@@ -124,7 +143,7 @@ body.has-overlay {
 	}
 
 	.tie-label {
-		width: 200px;
+		width: 250px;
 		margin-right: 20px;
 		display: inline-block;
 		float: left;
@@ -141,6 +160,11 @@ body.has-overlay {
 		line-height: 35px;
 	}
 
+	.button.insert-media{
+		height: auto;
+		line-height: 2.15384615;
+	}
+
 	.button-secondary {
 		height: 35px;
 		padding-right: 15px;
@@ -151,8 +175,8 @@ body.has-overlay {
 
 	input[type=text] {
 		border-radius: 3px;
-		padding: 8px 10px;
-		width: calc(100% - 230px);
+		padding: 3px 10px;
+		width: calc(100% - 275px);
 		max-width: 300px;
 
 
@@ -178,13 +202,13 @@ body.has-overlay {
 			max-width: 100%;
 
 			@include breakpoint_min(671px){
-				width: calc(100% - 225px);
+				width: calc(100% - 275px);
 			}
 		}
 	}
 
 	.image-preview-wrapper{
-		width: calc(100% - 230px);
+		width: calc(100% - 280px);
 
 		input[type=text]{
 			width: calc(100% - 100px);
@@ -233,7 +257,7 @@ body.has-overlay {
 	}
 
 	.typography-custom-slelect{
-		width: calc((100% - 242px) / 4);
+		width: calc((100% - 292px) / 4);
 		margin-bottom: 10px;
 
 		@include breakpoint_max(670px){
@@ -249,7 +273,7 @@ body.has-overlay {
 		padding: 7px 10px;
 		direction: ltr;
 		text-align: left;
-		width: calc(100% - 225px);
+		width: calc(100% - 275px);
 		height: 100px;
 		padding: 10px;
 		border-radius: 3px;
@@ -841,9 +865,14 @@ $curve: cubic-bezier(.6,.13,.47,.85);
 .extra-text {
 	display: block;
 	clear: both;
-	padding: 8px 0 0 220px;
+	padding: 8px 0 0 270px;
 	font-size: 12px;
 	color: #888;
+
+	.wp-editor-wrap + &{
+		padding-right: 0;
+		padding-left: 0;
+	}
 }
 
 .tabs-wrap {
@@ -900,23 +929,15 @@ $curve: cubic-bezier(.6,.13,.47,.85);
 		}
 	}
 
-	.wp-color-result-text{
-		line-height: 25px;
-	}
-
 	.iris-picker {
 		position: absolute;
 		z-index: 1;
 	}
 
 	.button {
-		height: 27px;
-		line-height: 27px;
-	}
-
-	input[type=text] {
-		padding-top: 5px;
-		padding-bottom: 5px;
+		height: 30px;
+		line-height: 30px;
+		margin: 0 5px;
 	}
 
 	.wp-color-result.wp-picker-open {
@@ -1245,7 +1266,7 @@ $curve: cubic-bezier(.6,.13,.47,.85);
 #custom_sidebar_error-item,
 #highlights_custom_error-item,
 .tie-background-options {
-	margin-left: 220px;
+	margin-left: 270px;
 }
 
 #breaking_custom-item {
@@ -1328,6 +1349,20 @@ $curve: cubic-bezier(.6,.13,.47,.85);
 
 	.notice-dismiss {
 		padding: 15px 10px;
+
+		&:before{
+	    float: right;
+		}
+
+		.screen-reader-text{
+			clip: auto;
+			clip-path: unset;
+			height: auto;
+			width: auto;
+			margin: 0;
+			position: relative;
+			color: #ffffff;
+		}
 
 		&:not(:hover) {
 			&:before {
@@ -1524,12 +1559,12 @@ span.tie-number-views-badge{
 
 
 /* Help Scout Beacon */
-#hs-beacon{
+#beacon-container .Beacon{
 
-	iframe {
+	.BeaconFabButtonFrame {
 		right: auto !important;
     left: 185px !important;
-    bottom: 30px !important;
+    bottom: 40px !important;
 
     & + iframe {
     	bottom: 107px !important;
@@ -1678,4 +1713,8 @@ span.tie-number-views-badge{
 	display: block;
 	margin: 10px 0;
 	text-align:center;
+
+	img{
+		max-width: 100%;
+	}
 }

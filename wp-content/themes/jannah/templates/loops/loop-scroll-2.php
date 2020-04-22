@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -22,13 +22,11 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 		if ( has_post_thumbnail() ){
 			tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', false, false, false );
 		}
-
 	?>
 
 	<div class="post-overlay">
 		<div class="post-content">
-			<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+			<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 		</div>
 	</div>
-
 </div><!-- .Slide /-->

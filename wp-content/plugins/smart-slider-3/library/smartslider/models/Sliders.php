@@ -46,7 +46,7 @@ class N2SmartsliderSlidersModel extends N2Model {
     public function invalidateCache() {
         $this->db->query("DELETE FROM `" . $this->db->parsePrefix('#__nextend2_section_storage') . "` WHERE `application` LIKE 'cache'");
 
-        return $this->db->query("UPDATE `" . $this->db->parsePrefix('#__nextend2_section_storage') . "` SET `value` = 1 WHERE `application` LIKE 'smartslider' AND `section` LIKE 'sliderChanged';");
+        $this->db->query("DELETE FROM `" . $this->db->parsePrefix('#__nextend2_section_storage') . "` WHERE `application` LIKE 'smartslider' AND `section` LIKE 'sliderChanged';");
     }
 
     public function refreshCache($sliderid) {
@@ -136,21 +136,28 @@ class N2SmartsliderSlidersModel extends N2Model {
 
         $generalTab  = new N2TabGroupped($sliderSettings, 'general', n2_('General'));
         $generalTab2 = new N2Tab($generalTab, 'slider', false);
-        new N2ElementText($generalTab2, 'title', n2_('Name'), n2_('Slider'), array(
+
+        $nameGroup = new N2ElementGroup($generalTab2, 'namegroup', n2_('Slider name'));
+
+        new N2ElementText($nameGroup, 'title', n2_('Name'), n2_('Slider'), array(
             'style' => 'width:400px;'
         ));
 
+        new N2ElementText($nameGroup, 'aria-label', n2_('ARIA Label'), n2_('Slider'), array(
+            'style' => 'width:200px;'
+        ));
+
         $aliasGroup = new N2ElementGroup($generalTab2, 'aliasgroup', n2_('Alias'), array(
-            'tip' => 'Find the description of the options by hovering over their titles.'
+            'tip' => n2_('Find the description of the options by hovering over their titles.')
         ));
 
         new N2ElementText($aliasGroup, 'alias', n2_('Alias'), '', array(
             'style' => 'width:200px;',
-            'tip'   => 'This alias can be used for your slider\'s shortcode, but you can also use it to create an element for anchors with the next on/off options.'
+            'tip'   => n2_('This alias can be used for your slider\'s shortcode, but you can also use it to create an element for anchors with the next on/off options.')
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-id', n2_('Use as ID on element before slider'), '', array(
-            'tip'           => 'You can have an empty div element before our slider, which would use this alias as its id. This can be useful, if you would want to use #your-alias as the url in your menu to jump to that element.',
+            'tip'           => n2_('You can have an empty div element before our slider, which would use this alias as its id. This can be useful, if you would want to use #your-alias as the url in your menu to jump to that element.'),
             'relatedFields' => array(
                 'slideralias-smoothscroll',
                 'slideralias-slideswitch'
@@ -158,25 +165,25 @@ class N2SmartsliderSlidersModel extends N2Model {
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-smoothscroll', n2_('Smooth scroll to this element'), '', array(
-            'tip' => 'The #your-alias urls in links would be forced to smooth scroll to our element.'
+            'tip' => n2_('The #your-alias urls in links would be forced to smooth scroll to our element.')
         ));
 
         new N2ElementOnOff($aliasGroup, 'alias-slideswitch', n2_('Allow slide switching for anchor'), '', array(
-            'tip' => 'If you wouldn\'t use #your-alias as anchor, but rather #your-alias-1 or #your-alias-2, then your slider will switch to the 1st, 2nd, etc. slide.'
+            'tip' => n2_('If you wouldn\'t use #your-alias as anchor, but rather #your-alias-1 or #your-alias-2, then your slider will switch to the 1st, 2nd, etc. slide.')
         ));
 
         $controls = new N2ElementGroup($generalTab2, 'controls', n2_('Controls'));
-        new N2ElementOnOff($controls, 'controlsScroll', n2_('Mouse scroll'), 0);
-        new N2ElementOnOff($controls, 'controlsDrag', n2_('Mouse drag'), 1);
-        new N2ElementRadio($controls, 'controlsTouch', n2_('Touch'), 'horizontal', array(
+
+        new N2ElementRadio($controls, 'controlsTouch', n2_('Touch and Pointer drag'), 'horizontal', array(
             'options' => array(
                 '0'          => n2_('Disabled'),
                 'horizontal' => n2_('Horizontal'),
                 'vertical'   => n2_('Vertical')
             )
         ));
-        new N2ElementOnOff($controls, 'controlsKeyboard', n2_('Keyboard'), 1);
 
+        new N2ElementOnOff($controls, 'controlsScroll', n2_('Mouse wheel'), 0);
+        new N2ElementOnOff($controls, 'controlsKeyboard', n2_('Keyboard'), 1);
 
         new N2ElementImage($generalTab2, 'thumbnail', n2_('Thumbnail'), '');
         new N2ElementRadio($generalTab2, 'align', n2_('Align'), 'normal', array(
@@ -236,6 +243,7 @@ class N2SmartsliderSlidersModel extends N2Model {
         $size = new N2ElementGroup($sizeTab2, 'slider-size', n2_('Slider size'));
         new N2ElementNumberAutocomplete($size, 'width', n2_('Width'), 900, array(
             'style'  => 'width:35px',
+            'min'    => 10,
             'values' => array(
                 1920,
                 1400,
@@ -248,6 +256,7 @@ class N2SmartsliderSlidersModel extends N2Model {
         ));
         new N2ElementNumberAutocomplete($size, 'height', n2_('Height'), 500, array(
             'style'  => 'width:35px',
+            'min'    => 10,
             'values' => array(
                 800,
                 600,
@@ -348,8 +357,8 @@ class N2SmartsliderSlidersModel extends N2Model {
         }
         new N2ElementImportant($optimizeImages, 'optimize-notice', n2_('Optimize image feature requires high memory limit. If you do not have enough memory you will get a blank page on the frontend.') . $memoryLimitText);
 
-        $backgroundImage = new N2ElementGroup($optimize2, 'background-image-resize', n2_('Background image resize'));
-        new N2ElementOnOff($backgroundImage, 'optimize-background-image-custom', n2_('Enable'), '0', array(
+        $backgroundImage = new N2ElementGroup($optimize2, 'background-image-resize', n2_('Custom background image size'));
+        new N2ElementOnOff($backgroundImage, 'optimize-background-image-custom', n2_('Customize'), '0', array(
             'relatedFields' => array(
                 'slideroptimize-background-image-width',
                 'slideroptimize-background-image-height'
@@ -412,9 +421,14 @@ class N2SmartsliderSlidersModel extends N2Model {
         $developer        = new N2TabGroupped($sliderSettings, 'developer', n2_('Developer'));
         $developerOptions = new N2Tab($developer, 'developer-options', false);
 
-        new N2ElementOnOff($developerOptions, 'overflow-hidden-page', n2_('Hide website\'s scrollbar'), 0, array(
-            'tip' => n2_('You won\'t be able to scroll your website anymore.')
+        $overflowGroup = new N2ElementGroup($developerOptions, 'overflow-group', n2_('Hide website\'s scrollbar'));
+        new N2ElementOnOff($overflowGroup, 'overflow-hidden-page', n2_('Hide'), 0, array(
+            'relatedFields' => array(
+                'slideroverflow-notice'
+            ),
+            'tip'           => n2_('You won\'t be able to scroll your website anymore.')
         ));
+        new N2ElementImportant($overflowGroup, 'overflow-notice', n2_('Your website won\'t be scrollable anymore! All out of screen elements will be hidden.'));
 
         $clearGroup = new N2ElementGroup($developerOptions, 'cleargroup', n2_('Clear both'));
         new N2ElementOnOff($clearGroup, 'clear-both', n2_('Before slider'), 0, array(
@@ -424,6 +438,48 @@ class N2SmartsliderSlidersModel extends N2Model {
             'tip' => n2_('Turn this off to allow contents following the slider get into the same row where the slider is.')
         ));
 
+        $mediaQueryGroup = new N2ElementGroup($developerOptions, 'media-query-group', n2_('Hide slider with CSS media query'), array(
+            'rowClass' => 'n2-expert'
+        ));
+        new N2ElementOnOff($mediaQueryGroup, 'media-query-hide-slider', n2_('Hide slider'), 0, array(
+            'relatedFields' => array(
+                'slidermedia-query-under-over',
+                'slidermedia-query-width'
+            )
+        ));
+        new N2ElementRadio($mediaQueryGroup, 'media-query-under-over', n2_('Under or over'), 'max-width', array(
+            'options' => array(
+                'max-width' => n2_('under'),
+                'min-width' => n2_('over')
+            )
+        ));
+        new N2ElementNumberAutocomplete($mediaQueryGroup, 'media-query-width', n2_('Browser width'), 640, array(
+            'style'  => 'width:35px',
+            'values' => array(
+                480,
+                640,
+                768,
+                1024,
+                1200
+            ),
+            'unit'   => 'px'
+        ));
+
+        $focus = new N2ElementGroup($developerOptions, 'responsiveFocus', n2_('Scroll to slider on user interaction'));
+        new N2ElementOnOff($focus, 'responsiveFocusUser', n2_('Enabled'), 1);
+
+
+        new N2ElementList($focus, 'responsiveFocusEdge', n2_('Edge'), 'auto', array(
+            'options' => array(
+                'auto'         => n2_('Auto'),
+                'top'          => n2_('Top - when needed'),
+                'top-force'    => n2_('Top - always'),
+                'bottom'       => n2_('Bottom - when needed'),
+                'bottom-force' => n2_('Bottom - always'),
+            )
+        ));
+
+
         new N2ElementTextarea($developerOptions, 'custom-css-codes', n2_('CSS'), '', array(
             'fieldStyle' => 'width:600px;height:300px;'
         ));
@@ -432,7 +488,7 @@ class N2SmartsliderSlidersModel extends N2Model {
         ));
 
         new N2ElementText($developerOptions, 'classes', n2_('Slider CSS classes'), '', array(
-            'tip' => 'You can put custom CSS classes to the slider\'s container.'
+            'tip' => n2_('You can put custom CSS classes to the slider\'s container.')
         ));
         new N2ElementTextarea($developerOptions, 'related-posts', n2_('Post IDs') . ' (' . n2_('one per line') . ')', '', array(
             'fieldStyle' => 'width:600px;height:100px;',
@@ -494,6 +550,8 @@ class N2SmartsliderSlidersModel extends N2Model {
 
             $this->xref->add($groupID, $sliderID);
 
+            N2SS3::sliderChanged();
+
             return $sliderID;
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
@@ -533,6 +591,8 @@ class N2SmartsliderSlidersModel extends N2Model {
                         $this->xref->add($group['group_id'], $sliderID);
                     }
                 }
+
+                N2SS3::sliderChanged();
 
                 return $sliderID;
             } catch (Exception $e) {
@@ -584,6 +644,8 @@ class N2SmartsliderSlidersModel extends N2Model {
             $sliderID = $this->db->insertId();
 
             $this->xref->add($groupID, $sliderID);
+
+            N2SS3::sliderChanged();
 
             return $sliderID;
         } catch (Exception $e) {
@@ -637,6 +699,8 @@ class N2SmartsliderSlidersModel extends N2Model {
         }
 
         self::markChanged($id);
+
+        N2SS3::sliderChanged();
 
         return $response;
     }
@@ -737,6 +801,8 @@ class N2SmartsliderSlidersModel extends N2Model {
         N2Cache::clearGroup(N2SmartSliderAbstract::getAdminCacheId($id));
 
         self::markChanged($id);
+
+        N2SS3::sliderChanged();
     }
 
     function deleteSlides($id) {
@@ -788,6 +854,8 @@ class N2SmartsliderSlidersModel extends N2Model {
                 }
             }
         }
+
+        N2SS3::sliderChanged();
 
         return $newSliderId;
     }

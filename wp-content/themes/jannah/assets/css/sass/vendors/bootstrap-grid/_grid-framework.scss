@@ -4,9 +4,9 @@
 // any value of `$grid-columns`.
 
 // [converter] This is defined recursively in LESS, but Sass supports real loops
-@mixin make-grid-columns($i: 1, $list: ".tie-col-xs-#{$i}, .tie-col-sm-#{$i}, .tie-col-md-#{$i}, .tie-col-lg-#{$i}"){
+@mixin make-grid-columns($i: 1, $list: ".tie-col-xs-#{$i}, .tie-col-sm-#{$i}, .tie-col-md-#{$i}"){
 	@for $i from (1 + 1) through $grid-columns{
-		$list: "#{$list}, .tie-col-xs-#{$i}, .tie-col-sm-#{$i}, .tie-col-md-#{$i}, .tie-col-lg-#{$i}";
+		$list: "#{$list}, .tie-col-xs-#{$i}, .tie-col-sm-#{$i}, .tie-col-md-#{$i}";
 	}
 	#{$list}{
 		position: relative;
@@ -34,31 +34,6 @@
 	@if ($type == width) and ($index > 0){
 		.tie-col-#{$class}-#{$index}{
 			width: percentage(($index / $grid-columns));
-		}
-	}
-	@if ($type == push) and ($index > 0){
-		.tie-col-#{$class}-push-#{$index}{
-			left: percentage(($index / $grid-columns));
-		}
-	}
-	@if ($type == push) and ($index == 0){
-		.tie-col-#{$class}-push-0{
-			left: auto;
-		}
-	}
-	@if ($type == pull) and ($index > 0){
-		.tie-col-#{$class}-pull-#{$index}{
-			right: percentage(($index / $grid-columns));
-		}
-	}
-	@if ($type == pull) and ($index == 0){
-		.tie-col-#{$class}-pull-0{
-			right: auto;
-		}
-	}
-	@if ($type == offset){
-		.tie-col-#{$class}-offset-#{$index}{
-			margin-left: percentage(($index / $grid-columns));
 		}
 	}
 }

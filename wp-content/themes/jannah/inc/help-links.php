@@ -12,8 +12,6 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 
 	class TIELABS_EXTERNAL_LINKS{
 
-
-
 		/**
 		 * __construct
 		 *
@@ -23,7 +21,6 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 
 			add_action( 'TieLabs/admin_after_tab_title',  array( $this, 'help_icons' ), 10, 1 );
 			add_action( 'TieLabs/admin_after_head_title', array( $this, 'help_icons' ), 10, 1 );
-
 
 			add_filter( 'arqam_lite_docs_url', array( $this, 'arqam_lite' )); // Arqam Lite documentation url
 			add_filter( 'tie_extensions_shortcodes_docs_url', array( $this, 'extensions_shortcodes' )); // Shortcodes documentation url
@@ -43,9 +40,7 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 			add_filter( 'TieLabs/External/foxpush',               array( $this, 'foxpush' ));
 			add_filter( 'TieLabs/External/changelog',             array( $this, 'changelog' ));
 			add_filter( 'TieLabs/translations_panel_url',         array( $this, 'translations_panel_url' ));
-
 		}
-
 
 
 		/**
@@ -97,7 +92,7 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 		}
 
 		function portfolio( $url ){
-			return esc_url( 'http://themeforest.net/user/tielabs/portfolio?ref=tielabs&utm_source=theme-panel&utm_medium=link&utm_campaign='.TIELABS_THEME_SLUG );
+			return esc_url( 'https://1.envato.market/zmEzO' );
 		}
 
 		function foxpush( $url ){
@@ -120,7 +115,6 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 		function translations_panel_url( $url ) {
 			return esc_url( 'https://tielabs.oneskyapp.com/collaboration/project/304436' );
 		}
-
 
 
 		/**
@@ -268,11 +262,19 @@ if( ! class_exists( 'TIELABS_EXTERNAL_LINKS' )){
 				// buddypress
 				'buddypress-tab' => '176-buddypress-settings',
 
+				//
+				'google-maps-api-key' => '210-how-to-get-google-maps-api-key',
+				'youtube-api-key'     => '209-how-to-get-youtube-api-key',
+				'weather-api-key'     => '47-how-to-setup-the-weather-widget',
+
+				//
+				'speed-optimization-tab' => '211-jannah-speed-optimization-plugin-settings',
+
 			);
 
 			add_thickbox();
 
-			$docs_url = "https://jannah.helpscoutdocs.com/article/";
+			$docs_url = 'https://jannah.helpscoutdocs.com/article/';
 
 			if( ! empty( $id ) && ! empty( $options[ $id ] ) ){
 				echo '<a href="'. esc_url( $docs_url . $options[ $id ] ) .'?tiedocs=true&TB_iframe=true&width=650&height=750" id="help-icon-'. $id .'" class="docs-link thickbox" target="_blank" rel="nofollow noopener" title="'. esc_html__( 'Need Help?', TIELABS_TEXTDOMAIN ) .'"><span class="dashicons dashicons-editor-help"></span></a>';

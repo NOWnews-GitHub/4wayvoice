@@ -4,7 +4,6 @@
  *
  */
 
-
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
@@ -18,25 +17,25 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		public static function init(){
 
 			// Head codes
-			add_action( 'wp_head', array( __CLASS__, 'insert_fonts_head' ), 20 );
-			add_action( 'wp_head', array( __CLASS__, 'custom_head_code' ) );
-			add_action( 'wp_head', array( __CLASS__, 'meta_theme_generator' ) );
-			add_action( 'wp_head', array( __CLASS__, 'meta_android_color' ) );
-			add_action( 'wp_head', array( __CLASS__, 'meta_viewport' ) );
+			add_action( 'wp_head',                   array( __CLASS__, 'insert_external_fonts_head' ), 20 );
+			add_action( 'wp_head',                   array( __CLASS__, 'custom_head_code' ) );
+			add_action( 'wp_head',                   array( __CLASS__, 'meta_android_color' ) );
+			add_action( 'wp_head',                   array( __CLASS__, 'meta_viewport' ) );
 
-			// Lets IE users a better experience.
-			add_action( 'send_headers', array( __CLASS__, 'header_ie_xua' ) );
+			// Body Code
+			add_action( 'wp_body_open',              array( __CLASS__, 'custom_body_code' ) );
 
-			// Remove Query Strings From Static Resources
-			add_filter( 'script_loader_src', array( __CLASS__, 'remove_query_strings' ), 15 );
-			add_filter( 'style_loader_src',  array( __CLASS__, 'remove_query_strings' ), 15 );
+			// Footer Codes
+			add_action( 'wp_footer',                 array( __CLASS__, 'insert_google_fonts_head' ), 200 );
 
 			// wp enqueue scripts
-			add_action( 'wp_enqueue_scripts',  array( __CLASS__, 'load_fonts' ), 1 );
-			add_action( 'wp_enqueue_scripts',  array( __CLASS__, 'get_custom_styles' ), 22 );
-			add_action( 'wp_enqueue_scripts',  array( __CLASS__, 'localize_script' ), 22 );
+			add_action( 'wp_enqueue_scripts',        array( __CLASS__, 'load_fonts' ), 1 );
+			add_action( 'wp_enqueue_scripts',        array( __CLASS__, 'localize_script' ), 22 );
 
-			add_action( 'enqueue_embed_scripts', array( __CLASS__, 'embed_iframe_styles' ), 99 );
+			add_action( 'wp_enqueue_scripts',        array( __CLASS__, 'enqueue_external_css' ), 1000 );
+			add_action( 'wp_enqueue_scripts',        array( __CLASS__, 'get_custom_styles' ), 1001 );
+
+			add_action( 'enqueue_embed_scripts',     array( __CLASS__, 'embed_iframe_styles' ), 99 );
 
 			// Update the CSS file
 			add_action( 'edit_terms',                array( __CLASS__, 'update_styles_file' ) );
@@ -64,41 +63,50 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			}
 
 			$js_vars = array(
-				'is_rtl'                => is_rtl(),
-				'ajaxurl'               => esc_url(admin_url( 'admin-ajax.php' )),
-				'mobile_menu_active'    => tie_get_option( 'mobile_menu_active' ),
-				'mobile_menu_top'       => ( tie_get_option( 'mobile_the_menu' ) === 'main-secondary' ) ,
-				'mobile_menu_parent'    => tie_get_option( 'mobile_menu_parent_link' ),
-				'lightbox_all'          => tie_get_option( 'lightbox_all' ),
-				'lightbox_gallery'      => tie_get_option( 'lightbox_gallery' ),
-				'lightbox_skin'         => tie_get_option( 'lightbox_skin', 'dark' ),
-				'lightbox_thumb'        => tie_get_option( 'lightbox_thumbs' ),
-				'lightbox_arrows'       => tie_get_option( 'lightbox_arrows' ),
-				'is_singular'           => is_singular(),
-				'is_sticky_video'       => ( is_single() && tie_get_option( 'sticky_featured_video' ) ),
-				'reading_indicator'     => tie_get_option( 'reading_indicator' ),
-				'lazyload'              => tie_get_option( 'lazy_load' ),
-				'select_share'          => tie_get_option( 'select_share' ),
-				'select_share_twitter'  => tie_get_option( 'select_share_twitter' ),
-				'select_share_facebook' => tie_get_option( 'select_share_facebook' ),
-				'select_share_linkedin' => tie_get_option( 'select_share_linkedin' ),
-				'select_share_email'    => tie_get_option( 'select_share_email' ),
-				'facebook_app_id'       => tie_get_option( 'facebook_app_id' ),
-				'twitter_username'      => tie_get_option( 'share_twitter_username' ),
-				'responsive_tables'     => tie_get_option( 'responsive_tables' ),
-				'ad_blocker_detector'   => tie_get_option( 'ad_blocker_detector' ),
+				'is_rtl'                 => is_rtl(),
+				'ajaxurl'                => esc_url( admin_url('admin-ajax.php') ),
+
+				'is_taqyeem_active'      => TIELABS_TAQYEEM_IS_ACTIVE,
+
+				'is_sticky_video'        => ( is_single() && tie_get_option( 'sticky_featured_video' ) ),
+
+				'mobile_menu_top'        => ( tie_get_option( 'mobile_the_menu' ) === 'main-secondary' ) ,
+				'mobile_menu_active'     => tie_get_option( 'mobile_menu_active' ),
+				'mobile_menu_parent'     => tie_get_option( 'mobile_menu_parent_link' ),
+
+				'lightbox_all'           => tie_get_option( 'lightbox_all' ),
+				'lightbox_gallery'       => tie_get_option( 'lightbox_gallery' ),
+				'lightbox_skin'          => tie_get_option( 'lightbox_skin', 'dark' ),
+				'lightbox_thumb'         => tie_get_option( 'lightbox_thumbs' ),
+				'lightbox_arrows'        => tie_get_option( 'lightbox_arrows' ),
+				'is_singular'            => is_singular(),
+
+				'reading_indicator'      => tie_get_option( 'reading_indicator' ),
+				'lazyload'               => tie_get_option( 'lazy_load' ),
+
+				'select_share'           => tie_get_option( 'select_share' ),
+				'select_share_twitter'   => tie_get_option( 'select_share_twitter' ),
+				'select_share_facebook'  => tie_get_option( 'select_share_facebook' ),
+				'select_share_linkedin'  => tie_get_option( 'select_share_linkedin' ),
+				'select_share_email'     => tie_get_option( 'select_share_email' ),
+
+				'facebook_app_id'        => tie_get_option( 'facebook_app_id' ),
+				'twitter_username'       => tie_get_option( 'share_twitter_username' ),
+				'responsive_tables'      => tie_get_option( 'responsive_tables' ),
+
+				'ad_blocker_detector'    => tie_get_option( 'ad_blocker_detector' ),
 
 				'sticky_behavior'        => tie_get_option( 'sticky_behavior' ),
 				'sticky_desktop'         => tie_get_option( 'stick_nav' ),
 				'sticky_mobile'          => tie_get_option( 'stick_mobile_nav' ),
 				'sticky_mobile_behavior' => tie_get_option( 'sticky_mobile_behavior' ),
 
-				'ajax_loader'           => tie_get_ajax_loader( false ),
-				'type_to_search'        => $type_to_search,
-				'lang_no_results'       => esc_html__( 'Nothing Found', TIELABS_TEXTDOMAIN ),
+				'ajax_loader'            => tie_get_ajax_loader( false ),
+				'type_to_search'         => $type_to_search,
+				'lang_no_results'        => esc_html__( 'Nothing Found', TIELABS_TEXTDOMAIN ),
 			);
 
-			wp_localize_script( 'jquery', 'tie', apply_filters( 'TieLabs/js_main_vars', $js_vars ) );
+			wp_localize_script( 'tie-scripts', 'tie', apply_filters( 'TieLabs/js_main_vars', $js_vars ) );
 		}
 
 
@@ -190,12 +198,12 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 					$out .= "
 						@font-face {
 							font-family: '$font_family';
+							font-display: swap;
 					";
 
 					$sources = array();
 
 					foreach ( $files as $ext => $format ) {
-
 						if( $file = tie_get_option( 'typography_'. $key .'_custom_'. $ext ) ){
 
 							if( $ext == 'eot' ){
@@ -203,12 +211,9 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 								$sources[] = "url('$file?#iefix') $format";
 							}
 							else{
-
 								$file .= $ext == 'svg' ? '#svgFont'.$key : '';
-
 								$sources[] = "url('$file') $format";
 							}
-
 						}
 					}
 
@@ -282,37 +287,51 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 				} // Section option
 			}
 
-			return $out;
+			return apply_filters( 'TieLabs/CSS/typography', $out );
 		}
 
 
 	 /*
-	  * Print the Google web fonts Script and external fonts code in the head section
+	  * Print the Google web fonts Script in the head section
 	  */
-		public static function insert_fonts_head(){
+		public static function insert_google_fonts_head(){
 
 			// Google fonts Loader
-			if( ! empty( $GLOBALS['tie_google_fonts'] ) ){
-				$google_fonts = $GLOBALS['tie_google_fonts'];
-
-				echo "
-					<script>
-						WebFontConfig ={
-							google:{
-								families: [$google_fonts]
-							}
-						};
-						(function(){
-							var wf   = document.createElement('script');
-							wf.src   = '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-							wf.type  = 'text/javascript';
-							wf.async = 'true';
-							var s = document.getElementsByTagName('script')[0];
-							s.parentNode.insertBefore(wf, s);
-						})();
-					</script>
-				";
+			if( empty( $GLOBALS['tie_google_fonts'] ) ){
+				return;
 			}
+
+			// Add display:swap | There is no official support for it, as a workaround we need to add it to the latest item in the array
+			$google_fonts = rtrim( $GLOBALS['tie_google_fonts'], "'" ) . "&display=swap'";
+
+			//
+			$js_code = "
+				WebFontConfig ={
+					google:{
+						families: [ $google_fonts ]
+					}
+				};
+
+				(function(){
+					var wf   = document.createElement('script');
+					wf.src   = '//ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+					wf.type  = 'text/javascript';
+					wf.defer = 'true';
+					var s = document.getElementsByTagName('script')[0];
+					s.parentNode.insertBefore(wf, s);
+				})();
+			";
+
+			echo '<script>';
+			echo apply_filters( 'TieLabs/google_fonts/js_code', $js_code, $GLOBALS['tie_google_fonts'] );
+			echo '</script>';
+		}
+
+
+	 /*
+	  * Print the External fonts code in the head section
+	  */
+		public static function insert_external_fonts_head(){
 
 			// External Code
 			if( ! empty( $GLOBALS['tie_external_font_code'] ) ){
@@ -338,6 +357,8 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			$google_early_fonts = array();
 			$fontface_me_fonts  = array();
 			$external_font_code = array();
+
+			$character_sets = tie_get_option( 'typography_google_character_sets' );
 
 			foreach( $fonts_sections as $font_section_key => $font_section_tags ){
 
@@ -368,7 +389,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 								$custom_fonts_names[ $font_section_key ] = array( str_replace( '+', ' ', "'$font'" ) );
 							}
 
-							# Google web font variants
+							// Google web font variants
 							$font .= ':';
 							if( $variants = tie_get_option( 'typography_'. $font_section_key .'_google_variants' )){
 								$font .= implode( ',', $variants );
@@ -376,7 +397,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 
 							// Google web font character sets
 							$font .= ':latin';
-							if( $character_sets = tie_get_option( 'typography_google_character_sets' )){
+							if( $character_sets ){
 								$font .= ','.implode( ',', $character_sets );
 							}
 
@@ -390,10 +411,10 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 
 					if( $ext_font = tie_get_option( 'typography_'. $font_section_key .'_ext_font' ) ){
 
-						# Add the font name to the fonts array
+						// Add the font name to the fonts array
 						$custom_fonts_names[ $font_section_key ] = "'$ext_font'";
 
-						# The custom Head code
+						// The custom Head code
 						if( $source == 'external' && ( $ext_head = tie_get_option( 'typography_'. $font_section_key .'_ext_head' ) ) ){
 
 							$external_font_code[] = $ext_head;
@@ -450,12 +471,19 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		/*
 		 * Minify Css
 		 */
-		public static function minify_css( $css ){
+		public static function minify_css( $css = false ){
 
+			// Return if there is no CSS code
 			if( empty( $css ) ){
 				return;
 			}
 
+			// If the debugging is on, don't minify
+			if( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) || ( defined( 'TIE_SCRIPT_DEBUG' ) && TIE_SCRIPT_DEBUG ) ){
+				return $css;
+			}
+
+			// Minify
 			$css = strip_tags( $css );
 			$css = str_replace( ',{', '{', $css );
 			$css = str_replace( ', ', ',', $css );
@@ -471,7 +499,15 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		 * Load the normal or minified files
 		 */
 		public static function is_minified(){
-			return tie_get_option( 'minified_files' ) ? '.min' : '';
+			return ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) || ( defined( 'TIE_SCRIPT_DEBUG' ) && TIE_SCRIPT_DEBUG ) ) ? '' : '.min';
+		}
+
+
+		/*
+		 * Check if is_inline_css
+		 */
+		public static function is_inline_css(){
+			return apply_filters( 'TieLabs/Styles/is_inline_css', tie_get_option( 'inline_css' ) );
 		}
 
 
@@ -490,6 +526,53 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			}
 
 			return $path.'/style-custom.css';
+		}
+
+
+		/*
+		 * Get the latest enqueued css file
+		 */
+		public static function latest_enqueued_file(){
+
+			$enqueue_styles = wp_styles();
+			$enqueued_files = array_reverse( $enqueue_styles->queue );
+
+			foreach ( $enqueued_files as $file ){
+
+				// Don't use IE files as loaded in condition
+				if( strpos( $file, 'tie-css-ie-' ) === false ){
+					return $file;
+				}
+			}
+
+			return 'tie-css-inline'; // Default CSS File Handler
+		}
+
+
+		/*
+		 * Get the builder styles
+		 */
+		public static function builder_styles(){
+
+			$css_code = '';
+
+			if( $sections = tie_get_postdata( 'tie_page_builder' ) ){
+
+				$sections = maybe_unserialize( $sections );
+
+				foreach( $sections as $section ){
+
+					$css_code .= self::builder_section_style( $section );
+
+					if( ! empty( $section['blocks'] ) && is_array( $section['blocks'] )){
+						foreach( $section['blocks'] as $block ){
+							$css_code .= self::builder_block_style( $block );
+						}
+					}
+				}
+			}
+
+			return $css_code;
 		}
 
 
@@ -528,6 +611,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 				if( ! empty( $background_color_1 ) && ! empty( $background_color_2 ) ){
 
 					$gradiant_css = "45deg, $background_color_1, $background_color_2";
+
 					$background_code .= "
 						background-image: -webkit-linear-gradient($gradiant_css);
 						background-image:         linear-gradient($gradiant_css);
@@ -565,6 +649,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 
 			// Overlay dots
 			$background_dots = tie_get_object_option( $prefix.'background_dots', 'background_dots', 'background_dots' );
+
 			if( ! empty( $background_dots )){
 				$background_overlay .= ! empty( $background_dots ) ? 'background-image: url('.  TIELABS_TEMPLATE_URL .'/assets/images/bg-dots.png);' : '';
 			}
@@ -575,6 +660,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			if( ! empty( $background_dimmer )){
 
 				$dimmer_value = tie_get_object_option( $prefix.'background_dimmer_value', 'background_dimmer_value', 'background_dimmer_value' );
+
 				if( ! empty( $dimmer_value ) ){
 					$dimmer_value = ( max( 0, min( 100, $dimmer_value )))/100;
 				}
@@ -613,7 +699,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			$background_code  = 'background-image: url('. $background_image['img'] .');'."\n";
 			$background_code .= ! empty( $background_image['repeat'] ) ? 'background-repeat: '. $background_image['repeat'] .';' : '';
 
-			# Image attachment
+			// Image attachment
 			if( ! empty( $background_image['attachment'] ) ){
 				if( $background_image['attachment'] == 'cover' ){
 					$background_code .= 'background-size: cover; background-attachment: fixed;';
@@ -623,7 +709,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 				}
 			}
 
-			# Image position
+			// Image position
 			$hortionzal = ! empty( $background_image['hor'] ) ? $background_image['hor'] : '';
 			$vertical   = ! empty( $background_image['ver'] ) ? $background_image['ver'] : '';
 
@@ -686,7 +772,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 					$hex = str_repeat( substr( $hex, 0, 1 ), 2 ) . str_repeat( substr( $hex, 1, 1 ), 2 ) . str_repeat( substr( $hex, 2, 1 ), 2 );
 				}
 
-				# Get decimal values
+				// Get decimal values
 				$rgb = array(
 					'r' => hexdec( substr( $hex, 0, 2 ) ),
 					'g' => hexdec( substr( $hex, 2, 2 ) ),
@@ -734,39 +820,28 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 
 
 		/*
+		 * Enquee the External CSS file
+		 */
+		public static function enqueue_external_css(){
+
+			if( self::is_inline_css() || ! file_exists( self::style_file_path( true ) ) ){
+				return false;
+			}
+
+			// Enqueue the external CSS file
+			wp_enqueue_style( 'tie-css-style-custom', self::style_file_path(), array(), get_option( 'style-custom-ver', TIELABS_DB_VERSION ), 'all' );
+		}
+
+
+		/*
 		 * Enquee the External CSS file or Inline the Custom CSS codes
 		 */
 		public static function get_custom_styles(){
 
-			$inline_css_code  = '';
-			$css_file_handler = 'tie-css-styles'; // Default CSS File Handler
+			$inline_css_code   = '';
 
-			// Add CSS inline if the inline_css option is enabled or the Custom CSS file is not exists
-			if( tie_get_option( 'inline_css' ) || ! file_exists( self::style_file_path( true ) ) ){
-
-				// Get the latest enqueued css file
-				$enqueue_styles = wp_styles();
-				$enqueued_files = array_reverse( $enqueue_styles->queue );
-
-				foreach ( $enqueued_files as $file ){
-					// Don't use IE files as loaded in condition
-					if( strpos( $file, 'tie-css-ie-' ) === false ){
-						$css_file_handler = $file;
-						break;
-					}
-				}
-
-				// Get the Custom CSS Codes
-				$inline_css_code .= self::get_all_custom_css();
-			}
-
-			// The inline CSS code option is disabled and the External Custom CSS file is exists
-			else{
-
-				// The Last enqueed file is the Custom CSS file
-				$css_file_handler = 'tie-css-style-custom';
-
-				wp_enqueue_style( $css_file_handler, self::style_file_path(), array(), get_option( 'style-custom-ver', TIELABS_DB_VERSION ), 'all' );
+			// Check if the external CSS file is registered
+			if( wp_style_is( 'tie-css-style-custom', 'enqueued' ) ){
 
 				// For posts and categories custom styles
 				$color = tie_get_object_option( false, 'cat_color', 'post_color' );
@@ -779,27 +854,32 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 				$inline_css_code .= tie_get_object_option( false, 'cat_custom_css', 'tie_custom_css' );
 			}
 
-			// Custom Blocks Styles
-			if( $sections = tie_get_postdata( 'tie_page_builder' ) ){
+			// If the inline css option is disabled or the external css file doesn't exist
+			else{
+				$inline_css_code .= self::get_all_custom_css();
+			}
 
-				$sections = maybe_unserialize( $sections );
+			// Builder styles
+			$inline_css_code .= self::builder_styles();
 
-				foreach( $sections as $section ){
-
-					$inline_css_code .= self::builder_section_style( $section );
-
-					if( ! empty( $section['blocks'] ) && is_array( $section['blocks'] )){
-						foreach( $section['blocks'] as $block ){
-							$inline_css_code .= self::builder_block_style( $block );
-						}
-					}
-				}
+			// Return if there is no inline code
+			if( empty( $inline_css_code ) ){
+				return;
 			}
 
 			// Minify and Inline the CSS codes
-			if( ! empty( $inline_css_code ) ){
-				$inline_css_code = self::minify_css( $inline_css_code );
+			$inline_css_code = apply_filters( 'TieLabs/Styles/inline_css_code', self::minify_css( $inline_css_code ) );
+
+			// Find the handler
+			$css_file_handler = wp_style_is( 'tie-css-style-custom', 'enqueued' ) ? 'tie-css-style-custom' : self::latest_enqueued_file();
+
+			// If the dependence CSS file is enqueued use the wp_add_inline_style else print the code.
+			if( wp_style_is( $css_file_handler, 'enqueued' ) ){
+
 				wp_add_inline_style( $css_file_handler, $inline_css_code );
+			}
+			else{
+				echo "<style id='tie-custom-css-inline' type='text/css'>$inline_css_code</style>\n";
 			}
 		}
 
@@ -809,15 +889,22 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		 */
 		public static function get_all_custom_css(){
 
+			$elements_styling = '';
+
+			// Get the Theme Custom color Codes
+			$elements_styling .= apply_filters( 'TieLabs/Styles/custom_theme_color', self::custom_theme_color() );
+
+			// Early Filter after getting the custom theme color
+			$elements_styling .= apply_filters( 'TieLabs/CSS/after_theme_color', $elements_styling );
+
 			$out  = '';
 			$out .= self::custom_fonts_css();
 			$out .= self::fonts_css();
 			$out .= self::typography_css();
 			$out .= self::get_background();
-			$out .= self::custom_theme_color();
+			$out .= $elements_styling;
 
-			// Early Filter after getting the custom theme color
-			$out = apply_filters( 'TieLabs/CSS/after_theme_color', $out );
+			$out = apply_filters( 'TieLabs/CSS/after_all_styles', $out );
 
 			// Global Custom CSS codes
 			$out .= tie_get_option( 'css' );
@@ -827,11 +914,17 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			// Custom CSS Codes for posts and cats
 			$out .= tie_get_object_option( false, 'cat_custom_css', 'tie_custom_css' );
 
-			$theme_color = tie_get_object_option( 'global_color', 'cat_color', 'post_color' ) ? tie_get_object_option( 'global_color', 'cat_color', 'post_color' ) : apply_filters( 'TieLabs/default_theme_color', '#000' );
+			// Theme Color
+			$theme_color = tie_get_object_option( 'global_color', 'cat_color', 'post_color' );
+
+			if( empty( $theme_color ) ){
+				$theme_color = apply_filters( 'TieLabs/default_theme_color', '#000' );
+			}
+
 			$out = str_replace( 'primary-color', $theme_color, $out );
 
 			// Prepare the CSS codes
-			return self::minify_css( apply_filters( 'TieLabs/CSS/output', $out ) );
+			return apply_filters( 'TieLabs/CSS/output', $out );
 		}
 
 
@@ -909,7 +1002,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		 */
 		public static function update_styles_file(){
 
-			if( tie_get_option( 'inline_css' ) ){
+			if( self::is_inline_css() ){
 				return;
 			}
 
@@ -924,7 +1017,7 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 			self::load_fonts();
 
 			// Get The CSS code
-			$css = self::get_all_custom_css();
+			$css = self::minify_css( self::get_all_custom_css() );
 
 			// Write the code to the file
 			$wrt = 'fwr'.'ite'; $wrt( $file, $css ); //##### ;)
@@ -937,32 +1030,11 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		}
 
 
-		/*
-		 * Remove Query Strings From Static Resources
-		 */
-		public static function remove_query_strings( $src ){
-
-			if( ! is_admin() && ! is_user_logged_in() ){
-				$src = remove_query_arg( 'ver', $src );
-			}
-
-			return $src;
-		}
-
-
-		/*
-		 * Lets IE users a better experience.
-		 */
-		public static function header_ie_xua(){
-			header( 'X-UA-Compatible: IE=edge' );
-		}
-
-
 		/**
 		 * Custom Code in <head>
 		 */
 		public static function custom_head_code(){
-			echo do_shortcode( tie_get_option( 'header_code' ) ), "\n";
+			echo do_shortcode( apply_filters( 'TieLabs/header_code', tie_get_option( 'header_code' ) ) ), "\n";
 		}
 
 
@@ -984,23 +1056,26 @@ if( ! class_exists( 'TIELABS_STYLES' )){
 		 * Theme-color in Chrome 39 for Android
 		 */
 		public static function meta_android_color(){
-			$theme_color = tie_get_object_option( 'global_color', 'cat_color', 'post_color' ) ? tie_get_object_option( 'global_color', 'cat_color', 'post_color' ) : apply_filters( 'TieLabs/default_theme_color', '#000' );
+
+			$theme_color = tie_get_object_option( 'global_color', 'cat_color', 'post_color' );
+
+			if( empty( $theme_color ) ){
+				$theme_color = apply_filters( 'TieLabs/default_theme_color', '#000' );
+			}
+
 			echo "<meta name=\"theme-color\" content=\"$theme_color\" />";
 		}
 
 
 		/**
-		 * Theme Generator Meta
+		 * Custom Code after the opening <body> tag.
 		 */
-		public static function meta_theme_generator(){
-			$theme_data    = wp_get_theme();
-			$theme_version = ! empty( $theme_data['Version'] ) ? ' '.$theme_data['Version'] : '';
-			echo '<meta name="generator" content="' . $theme_data . $theme_version . '" />' . "\n";
+		public static function custom_body_code(){
+			echo do_shortcode( apply_filters( 'TieLabs/body_code', tie_get_option( 'body_code' ) ) ), "\n";
 		}
 
 	} // class
 
 }
-
 
 TIELABS_STYLES::init();

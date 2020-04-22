@@ -8,17 +8,16 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author 		TieLabs
- * @version   2.1.0
+ * @version   4.4.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
 // Posts Only
-if ( ! is_singular('post') ){
+if ( ! TIELABS_HELPER::is_supported_post_type() ){
 	return;
 }
-
 
 // Get the current post
 the_post();
@@ -29,7 +28,7 @@ if( tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' )
 	$post_layout = tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' );
 	$post_layout = ! empty( $post_layout ) ? $post_layout : 1;
 
-	# Post title area
+	// Post title area
 	if( $post_layout == 3 || $post_layout == 7 ){
 		echo '
 			<div class="container">
@@ -42,7 +41,7 @@ if( tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' )
 	}
 	elseif( $post_layout == 4 || $post_layout == 5 || $post_layout == 8 ){
 
-		# Get the parallax js file
+		// Get the parallax js file
 		wp_enqueue_script( 'tie-js-parallax' );
 
 		# Normal Width layout
@@ -61,7 +60,7 @@ if( tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' )
 			$inner_featured_1    = $inner_featured_2 = '';
 		}
 
-		# Get the custom featured area bg
+		// Get the custom featured area bg
 		if( tie_get_object_option( 'featured_custom_bg', 'cat_featured_custom_bg', 'tie_featured_custom_bg' ) ){
 			$featured_img = tie_get_object_option( 'featured_custom_bg', 'cat_featured_custom_bg', 'tie_featured_custom_bg' );
 		}
@@ -106,7 +105,7 @@ if( tie_get_object_option( 'post_layout', 'cat_post_layout', 'tie_post_layout' )
 			'.$after_featured;
 	}
 
-	# Post featured area
+	// Post featured area
 	if( $post_layout == 6 || $post_layout == 7 ){
 
 		$before_featured = $after_featured = '';

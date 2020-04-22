@@ -4,7 +4,7 @@
 	Plugin URI: https://tielabs.com
 	Description: Add additional features to Jannah theme: Shortcodes, Custom Sliders post type
 	Author: TieLabs
-	Version: 1.0.10
+	Version: 1.0.11
 	Author URI: http://tielabs.com
 */
 

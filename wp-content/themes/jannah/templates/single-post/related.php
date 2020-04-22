@@ -17,7 +17,9 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 if( (( tie_get_option( 'related' ) && ! tie_get_postdata( 'tie_hide_related' )) || ( tie_get_postdata( 'tie_hide_related' ) == 'no' ) ) && is_singular( 'post' ) ):
 
 	// Check if the newsletter is hidden on mobiles
-	if( TIELABS_HELPER::is_mobile_and_hidden( 'related' )) return;
+	if( TIELABS_HELPER::is_mobile_and_hidden( 'related' ) ){
+		return;
+	}
 
 	$class   = 'container-wrapper';
 	$post_id = get_the_id();
@@ -48,7 +50,7 @@ if( (( tie_get_option( 'related' ) && ! tie_get_postdata( 'tie_hide_related' )) 
 	}
 
 	// Prepare the query
-	$query_type = tie_get_option('related_query');
+	$query_type = tie_get_option( 'related_query' );
 
 	// Post Order
 	$order = tie_get_option( 'related_order' );
@@ -101,7 +103,7 @@ if( (( tie_get_option( 'related' ) && ! tie_get_postdata( 'tie_hide_related' )) 
 									}
 								?>
 
-								<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $title_length ); ?></a></h3>
+								<h3 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $title_length ); ?></a></h3>
 
 								<?php
 
@@ -115,21 +117,6 @@ if( (( tie_get_option( 'related' ) && ! tie_get_postdata( 'tie_hide_related' )) 
 
 					</div><!-- .related-posts-list /-->
 				</div><!-- #related-posts /-->
-
-				<div id="_popIn_recommend"></div>
-				<script type="text/javascript">
-
-				(function() {
-
-						var pa = document.createElement('script'); pa.type = 'text/javascript'; pa.charset = "utf-8"; pa.async = true;
-
-						pa.src = window.location.protocol + "//api.popin.cc/searchbox/nownews_4wayvoice.js";
-
-						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pa, s);
-
-				})(); 
-
-				</script>
 
 			<?php if( tie_get_option( 'related_position') == 'footer' ){ ?>
 			</div><!-- .tie-col-md-12 -->

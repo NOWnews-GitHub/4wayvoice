@@ -9,27 +9,18 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 # Debug
 //update_option( 'tie_ver_'. TIELABS_THEME_ID, '2.0.0' );
 
-
 $current_version = get_option( 'tie_ver_'. TIELABS_THEME_ID ) ? get_option( 'tie_ver_'. TIELABS_THEME_ID ) : get_option( 'tie_jannah_ver' );
 
-
-# Apply updates
+// Apply updates
 if( $current_version ){
 
 	if( version_compare( $current_version, TIELABS_DB_VERSION, '<' ) ){
 
-
-		# ChangeLog
+		// ChangeLog
 		$changelog = '';
 
-
-		# Custom Versions updates-------------------------------- */
+		// Custom Versions updates
 		$updated_options = $original_options = get_option( apply_filters( 'TieLabs/theme_options', '' ) );
-
-
-
-
-
 
 
 		/*
@@ -50,15 +41,15 @@ if( $current_version ){
 		 */
 		if( version_compare( $current_version, '1.1.0', '<' ) ){
 
-			# Store the posts number needed for th switcher-
+			// Store the posts number needed for th switcher-
 			$count_posts     = wp_count_posts();
 			$published_posts = ! empty( $count_posts->publish ) ? $count_posts->publish : 0;
 			update_option( 'tie_published_posts_'. TIELABS_THEME_ID, $published_posts, false );
 
-			# Delete the stored cache to re-update it needed for the switcher
+			// Delete the stored cache to re-update it needed for the switcher
 			delete_transient( 'tie-data-'.TIELABS_THEME_SLUG );
 
-			# Chnagelog
+			// Chnagelog
 			$changelog .= '
 				NEW: Introducing our Jannah Switcher Plugin now you can migrating your posts from 17 themes to Jannah.
 				NEW: Option to set a custom RSS feed URL.
@@ -87,7 +78,7 @@ if( $current_version ){
 				unset( $updated_options['custom_logo_sticky'] );
 			}
 
-			# Chnagelog
+			// Chnagelog
 			$changelog .= "
 				New: 3 typography options to customize the posts titles in the sliders.
 				NEW: LazyLoad for the Sliders images.
@@ -126,7 +117,6 @@ if( $current_version ){
 				IMPROVED: BreadCrumbs support for the CPT.
 				IMPROVED: Post views system excludes the bots visits.
 			";
-
 		}
 
 
@@ -136,7 +126,7 @@ if( $current_version ){
 		 */
 		if( version_compare( $current_version, '1.3.0', '<' ) ){
 
-			# Chnagelog
+			// Chnagelog
 			$changelog .= "
 				New: Automatic theme update feature.
 				New: Edit Post link in the end of the post.
@@ -148,7 +138,6 @@ if( $current_version ){
 				IMPROVED: Sections custom margins in the responsive version.
 				IMPROVED: Default Logo margins in the Header Layout 3.
 			";
-
 		}
 
 
@@ -179,7 +168,6 @@ if( $current_version ){
 				}
 			}
 
-
 			// Update theme Options
 			$updated_options['boxes_style']           = 1;
 			$updated_options['sticky_featured_video'] = 'true';
@@ -191,13 +179,12 @@ if( $current_version ){
 			$updated_options['views_veryhot_color']   = 5000;
 			$updated_options['related_position']      = 'post';
 
-
-			# If the sticky menu active | enable the mobile Sticky Header
+			// If the sticky menu active | enable the mobile Sticky Header
 			if( tie_get_option( 'stick_nav' ) ){
 				$updated_options['stick_mobile_nav'] = 'true';
 			}
 
-			# If the Copyright area has custom Styles apply them on the back to top button
+			// If the Copyright area has custom Styles apply them on the back to top button
 			if( tie_get_option( 'copyright_background_color' ) ){
 				$updated_options['back_top_background_color'] = tie_get_option( 'copyright_background_color' );
 			}
@@ -206,8 +193,7 @@ if( $current_version ){
 				$updated_options['back_top_text_color'] = tie_get_option( 'copyright_text_color' );
 			}
 
-
-			# Set all Weather widget to be animated
+			// Set all Weather widget to be animated
 			$weather_widgets = get_option( 'widget_tie-weather-widget' );
 			if( ! empty( $weather_widgets ) && is_array( $weather_widgets ) ){
 
@@ -222,9 +208,7 @@ if( $current_version ){
 			}
 
 
-
-
-			# Chnagelog
+			// Chnagelog
 			$changelog .= "
 				NEW: Block Layout #16.
 				NEW: 3 new Posts layouts for archives pages.
@@ -309,11 +293,7 @@ if( $current_version ){
 				Updated: Jarallax.js to the latest version.
 				Updated: iLightBox.js to the latest version.
 			";
-
 		}
-
-
-
 
 
 		/*
@@ -377,7 +357,6 @@ if( $current_version ){
 		}
 
 
-
 		/*
 		 * Update to version 2.1.1
 		 *
@@ -387,14 +366,10 @@ if( $current_version ){
 			if( get_option('switch_to_jannah') ){
 
 				$theme_switched = get_option('switch_to_jannah');
-				update_option( 'tie_switch_to_'. TIELABS_THEME_ID, $theme_switched );
+				update_option( 'tie_switch_to_'. TIELABS_THEME_ID, $theme_switched, false );
 				delete_option('switch_to_jannah');
 			}
 		}
-
-
-
-
 
 
 		/*
@@ -458,40 +433,210 @@ if( $current_version ){
 		}
 
 
+		/*
+		 * Update to version 4.0.0
+		 *
+		 */
+		if( version_compare( $current_version, '4.0.0', '<' ) ){
+
+			// Meta description
+			$updated_options['post_meta_escription'] = 'true';
+
+			// Google Plus
+			if( ! empty( $updated_options['social']['google_plus'] ) ){
+				unset( $updated_options['social']['google_plus'] );
+			}
+
+			// Weather API
+			if( tie_get_option( 'top-nav-components_wz_api_key' ) ){
+				$updated_options['api_openweather'] = tie_get_option( 'top-nav-components_wz_api_key' );
+			}
+			elseif( tie_get_option( 'main-nav-components_wz_api_key' ) ){
+				$updated_options['api_openweather'] = tie_get_option( 'main-nav-components_wz_api_key' );
+			}
+
+			// YouTube ApiKey
+			if( $arq_options = get_option( 'arq_options' ) ){
+
+				if( ! empty( $arq_options['social']['youtube']['key'] ) ){
+					$updated_options['api_youtube'] = $arq_options['social']['youtube']['key'];
+				}
+			}
+
+			// Chnagelog
+			$changelog .= "
+				- Performance: Introduced the new Jannah Speed Optimization plugin (beta).
+				- Performance: Improved Ajax Requests performance.
+				- Performance: Improved Theme performance.
+				- Performance: Reduced the number of nodes per page.
+				- Performance: Improved Ajax Search library performance.
+				- Performance: Reduced the size and the number of scripts files loaded on mobiles.
+				- Performance: Google Fonts disabled by default on the low-speed connections.
+				- Performance: Used smaller Instagram images size.
+				- Performance: Used by default the min JS and CSS files.
+				- Performance: Reduced number of images generated by the theme to 3 images only.
+				- Performance: Font Display Swap to all Google Fonts.
+				- Performance: Font Display Swap to the custom uploaded fonts.
+				- Performance: New option to inline critical path CSS.
+				- Performance: New option to Load JS files deferred
+				- Performance: New option to Optimize CSS delivery.
+				- Performance: New option to Remove query strings from static resources.
+				- Performance: New options to remove unneeded Js files.
+				- Performance: New option to Disable Emoji and Smilies.
+				- Performance: New option to Minify HTML.
+				- Performance: New option to cache some static parts like widgets, main menu and breaking news to reduce MySQL queries.
+				- New: Co-Authors Plus plugin support.
+				- New: Notice in the dashboard if the child theme uses outdated files.
+				- New: Masonry layout for the BuddyPress grid pages.
+				- New: New tab for the API Keys in the theme options page.
+				- New: Get related posts by categories in the AMP Related Posts section.
+				- New: Lazy load support for the Instagram images.
+				- New: Lazy load support for the images in the posts.
+				- New: Lazy load support for the Ad images.
+				- New: Option to set a lazy load logo.
+				- New: Option to customize the title, message, and color of the Adblock popup.
+				- New: Meta description tag if there is no SEO plugin installed with an option to enable/disable.
+				- New: Option to upload an image for the custom social icons.
+				- New: Option to list posts in alphabetic order (A to Z listing) for the blocks.
+				- New: Option to list posts in alphabetic order (A to Z listing) for the related posts.
+				- New: Option to list posts in alphabetic order (A to Z listing) for the read next slider.
+				- New: Option to list posts in alphabetic order (A to Z listing) for the posts widget.
+				- New: Option to list posts in alphabetic order (A to Z listing) for the slider widget.
+				- New: Alt text option for the logo.
+				- New: Option to set an icon for the section title.
+				- New: Option to set an icon for the block title.
+				- New: Option to hide all read more buttons on mobiles.
+				- New: 3 new ad spaces in the category pages.
+				- New: Don't duplicate posts option in masonry page.
+				- New: Don't duplicate posts option in categories.
+				- New: Skype share button.
+				- New: 100+ Google fonts.
+				- New: AMP now uses the theme and custom posts colors.
+				- New: Post subtitle in the AMP pages.
+				- New: Modern user login drop-down menu in the navigation menus.
+				- New: Option to place code after opening the <body> tag.
+				- New: Parallax sections now supports self-hosted mp4 files.
+				- New: WPML XML file.
+				- Tweak: Accessibility improvements.
+				- Tweak: h1 internal page builder pages title.
+				- Tweak: The All link in the mega menu.
+				- Tweak: Responsive videos code.
+				- Tweak: Updated all Javascript libraries to the latest versions.
+				- Tweak: Updated YouTube icon.
+				- Tweak: Updated Arqam Lite plugin to fix the Instagram counter bug.
+				- Tweak: Updated Taqyeem plugin to support the new Reviews structure data changes.
+				- Tweak: Improved Header shadow.
+				- Tweak: Login form modules and the compatibility with the captcha and social login plugins.
+				- Tweak: Self-hosted videos/audios player style on mobile.
+				- Tweak: Improved menus styling and spaces.
+				- Tweak: Improved Cart menu.
+				- Tweak: All theme notices now appear in the theme options page only.
+				- Tweak: Hide all non-theme notices from the theme options page.
+				- Tweak: Improved slide sidebar and mobile menu close icon position.
+				- Tweak: Category description content styling.
+				- Tweak: Improved lists style on RTL AMP.
+				- Tweak: Removed the Google+ Widget
+				- Tweak: Removed the StumbleUpon share button.
+				- Tweak: Removed Google+ share button.
+				- Tweak: Use a background image as a fallback for the parallax video background.
+				- Fix: Customizer loading issue on some servers.
+				- Fix: Theme settings saving issue on some servers.
+				- Fix: block title using HTML tags.
+				- Fix: JetPack post views bug.
+				- Fix: Header image ad alignment.
+				- Fix: Instagram Lightbox images bug.
+				- Fix: Page builder appearance issue with Gutenberg.
+				- Fix: Story index bug prevents clicking on the content behind it.
+				- Fix: LinkedIn share button bug.
+				- Fix: WhatsApp and telegram share buttons.
+				- Fix: Disable meta options in the archives pages.
+				- Fix: Install plugins page conflict with some plugins.
+				- Fix: Buddypress icons bug.
+				- Fix: Instagram Widget bug.
+				- Fix: WooCommerce slider block bug.
+				- Fix: Buddypress messages page styling bug.
+				- Fix: LiveSearch results positions bug
+				- Dev: Added the TIE_LOGGING class, to allow for easier debugging by developers.
+				- Dev: A lot of new filters and hooks to allow the developers to customize the theme easily.
+				- Dev: New function wp_body_open added.
+				- And Improvements and minor bug fixes.
+			";
+		}
 
 
-		# Update if the Changelog has items-------------------- */
+		/*
+		 * Update to version 4.1.0
+		 *
+		 */
+		if( version_compare( $current_version, '4.1.0', '<' ) ){
+
+			// Chnagelog
+			$changelog .= "
+				- New: Two Ad spaces in the AMP pages.
+				- Fix: Alignment of the Codes sections in the single post edit page.
+				- Fix: Lightbox close button bug.
+				- Fix: WooCommerce import products page bug.
+				- Fix: AMP related Posts.
+				- Fix: Saving Widgets settings bug.
+				- Fix: Select and Share feature bug.
+				- Fix: Ajax pagination bug in the archives pages.
+				- Fix: PHP notice in the page builder blocks.
+				- Fix: Missing file URL error while theme auto-update.
+				- Fix: Page builder scrolling bug on iPad.
+				- Fix: Megamenu caching issue.
+				- Fix: Appearance of the category label in the Ajax loaded posts in the category pages.
+				- Fix: Add Notice above the Video Player if the YouTube API returns errors.
+				- Fix: Author description translation bug with the WPML plugin.
+				- Fix: Posts List widget saving options bug.
+				- Fix: Post title sharing issue if it contains single or double Quotation marks.
+				- Fix: Send to friend share button bug on Chrome.
+				- Fix: Instagram Counter issue, you need to update the Arqam Lite Plugin and set the Access token in the plugin's settings page.
+				- Fix: Weather appearance bug in the Header.
+				- Fix: Missing the Author name WPML translation.
+				- Fix: Polylang XML file bug.
+				- Fix: Horizontal Tabs shortcode bug.
+				- Fix: BuddyPress Grid Layout bug.
+				- Fix: Subtitle bug in the AMP posts.
+				- Fix: Ajax requests bug.
+				- Fix: WhatsApp share button bug.
+				- Fix: .alignwide and .alignfull margin for images in Gutenberg.
+				- Fix: Custom Styles and typography on the homepage.
+				- And Improvements and minor bug fixes.
+			";
+		}
+
+
+
+
+		// Update if the Changelog has items
 		if( ! empty( $changelog ) ){
 
-			# Store the new data
+			// Store the new data
 			update_option( 'tie_chnagelog_'. TIELABS_THEME_ID, trim( $changelog ), false );
 
-			# Remove the pointer from the dismissed array
+			// Remove the pointer from the dismissed array
 			$dismissed = array_filter( explode( ',', (string) get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true ) ) );
 			$pointer   = 'tie_new_updates_'. TIELABS_THEME_ID;
 
 			if ( in_array( $pointer, $dismissed ) ){
 				unset( $dismissed[ array_search( $pointer, $dismissed )] );
 			}
+
 			$dismissed = implode( ',', $dismissed );
 
 			update_user_meta( get_current_user_id(), 'dismissed_wp_pointers', $dismissed );
 		}
 
-
-		# Update the New options if it changed-------------------- */
+		// Update the New options if it changed
 		if( $updated_options != $original_options ){
 			update_option( apply_filters( 'TieLabs/theme_options', '' ), $updated_options );
 		}
 
-
-		# Update the DB version number
+		// Update the DB version number
 		update_option( 'tie_ver_'. TIELABS_THEME_ID, TIELABS_DB_VERSION );
 
-
-		# Use this action to run functions after updating the theme version
+		// Use this action to run functions after updating the theme version
 		do_action( 'TieLabs/after_db_update' );
 
 	}
 }
-

@@ -102,7 +102,11 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 			 */
 			$class_names = join( ' ' , apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args, $depth ) );
 
-			$a_class = $item_output = $item_data_id = '';
+			$a_class = $item_output = $item_data_id = $media_icon = '';
+
+			// Get All custom data
+			$menu_item_data = get_post_meta( $item->ID );
+			$mega_prefix    = 'tie_megamenu_';
 
 			// Define the mega vars
 			if( $depth === 0 ){
@@ -113,24 +117,22 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 					$this->tie_has_children = $args->has_children;
 				}
 
-				$this->tie_megamenu_type          = get_post_meta( $item->ID, 'tie_megamenu_type',          true );
-				$this->tie_megamenu_columns       = get_post_meta( $item->ID, 'tie_megamenu_columns',       true );
-				$this->tie_megamenu_image         = get_post_meta( $item->ID, 'tie_megamenu_image',         true );
-				$this->tie_megamenu_position      = get_post_meta( $item->ID, 'tie_megamenu_position',      true );
-				$this->tie_megamenu_position_y    = get_post_meta( $item->ID, 'tie_megamenu_position_y',    true );
-				$this->tie_megamenu_repeat        = get_post_meta( $item->ID, 'tie_megamenu_repeat',        true );
-				$this->tie_megamenu_min_height    = get_post_meta( $item->ID, 'tie_megamenu_min_height',    true );
-				$this->tie_megamenu_padding_left  = get_post_meta( $item->ID, 'tie_megamenu_padding_left',  true );
-				$this->tie_megamenu_padding_right = get_post_meta( $item->ID, 'tie_megamenu_padding_right', true );
-				$this->tie_megamenu_media_overlay = get_post_meta( $item->ID, 'tie_megamenu_media_overlay', true );
-				$this->tie_megamenu_icon_only     = get_post_meta( $item->ID, 'tie_megamenu_icon_only',     true );
-				$this->tie_megamenu_hide_headings = get_post_meta( $item->ID, 'tie_megamenu_hide_headings', true );
+				// Assign the heigh-level menu only item data
+				$menu_data_array = array( 'columns', 'type', 'image', 'position', 'position_y', 'repeat', 'min_height', 'padding_left', 'padding_right', 'media_overlay', 'icon_only', 'hide_headings' );
 
+				foreach ( $menu_data_array as $meta_item ) {
+					$meta_name = $mega_prefix.$meta_item;
+					$this->$meta_name = ! empty( $menu_item_data[ $meta_name ][0] ) ? $menu_item_data[ $meta_name ][0] : false;
+				}
 			}
 
-			$this->tie_megamenu_tiny_text = get_post_meta( $item->ID, 'tie_megamenu_tiny_text', true );
-			$this->tie_megamenu_tiny_bg   = get_post_meta( $item->ID, 'tie_megamenu_tiny_bg',   true );
-			$this->tie_megamenu_icon      = get_post_meta( $item->ID, 'tie_megamenu_icon',      true );
+			// Assign the general menu only item data
+			$menu_data_array = array( 'tiny_text', 'tiny_bg', 'icon' );
+
+			foreach ( $menu_data_array as $meta_item ) {
+				$meta_name = $mega_prefix.$meta_item;
+				$this->$meta_name = ! empty( $menu_item_data[ $meta_name ][0] ) ? $menu_item_data[ $meta_name ][0] : false;
+			}
 
 			//Menu Item has an icon
 			if( $depth === 0 && ! empty( $this->tie_megamenu_icon ) ){
@@ -144,30 +146,37 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 
 			//Menu Classes
 			if( $depth === 0 && ! empty( $this->tie_megamenu_type ) && $this->tie_megamenu_type != 'disable' ){
+
 				$class_names .= ' mega-menu';
 
-				if( ( $this->tie_megamenu_type == 'sub-posts' || $this->tie_megamenu_type == 'sub-hor-posts' ) &&  $item->object == 'category' ){
-
-					$class_names .= ' mega-cat ';
-
-					if( ! empty( $item->object_id ) ){
-						$item_data_id = " data-id=\"$item->object_id\" ";
-					}
-
-				}elseif( $this->tie_megamenu_type == 'links' ){
+				// Links
+				if( $this->tie_megamenu_type == 'links' ){
 
 					$columns     = ( ! empty( $this->tie_megamenu_columns ) ? $this->tie_megamenu_columns :  2 );
 					$class_names  .= ' mega-links mega-links-'.$columns.'col ';
+				}
 
-				}elseif( $this->tie_megamenu_type == 'recent' &&  $item->object == 'category'  ){
+				// Category
+				elseif( $item->object == 'category' ){
 
-					$class_names .= ' mega-recent-featured ';
-
+					// Category ID
 					if( ! empty( $item->object_id ) ){
 						$item_data_id = " data-id=\"$item->object_id\" ";
 					}
 
+					// Media Icon
+					if( ! empty( $this->tie_megamenu_media_overlay ) ){
+						$media_icon = ' data-icon="true" ';
+					}
+
+					if( $this->tie_megamenu_type == 'sub-posts' || $this->tie_megamenu_type == 'sub-hor-posts' ){
+						$class_names .= ' mega-cat ';
+					}
+					elseif( $this->tie_megamenu_type == 'recent' ){
+						$class_names .= ' mega-recent-featured ';
+					}
 				}
+
 			}
 
 			if( $depth === 1 && $this->tie_megamenu_type == 'links' ){
@@ -191,13 +200,14 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 			$id = apply_filters( 'nav_menu_item_id', 'menu-item-'. $item->ID, $item, $args );
 			$id = $id ? ' id="' . esc_attr( $id ) . '"' : '';
 
-			//$output .= $indent . '<li' . $id . $class_names . $item_data_id .'>';
+			//$output .= $indent . '<li' . $id . $class_names . $item_data_id . $media_icon '>';
 
 			$output .= sprintf( '%s<li%s%s%s%s>',
 				$indent,
 				$id,
 				$class_names,
 				$item_data_id,
+				$media_icon,
 				in_array( 'menu-item-has-children', $item->classes ) ? ' aria-haspopup="true" aria-expanded="false" tabindex="0"' : ''
 			);
 
@@ -259,13 +269,12 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
       $menu_item = apply_filters( 'nav_menu_item_title', $menu_item, $item, $args, $depth );
 
 
-			# -------
+			// -------
 			if( $depth === 0 && ! empty( $this->tie_megamenu_icon_only ) ){
 				$menu_item = ' <span class="screen-reader-text">'. $menu_item .'</span>';
 			}
 
-
-			# Tiny Text
+			// Tiny Text
 			if( $this->tie_megamenu_tiny_text ){
 
 				$label_bg = '';
@@ -278,15 +287,13 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 				$menu_item  .= ' <small class="menu-tiny-label '. $label_class .'" '.$label_bg.'>'. $this->tie_megamenu_tiny_text .'</small>';
 			}
 
-
-
 			$item_output .= $args->link_before . $menu_item . $args->link_after;
 			$item_output .= '</a>';
 			$item_output .= $args->after;
 
 
 		//By TieLabs ===========
-			if( $depth === 0 && ! empty( $this->tie_megamenu_type ) && $this->tie_megamenu_type != 'disable' /* && ! tie_is_mobile() */){
+			if( $depth === 0 && ! empty( $this->tie_megamenu_type ) && $this->tie_megamenu_type != 'disable' /*&& ! tie_is_mobile() */ ){
 
 				$style = '';
 				if ( ! empty( $this->tie_megamenu_image )){
@@ -335,12 +342,13 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 		public function end_el( &$output, $item, $depth = 0, $args = array() ){
 
 		//By TieLabs ===========
-			if( $depth === 0 && ! empty( $this->tie_megamenu_type ) && $this->tie_megamenu_type != 'disable' /* && ! tie_is_mobile() */){
+			if( $depth === 0 && ! empty( $this->tie_megamenu_type ) && $this->tie_megamenu_type != 'disable' /* && ! tie_is_mobile() */ ){
 
 				if( $this->tie_megamenu_type != 'links' ){
+
 					$media_icon = '';
 					if( ! empty( $this->tie_megamenu_media_overlay ) ){
-							$media_icon = ' media-overlay';
+						$media_icon = ' media-overlay';
 					}
 
 					$output .="\n<div class=\"mega-menu-content$media_icon\">\n";
@@ -357,17 +365,14 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 
 					$sub_categories = get_categories( $query_args );
 
-					//Check if the Category doesn't contain any sub categories.
+					// Check if the Category doesn't contain any sub categories.
 					if( count( $sub_categories ) == 0){
-
-						$sub_categories   = array( $item->object_id ) ;
-						$no_sub_categories  = true ;
-
+						$sub_categories    = array( $item->object_id ) ;
+						$no_sub_categories = true ;
 					}
 					else{
 						$sub_categories_exists = ' mega-cat-sub-exists';
 					}
-
 
 					//Horizontal sub categories filter
 					if( $this->tie_megamenu_type == 'sub-hor-posts' || $no_sub_categories ){
@@ -384,13 +389,20 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 
 					if( ! $no_sub_categories ){
 
-						$output .= "<ul class=\"mega-cat-sub-categories$sub_categories_type\">\n";
+						$cat_link = TIELABS_WP_HELPER::get_term_link( (int) $item->object_id, 'category' );
 
-						$output .= "<li><a href=\"#\" class=\"is-active is-loaded mega-sub-cat\" data-id=\"$item->object_id\">". esc_html__( 'All', TIELABS_TEXTDOMAIN ) ."</a></li>\n";
+						// Media Icon
+						$media_icon = '';
+						if( ! empty( $this->tie_megamenu_media_overlay ) ){
+							$media_icon = ' data-icon="true" ';
+						}
+
+						$output .= "<ul class=\"mega-cat-sub-categories$sub_categories_type\">\n";
+						$output .= "<li class=\"mega-all-link\"><a href=\"$cat_link\" class=\"is-active is-loaded mega-sub-cat\" data-id=\"$item->object_id\">". esc_html__( 'All', TIELABS_TEXTDOMAIN ) ."</a></li>\n";
 
 						foreach( $sub_categories as $category ){
-							$cat_link =TIELABS_WP_HELPER::get_term_link( $category->term_id, 'category' );
-							$output  .= "<li><a href=\"$cat_link\" class=\"mega-sub-cat\" data-id=\"$category->term_id\">$category->name</a></li>\n";
+							$cat_link = TIELABS_WP_HELPER::get_term_link( $category->term_id, 'category' );
+							$output  .= "<li><a href=\"$cat_link\" class=\"mega-sub-cat\" $media_icon data-id=\"$category->term_id\">$category->name</a></li>\n";
 						}
 
 						$output .=  "</ul>\n";
@@ -451,21 +463,25 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 	if( ! tie_get_option( 'disable_mega_menu' ) ){
 
 		add_filter( 'wp_edit_nav_menu_walker', 'tie_custom_nav_edit_walker', 10, 2 );
-		function tie_custom_nav_edit_walker( $walker, $menu_id = false ){
-			return 'TIELABS_MEGA_MENU_EDIT_WALKER';
-		}
-
 
 		// Custom icons beside the title
 		add_action( 'wp_nav_menu_item_before_title', 'tie_add_megamenu_icon_preview', 10, 4 );
-		function tie_add_megamenu_icon_preview( $item_id, $item, $depth, $args ){
-			echo "<span class=\"preview-menu-item-icon fa $item->tie_megamenu_icon\"></span>";
-		}
+
+		// The Custom TieLabs menu fields
+		add_action( 'wp_nav_menu_item_custom_fields', 'tie_add_megamenu_fields', 10, 4 );
 	}
 
 
+	function tie_custom_nav_edit_walker( $walker, $menu_id = false ){
+		return 'TIELABS_MEGA_MENU_EDIT_WALKER';
+	}
+
+	// Custom icons beside the title
+	function tie_add_megamenu_icon_preview( $item_id, $item, $depth, $args ){
+		echo "<span class=\"preview-menu-item-icon fa $item->tie_megamenu_icon\"></span>";
+	}
+
 	// The Custom TieLabs menu fields
-	add_action( 'wp_nav_menu_item_custom_fields', 'tie_add_megamenu_fields', 10, 4 );
 	function tie_add_megamenu_fields( $item_id, $item, $depth, $args ){
 
 		$theme_color = tie_get_option( 'global_color', '#000000' );
@@ -494,14 +510,16 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 		</p>
 
 		<div class="tie-mega-menu-type">
+
 			<p class="field-megamenu-icon description description-wide">
 				<label for="edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>">
 					<?php esc_html_e( 'Menu Icon', TIELABS_TEXTDOMAIN ); ?>
 					<input type="hidden" id="edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>" class="widefat code edit-menu-item-megamenu-icon" name="menu-item-tie-megamenu-icon[<?php echo esc_attr( $item_id ) ?>]" value="<?php echo esc_attr( $item->tie_megamenu_icon ) ?>">
-					<div id="preview_edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>" data-target="#edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>" class="button icon-picker fa <?php echo esc_attr( $item->tie_megamenu_icon ) ?>"></div>
+					<div class="icon-picker-wrapper">
+						<div id="preview_edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>" data-target="#edit-menu-item-megamenu-icon-<?php echo esc_attr( $item_id ) ?>" class="button icon-picker fa <?php echo esc_attr( $item->tie_megamenu_icon ) ?>"></div>
+					</div>
 				</label>
 			</p>
-
 
 			<p class="field-megamenu-icon-only description description-wide">
 				<label for="edit-menu-item-megamenu-icon-only-<?php echo esc_attr( $item_id ) ?>">
@@ -649,24 +667,20 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 
 
 	/*
-	 * Adds value of new field to $item object that will be passed to     Walker_Nav_Menu_Edit_Custom
+	 * Adds value of the new fields to $item object that will be passed to Walker_Nav_Menu_Edit_Custom
 	 */
 	add_filter( 'wp_setup_nav_menu_item', 'tie_custom_nav_item' );
-	function tie_custom_nav_item($menu_item){
-		$menu_item->tie_megamenu_tiny_text     = get_post_meta( $menu_item->ID, 'tie_megamenu_tiny_text',     true );
-		$menu_item->tie_megamenu_tiny_bg       = get_post_meta( $menu_item->ID, 'tie_megamenu_tiny_bg',       true );
-		$menu_item->tie_megamenu_type          = get_post_meta( $menu_item->ID, 'tie_megamenu_type',          true );
-		$menu_item->tie_megamenu_icon          = get_post_meta( $menu_item->ID, 'tie_megamenu_icon',          true );
-		$menu_item->tie_megamenu_image         = get_post_meta( $menu_item->ID, 'tie_megamenu_image',         true );
-		$menu_item->tie_megamenu_position      = get_post_meta( $menu_item->ID, 'tie_megamenu_position',      true );
-		$menu_item->tie_megamenu_position_y    = get_post_meta( $menu_item->ID, 'tie_megamenu_position_y',    true );
-		$menu_item->tie_megamenu_repeat        = get_post_meta( $menu_item->ID, 'tie_megamenu_repeat',        true );
-		$menu_item->tie_megamenu_min_height    = get_post_meta( $menu_item->ID, 'tie_megamenu_min_height',    true );
-		$menu_item->tie_megamenu_padding_left  = get_post_meta( $menu_item->ID, 'tie_megamenu_padding_left',  true );
-		$menu_item->tie_megamenu_padding_right = get_post_meta( $menu_item->ID, 'tie_megamenu_padding_right', true );
-		$menu_item->tie_megamenu_media_overlay = get_post_meta( $menu_item->ID, 'tie_megamenu_media_overlay', true );
-		$menu_item->tie_megamenu_icon_only     = get_post_meta( $menu_item->ID, 'tie_megamenu_icon_only',     true );
-		$menu_item->tie_megamenu_hide_headings = get_post_meta( $menu_item->ID, 'tie_megamenu_hide_headings', true );
+	function tie_custom_nav_item( $menu_item ){
+
+		$menu_item_data  = get_post_meta( $menu_item->ID );
+		$menu_data_array = array( 'tiny_text', 'tiny_bg', 'type', 'icon', 'image', 'position', 'position_y', 'repeat', 'min_height', 'padding_left', 'padding_right', 'media_overlay', 'icon_only', 'hide_headings' );
+		$mega_prefix     = 'tie_megamenu_';
+
+		foreach ( $menu_data_array as $meta_item ) {
+			$meta_name = $mega_prefix.$meta_item;
+			$menu_item->$meta_name = ! empty( $menu_item_data[ $meta_name ][0] ) ? $menu_item_data[ $meta_name ][0] : false;
+		}
+
 		return $menu_item;
 	}
 
@@ -923,7 +937,7 @@ if( ! class_exists( 'TIELABS_MEGA_MENU' )){
 # Modify the menu classes
 /*-----------------------------------------------------------------------------------*/
 add_filter( 'nav_menu_css_class', 'tie_special_current_nav_class', 10, 4 );
-function tie_special_current_nav_class( $classes, $item, $args, $depth ) {
+function tie_special_current_nav_class( $classes, $item, $args, $depth = 0 ) {
 
 	// Return the default Classes if we are not in the top level or the mega menu is disabled
 	if ( $depth != 0 || tie_get_option( 'disable_mega_menu' )) {
@@ -942,7 +956,7 @@ function tie_special_current_nav_class( $classes, $item, $args, $depth ) {
 	}
 
 	// Add custom class for the current menu item to use it in the CSS files
-	$current_calsses = array(
+	$current_classes = array(
 		'current-menu-item',
 		'current-menu-parent',
 		'current-menu-ancestor',
@@ -953,11 +967,15 @@ function tie_special_current_nav_class( $classes, $item, $args, $depth ) {
 		'current-category-ancestor',
 	);
 
-	foreach ( $classes as $class ){
-		if( in_array( $class, $current_calsses )){
+  $current_classes = apply_filters( 'TieLabs/Mega_Menu/current_classes', $current_classes, $classes, $item, $args, $depth );
 
-			$classes[] = 'tie-current-menu';
-			break;
+  if( ! empty( $current_classes ) && is_array( $current_classes ) ){
+		foreach ( $classes as $class ){
+			if( in_array( $class, $current_classes )){
+
+				$classes[] = 'tie-current-menu';
+				break;
+			}
 		}
 	}
 

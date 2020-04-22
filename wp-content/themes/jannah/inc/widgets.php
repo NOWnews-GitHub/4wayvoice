@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Register Widgets
  */
@@ -14,10 +13,10 @@ function tie_widgets_init(){
 	$widget_icon = tie_get_option( 'widgets_icon' ) ? '<span class="widget-title-icon fa"></span>' : '';
 
 	// Widget HTML markup
-	$before_widget = '<div id="%1$s" class="container-wrapper widget %2$s">';
-	$after_widget  = '<div class="clearfix"></div></div><!-- .widget /-->';
-	$before_title  = '<div '. tie_box_class( 'widget-title', false ) .'><h4>';
-	$after_title   = $widget_icon .'</h4></div>';
+	$before_widget = apply_filters( 'TieLabs/Widgets/before_widget', '<div id="%1$s" class="container-wrapper widget %2$s">' );
+	$after_widget  = apply_filters( 'TieLabs/Widgets/after_widget',  '<div class="clearfix"></div></div><!-- .widget /-->' );
+	$before_title  = apply_filters( 'TieLabs/Widgets/before_title',  '<div '. tie_box_class( 'widget-title', false ) .'><div class="the-subtitle">' );
+	$after_title   = apply_filters( 'TieLabs/Widgets/after_title',   $widget_icon .'</div></div>' );
 
 	// Default Sidebar
 	register_sidebar( array(
@@ -169,11 +168,10 @@ function tie_widgets_init(){
 /**
  * Import the Default Widgets
  */
-$theme_widgets = array( 'ads', 'tabs', 'posts', 'login', 'about', 'google', 'flickr', 'author', 'social', 'slider', 'weather', 'youtube', 'twitter', 'facebook', 'text-html', 'instagram', 'newsletter', 'soundcloud', 'categories', 'comments-avatar', 'social-counters' );
+$theme_widgets = array( 'ads', 'tabs', 'posts', 'login', 'about', 'flickr', 'author', 'social', 'slider', 'weather', 'youtube', 'twitter', 'facebook', 'text-html', 'instagram', 'newsletter', 'soundcloud', 'categories', 'comments-avatar', 'social-counters' );
 $theme_widgets = apply_filters( 'TieLabs/Widgets/default_widgets', $theme_widgets );
 
 if( ! empty( $theme_widgets ) && is_array( $theme_widgets ) ){
-
 	foreach ( $theme_widgets as $widget ){
 		locate_template( "framework/widgets/$widget.php", true, true );
 	}

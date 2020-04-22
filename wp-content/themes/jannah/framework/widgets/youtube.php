@@ -26,7 +26,7 @@ if( ! class_exists( 'TIE_YOUTUBE_WIDGET' )){
 				echo ( $args['before_title'] . $instance['title'] . $args['after_title'] );
 			}
 
-			//Youtube Widget
+			//YouTube Widget
 			if( ! empty( $instance['page_url'] ) ){
 
 				wp_enqueue_script( 'tie-google-platform-js', '//apis.google.com/js/platform.js' );
@@ -41,7 +41,7 @@ if( ! class_exists( 'TIE_YOUTUBE_WIDGET' )){
 
 
 				echo '
-					<div class="youtube-box">
+					<div class="youtube-box tie-ignore-fitvid">
 						<div class="g-ytsubscribe" data-'.$source.'="' .$instance['page_url']. '" data-layout="full" data-count="default"></div>
 					</div>
 				';

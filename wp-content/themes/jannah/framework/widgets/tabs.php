@@ -142,9 +142,9 @@ if( ! class_exists( 'TIE_WIDGET_TABS' )){
 			$instance['posts_number']     = $new_instance['posts_number'];
 			$instance['posts_order']      = $new_instance['posts_order'];
 			$instance['tabs_order']       = $new_instance['tabs_order'];
-			$instance['disable_popular']  = $new_instance['disable_popular'];
-			$instance['disable_recent']   = $new_instance['disable_recent'];
-			$instance['disable_comments'] = $new_instance['disable_comments'];
+			$instance['disable_popular']  = ! empty( $new_instance['disable_popular'] )  ? 'true' : false;
+			$instance['disable_recent']   = ! empty( $new_instance['disable_recent'] )   ? 'true' : false;
+			$instance['disable_comments'] = ! empty( $new_instance['disable_comments'] ) ? 'true' : false;
 			return $instance;
 		}
 

@@ -8,13 +8,13 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-# Set custom class for the post without thumb
+// Set custom class for the post without thumb
 $no_thumb = ! has_post_thumbnail() ? 'no-post-thumb' : '';
 
 ?>
@@ -24,28 +24,25 @@ $no_thumb = ! has_post_thumbnail() ? 'no-post-thumb' : '';
 	<div class="block-post-overlay">
 		<?php
 
-			# Get the post thumbnail
+			// Get the post thumbnail
 			if ( has_post_thumbnail() ){
 
-				$image_size = ! empty( $block['is_full'] ) ? TIELABS_THEME_SLUG.'-image-full' : TIELABS_THEME_SLUG.'-image-post';
-
-				tie_post_thumbnail( $image_size, 'large' );
+				$image_size = ! empty( $block['is_full'] ) ? 'full' : TIELABS_THEME_SLUG.'-image-post';
+				tie_post_thumbnail( $image_size, 'large', false, true, $block['media_overlay'] );
 			}
-
 		?>
 
 		<div class="block-title-overlay">
 
 			<?php
 
-				# Get the Post Meta info
+				// Get the Post Meta info
 				if( ! empty( $block['post_meta'] )){
 					tie_the_post_meta();
 				}
-
 			?>
 
-			<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+			<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 		</div>
 	</div>
 
@@ -56,11 +53,8 @@ $no_thumb = ! has_post_thumbnail() ? 'no-post-thumb' : '';
 			<?php
 		}
 
-		if( ! empty( $block['read_more'] )){ ?>
-			<a class="more-link button" href="<?php the_permalink() ?>"><?php esc_html_e( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) ?></a>
-			<?php
+		if( ! empty( $block['read_more'] )){
+			tie_the_more_button();
 		}
-
 	?>
-
 </li>

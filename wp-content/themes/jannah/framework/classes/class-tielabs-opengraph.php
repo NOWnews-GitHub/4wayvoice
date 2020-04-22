@@ -28,7 +28,7 @@ if( ! class_exists( 'TIELABS_OPENGRAPH' )){
 		function insert_opengraph(){
 
 			// Check if single and og is active and there is no OG plugin is active
-			if( self::is_active() || ! is_singular() || ! tie_get_option( 'post_og_cards' )){
+			if( self::is_active() || ! is_singular() || ! tie_get_option( 'post_og_cards' ) ){
 				return;
 			}
 
@@ -45,22 +45,22 @@ if( ! class_exists( 'TIELABS_OPENGRAPH' )){
 			}
 
 			echo '
-				<meta property="og:title" content="'. $og_title .'" />
-				<meta property="og:type" content="'. $og_type .'" />
-				<meta property="og:description" content="'. esc_attr( wp_html_excerpt( $og_description, 100 ) ) .'" />
-				<meta property="og:url" content="'. get_permalink() .'" />
-				<meta property="og:site_name" content="'. get_bloginfo( 'name' ) .'" />
-			';
+<meta property="og:title" content="'. $og_title .'" />
+<meta property="og:type" content="'. $og_type .'" />
+<meta property="og:description" content="'. esc_attr( wp_html_excerpt( $og_description, 100 ) ) .'" />
+<meta property="og:url" content="'. get_permalink() .'" />
+<meta property="og:site_name" content="'. get_bloginfo( 'name' ) .'" />
+';
 
 			if ( has_post_thumbnail() || tie_get_option( 'post_og_cards_image' ) ){
 
 				$image = has_post_thumbnail() ? tie_thumb_src( TIELABS_THEME_SLUG.'-image-post' ) : tie_get_option( 'post_og_cards_image' );
-				echo '<meta property="og:image" content="'. esc_url( $image ) .'" />'."\n";
+echo '<meta property="og:image" content="'. esc_url( $image ) .'" />'."\n";
 			}
 		}
 
 
-		/*
+		/**
 		 * Add the opengraph namespace to the <html> tag
 		 */
 		function opengraph_namespace( $input ){
@@ -74,7 +74,7 @@ if( ! class_exists( 'TIELABS_OPENGRAPH' )){
 		}
 
 
-		/*
+		/**
 		 * Check if an open graph plugin active
 		 */
 		public static function is_active(){
@@ -89,11 +89,16 @@ if( ! class_exists( 'TIELABS_OPENGRAPH' )){
 				}
 			}
 
+			// Open Graph and Twitter Card Tags
+			elseif( class_exists( 'Webdados_FB' ) ){
+				$is_active = true;
+			}
+
 			return apply_filters( 'TieLabs/is_opengraph_active', $is_active );
 		}
 
 	}
 
-	// Single instance.
+	// Single instance
 	$TIELABS_OPENGRAPH = new TIELABS_OPENGRAPH();
 }

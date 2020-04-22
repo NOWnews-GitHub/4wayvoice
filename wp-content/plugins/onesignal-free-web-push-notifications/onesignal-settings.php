@@ -48,7 +48,6 @@ class OneSignal {
                   'notifyButton_size' => 'medium',
                   'notifyButton_theme' => 'default',
                   'notifyButton_enable' => 'CALCULATE_SPECIAL_VALUE',
-                  'notifyButton_prenotify' => true,
                   'notifyButton_customize_enable' => 'CALCULATE_SPECIAL_VALUE',
                   'notifyButton_customize_colors_enable' => false,
                   'notifyButton_customize_offset_enable' => false,
@@ -67,7 +66,6 @@ class OneSignal {
                   'notifyButton_offset_right' => '',
                   'notifyButton_showcredit' => true,
                   'notifyButton_showAfterSubscribed' => true,
-                  'notifyButton_message_prenotify' => '',
                   'notifyButton_tip_state_unsubscribed' => '',
                   'notifyButton_tip_state_subscribed' => '',
                   'notifyButton_tip_state_blocked' => '',
@@ -89,10 +87,6 @@ class OneSignal {
                   'use_custom_sdk_init' => false,
                   'show_notification_send_status_message' => true,
                   'use_http_permission_request' => 'CALCULATE_SPECIAL_VALUE',
-                  'http_permission_request_modal_title' => '',
-                  'http_permission_request_modal_message' => '',
-                  'http_permission_request_modal_button_text' => '',
-                  'use_slidedown_permission_message_for_https' => false,
                   'persist_notifications' => 'CALCULATE_SPECIAL_VALUE'
                   );
 
@@ -108,12 +102,10 @@ class OneSignal {
     $is_new_user = false;
 
     // If not set or empty, load a fresh empty array
-    if (!isset($onesignal_wp_settings)) {
-      $onesignal_wp_settings = get_option("OneSignalWPSetting");
-      if (empty( $onesignal_wp_settings )) {
-         $is_new_user = true;
-         $onesignal_wp_settings = array();
-      }
+    $onesignal_wp_settings = get_option("OneSignalWPSetting");
+    if (empty( $onesignal_wp_settings )) {
+        $is_new_user = true;
+        $onesignal_wp_settings = array();
     }
 
     // Assign defaults if the key doesn't exist in $onesignal_wp_settings
@@ -181,7 +173,6 @@ class OneSignal {
         $onesignal_wp_settings['notifyButton_customize_enable'] = true;
       } else {
         $text_customize_settings = array(
-          'notifyButton_message_prenotify',
           'notifyButton_tip_state_unsubscribed',
           'notifyButton_tip_state_subscribed',
           'notifyButton_tip_state_blocked',
@@ -250,7 +241,7 @@ class OneSignal {
       } else {
         // This was the old key name for persist_notifications
         if (array_key_exists('chrome_auto_dismiss_notifications', $onesignal_wp_settings)) {
-          if ($onesignal_wp_settings['chrome_auto_dismiss_notifications'] == "1") {
+          if ($onesignal_wp_settings['chrome_auto_dismiss_notifications'] === "1") {
             // The user wants notifications to be dismissed
             $onesignal_wp_settings['persist_notifications'] = 'platform-default';
           } else {
@@ -263,12 +254,15 @@ class OneSignal {
       }
     }
 
-    return $onesignal_wp_settings;
+    return apply_filters( 'onesignal_get_settings', $onesignal_wp_settings );
   }
 
   public static function save_onesignal_settings($settings) {
     $onesignal_wp_settings = $settings;
     update_option("OneSignalWPSetting", $onesignal_wp_settings);
   }
+
+  public static function maskedRestApiKey($rest_api_key) {
+    return str_repeat('*', 44) . substr($rest_api_key, -4);
+  }
 }
-?>

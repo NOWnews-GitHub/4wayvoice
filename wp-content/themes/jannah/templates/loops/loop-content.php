@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 	?>
 
-	<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+	<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 	<div class="entry"><?php the_content( esc_html__( 'Read More &raquo;', TIELABS_TEXTDOMAIN ) ) ?></div>
 
 </li>

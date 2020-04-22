@@ -21,19 +21,19 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 			/** This filter is documented in wp-includes/widgets/class-wp-widget-pages.php */
 			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'], $instance, $this->id_base );
 
-			# Query arguments
-			$no_of_posts   = isset( $instance['no_of_posts'] )   ? $instance['no_of_posts'] : 5;
-			$offset        = isset( $instance['offset'] )        ? $instance['offset'] : '';
-			$posts_order   = isset( $instance['posts_order'] )   ? $instance['posts_order'] : 'latest';
-			$class         = isset( $instance['media_overlay'] ) ? 'media-overlay ' : '';
-			$cats_id       = empty( $instance['cats_id'] )       ? '' : explode ( ',', $instance['cats_id'] );
+			// Query arguments
+			$no_of_posts   = ! empty( $instance['no_of_posts'] )   ? $instance['no_of_posts'] : 5;
+			$offset        = ! empty( $instance['offset'] )        ? $instance['offset']      : '';
+			$posts_order   = ! empty( $instance['posts_order'] )   ? $instance['posts_order'] : 'latest';
+			$class         = ! empty( $instance['media_overlay'] ) ? 'media-overlay '         : '';
+			$cats_id       = ! empty( $instance['cats_id'] )       ? explode ( ',', $instance['cats_id'] ) : '';
 			$before_posts  = '<ul class="posts-list-items">';
 			$after_posts   = '</ul>';
 
 			$style_args = array();
-			$style_args['exclude_current'] = isset( $instance['exclude_current'] ) ? true : false;
+			$style_args['exclude_current'] = ! empty( $instance['exclude_current'] ) ? true : false;
 
-			# Return If this is a related posts and we are not in the post single page
+			// Return If this is a related posts and we are not in the post single page
 			if ( ! is_single() && strpos( $posts_order, 'related' ) !== false ){
 				return;
 			}
@@ -45,7 +45,7 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 				'id'     => $cats_id,
 			);
 
-			# Style
+			// Style
 			$layouts = array(
 				1  => '',
 				2  => 'timeline-widget',
@@ -91,8 +91,13 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 				}
 			}
 
+			// Media Icon
+			if( isset( $instance['media_overlay'] ) ){
+				$style_args['media_icon'] = true;
+			}
 
-			# Print the widget
+
+			// Print the widget
 			echo ( $args['before_widget'] );
 
 			if ( ! empty($instance['title']) ){
@@ -115,13 +120,14 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 		 * Handles updating settings for widget instance.
 		 */
 		public function update( $new_instance, $old_instance ){
+
 			$instance                    = $old_instance;
 			$instance['title']           = sanitize_text_field( $new_instance['title'] );
 			$instance['no_of_posts']     = $new_instance['no_of_posts'];
 			$instance['posts_order']     = $new_instance['posts_order'];
 			$instance['offset']          = $new_instance['offset'];
-			$instance['media_overlay']   = $new_instance['media_overlay'];
-			$instance['exclude_current'] = $new_instance['exclude_current'];
+			$instance['media_overlay']   = ! empty( $new_instance['media_overlay'] )   ? 'true' : false;
+			$instance['exclude_current'] = ! empty( $new_instance['exclude_current'] ) ? 'true' : false;
 			$instance['style']           = $new_instance['style'];
 
 			if( ! empty( $new_instance['cats_id'] ) && is_array( $new_instance['cats_id'] ) ){
@@ -138,26 +144,27 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 			$defaults = array( 'title' => esc_html__('Recent Posts', TIELABS_TEXTDOMAIN) , 'no_of_posts' => '5', 'posts_order' => 'latest' );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title           = isset( $instance['title'] )           ? $instance['title']       : '';
-			$no_of_posts     = isset( $instance['no_of_posts'] )     ? $instance['no_of_posts'] : 5;
-			$offset          = isset( $instance['offset'] )          ? $instance['offset']      : '';
-			$posts_order     = isset( $instance['posts_order'] )     ? $instance['posts_order'] : 'latest';
-			$style           = isset( $instance['style'] )           ? $instance['style'] : 1;
-			$media_overlay   = isset( $instance['media_overlay'] )   ? 'true' : '';
-			$exclude_current = isset( $instance['exclude_current'] ) ? 'true' : '';
+			$title           = ! empty( $instance['title'] )           ? $instance['title']       : '';
+			$no_of_posts     = ! empty( $instance['no_of_posts'] )     ? $instance['no_of_posts'] : 5;
+			$offset          = ! empty( $instance['offset'] )          ? $instance['offset']      : '';
+			$posts_order     = ! empty( $instance['posts_order'] )     ? $instance['posts_order'] : 'latest';
+			$style           = ! empty( $instance['style'] )           ? $instance['style'] : 1;
+			$media_overlay   = ! empty( $instance['media_overlay'] )   ? 'true' : '';
+			$exclude_current = ! empty( $instance['exclude_current'] ) ? 'true' : '';
 			$cats_id         = array();
 
 			if( ! empty( $instance['cats_id'] )){
 				$cats_id = explode ( ',', $instance['cats_id'] );
 			}
 
-			# Post Order : Default
+			// Post Order : Default
 			$post_order = array(
 				'standard' => array(
 					'latest'   => esc_html__( 'Recent Posts',         TIELABS_TEXTDOMAIN ),
 					'rand'     => esc_html__( 'Random Posts',         TIELABS_TEXTDOMAIN ),
 					'modified' => esc_html__( 'Last Modified Posts',  TIELABS_TEXTDOMAIN ),
 					'popular'  => esc_html__( 'Most Commented posts', TIELABS_TEXTDOMAIN ),
+					'title'    => esc_html__( 'Alphabetically',       TIELABS_TEXTDOMAIN ),
 				)
 			);
 
@@ -166,11 +173,11 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 			}
 
 
-			# JetPack
+			// JetPack
 			$post_order['jetpack']['jetpack-7']  = esc_html__( 'Jetpack - Most Viewed for 7 days',  TIELABS_TEXTDOMAIN );
 			$post_order['jetpack']['jetpack-30'] = esc_html__( 'Jetpack - Most Viewed for 30 days', TIELABS_TEXTDOMAIN );
 
-			# Related Posts options
+			// Related Posts options
 			$post_order['related']['related-cat']    = esc_html__( 'Related Posts by Categories', TIELABS_TEXTDOMAIN );
 			$post_order['related']['related-tag']    = esc_html__( 'Related Posts by Tags',       TIELABS_TEXTDOMAIN );
 			$post_order['related']['related-author'] = esc_html__( 'Related Posts by Author',     TIELABS_TEXTDOMAIN );
@@ -178,7 +185,7 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 
 			$post_order = apply_filters( 'TieLabs/Widget/Posts/post_order_args' ,$post_order );
 
-			# Style the Custom options
+			// Style the Custom options
 			$style_visible   = 'style="display:block"';
 			$jetpack_options = $related_options = $non_custom_options = '';
 
@@ -192,7 +199,7 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 				$non_custom_options = $style_visible;
 			}
 
-			# Get the Categories List
+			// Get the Categories List
 			$categories = TIELABS_ADMIN_HELPER::get_categories();
 
 			?>
@@ -270,15 +277,13 @@ if( ! class_exists( 'TIE_POSTS_LIST' )){
 				<label for="<?php echo esc_attr( $this->get_field_id( 'exclude_current' ) ); ?>"><?php esc_html_e( 'Exclude Current Post in the single post page.', TIELABS_TEXTDOMAIN) ?></label>
 			</p>
 
+			<label><?php esc_html_e( 'Style', TIELABS_TEXTDOMAIN) ?></label>
+
 			<div class="tie-styles-list-widget">
 				<p>
-					<label><?php esc_html_e( 'Style', TIELABS_TEXTDOMAIN) ?></label>
-
-					<br class="clear">
-
 					<?php
 						for ( $i=1; $i < 9; $i++ ){ ?>
-							<label>
+							<label class="tie-widget-options">
 								<input name="<?php echo esc_attr( $this->get_field_name( 'style' ) ); ?>" type="radio" value="<?php echo esc_attr( $i ) ?>" <?php echo checked( $style, $i ) ?>> <img src="<?php echo TIELABS_TEMPLATE_URL .'/framework/admin/assets/images/widgets/posts-'.$i.'.png'; ?>" />
 							</label>
 							<?php

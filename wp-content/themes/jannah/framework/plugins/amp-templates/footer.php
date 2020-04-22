@@ -1,5 +1,13 @@
 <?php
 
+	// Above Footer Ad
+	if( tie_get_option( 'amp_ad_above_footer' ) ){ ?>
+		<div class="amp-custom-ad amp-above-footer-ad amp-ad">
+			<?php echo tie_get_option( 'amp_ad_above_footer' ); ?>
+		</div>
+	<?php
+	}
+
 	// Back to top button
 	if( tie_get_option( 'amp_back_to_top' ) ){ ?>
 		<section class="top">

@@ -13,189 +13,59 @@
 */
 
 
-/**
- * Table of Contents:
- *
- * 1.0  - Reset
- * 2.0  - Basic Structure
- * 3.0  - General Compontents
- * 4.0  - Layouts
- * 5.0  - Headers
- *   5.1  - Top Bar
- *   5.2  - Breaking News
- *   5.3  - Main Menu
- *   5.4  - Mobile Menu
- * 6.0  - Magazine Boxes
- * 7.0  - Post Content
- * 8.0  - Shortcodes
- * 9.0  - Sidebars
- * 10.0 - Page Templates
- * 11.0 - Sliders
- * 12.0 - Side Aside
- * 13.0 - Footer
- * 14.0 - Dark Skin
- * 15.0 - Third Party Components
- * 16.0 - Print
- * ----------------------------------------------------------------------------
- */
-
-// MIXINS & GLOBAL VARIALS ALL OVER THE THEME & CSS3 MIXINS--------------------
+// MIXINS & GLOBAL VARIALS ALL OVER THE THEME & CSS3 MIXINS
 @import "utils/mixins";
 @import "utils/variables";
 
-
-/**
- * normalize.css
- * -----------------------------------------------------------------------------
- */
-@import "vendors/normalize";
-
-
-/**
- * Basics
- * -----------------------------------------------------------------------------
- */
-@import "base/base";
-
-
-/**
- * General Compontents
- * -----------------------------------------------------------------------------
- */
-@import "base/general";
-
-
-/**
- * Layout :: Basic Layouts
- * -----------------------------------------------------------------------------
- */
-@import "layout/layout";
-
-
-/**
- * Layout :: Magaizne Layout 2
- * -----------------------------------------------------------------------------
- */
+/** Magaizne Layout 2 */
 @import "layout/magazine2";
+// ----------------------------------------------------------------------------
 
+/** Header Compontents Sub Menus */
+@import "header/_header-comp-menus";
+@import "header/_mega_menus.scss";
+// ----------------------------------------------------------------------------
 
-/**
- * Headers
- * -----------------------------------------------------------------------------
- */
-@import "header/header";
+/** General Compontents */
+@import "base/general";
+// ----------------------------------------------------------------------------
 
-/* Header :: Top Bar ----------------------------------------------------------*/
-@import "header/top-nav";
-
-/* Header :: Breaking News ----------------------------------------------------*/
-@import "header/breaking-news";
-
-/** Header :: Main Menu -------------------------------------------------------*/
-@import "header/main-nav";
-
-/** Header :: Mobile Menu -----------------------------------------------------*/
+/** Header :: Mobile Menu */
 @import "header/mobile-nav";
+// ----------------------------------------------------------------------------
 
-
-/**
- * Block Heads
- * -----------------------------------------------------------------------------
- */
+/** Block Heads */
 @import "components/block-heads";
+// ----------------------------------------------------------------------------
 
-/**
- * Magazine Boxes
- * -----------------------------------------------------------------------------
- */
+/** Magazine Boxes */
 @import "components/magazine-boxes";
+// ----------------------------------------------------------------------------
 
+// /** Sidebars */
+//@import "components/widgets";
+// ----------------------------------------------------------------------------
 
-/**
- * Post Entry Content
- * -----------------------------------------------------------------------------
- */
-@import "components/post-content";
-
-
-/**
- * Gutenberg
- * -----------------------------------------------------------------------------
- */
-@import "components/gutenberg";
-
-
-/**
- * Shortcodes
- * -----------------------------------------------------------------------------
- */
-@import "components/shortcodes";
-
-
-/**
- * Sidebar
- * -----------------------------------------------------------------------------
- */
-@import "components/widgets";
-
-
-/**
- * Tabs (Mag box, Widget, Shortcodes, Woocommerce product tabs) & in Mag2, Dark-skin
- * -----------------------------------------------------------------------------
- */
+/** Tabs (Mag box, Widget, Shortcodes, Woocommerce product tabs) & in Mag2, Dark-skin */
 @import "components/tabs";
+// ----------------------------------------------------------------------------
 
-
-/**
- * Page Templates
- * -----------------------------------------------------------------------------
- */
+/** Page Templates */
 @import "components/page-templates";
+// ----------------------------------------------------------------------------
 
+/** Sliders */
+@import "components/sliders";
+// ----------------------------------------------------------------------------
 
-/**
- * Sliders
- * -----------------------------------------------------------------------------
- */
- @import "components/sliders";
-
-
-/**
- * Side Aside (Secondary Sidebar) (Hidden Sidebar)
- * -----------------------------------------------------------------------------
- */
+/** Side Aside (Secondary Sidebar) (Hidden Sidebar) */
 @import "components/side-aside";
+// ----------------------------------------------------------------------------
 
-
-/**
- * Footer
- * -----------------------------------------------------------------------------
- */
+/** Footer */
 @import "components/footer";
+// ----------------------------------------------------------------------------
 
-
-/**
- * Dark Skin
- * -----------------------------------------------------------------------------
- */
+/** Dark Skin */
 @import "components/dark-skin";
-
-
-/**
- * Third Party Components :: FontAwesome - TieFont - Custom Scroll
- * -----------------------------------------------------------------------------
- */
-@import "vendors/third-party-components";
-
-
-/**
- * Print
- * -----------------------------------------------------------------------------
- */
-@import "components/print";
-
-
-
-body {
-  visibility: visible!important;
-}
+// ----------------------------------------------------------------------------

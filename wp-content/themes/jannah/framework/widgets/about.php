@@ -27,22 +27,22 @@ if( ! class_exists( 'TIE_ABOUT_WIDGET' )){
 
 				$image_style = ' style="';
 
-				# Margin top
+				// Margin top
 				if( ! empty( $instance['margin_top'] )){
 					$image_style .= 'margin-top: ' .str_replace( 'px', '', $instance['margin_top'] ). 'px; ';
 				}
 
-				# Margin bottom
+				// Margin bottom
 				if( ! empty( $instance['margin_bottom'] )){
 					$image_style .= 'margin-bottom: ' .str_replace( 'px', '', $instance['margin_bottom'] ). 'px;';
 				}
 
-				# Width
+				// Width
 				if( ! empty( $instance['width'] )){
 					$image_style .= 'width: ' .str_replace( 'px', '', $instance['width'] ). 'px; ';
 				}
 
-				# Height
+				// Height
 				if( ! empty( $instance['height'] )){
 					$image_style .= 'height: ' .str_replace( 'px', '', $instance['height'] ). 'px;';
 				}
@@ -50,15 +50,17 @@ if( ! class_exists( 'TIE_ABOUT_WIDGET' )){
 				$image_style .= '" ';
 			}
 
-			# Image
+			// Image
 			$img = '';
 			$img_class = 'about-author-img';
 
 			if( ! empty( $instance['img'] ) ){
 
+				// WPML
+				$instance['img'] = apply_filters( 'wpml_translate_single_string', $instance['img'], TIELABS_THEME_SLUG, 'widget_img_'.$this->id );
+
 				if( tie_get_option( 'lazy_load' ) ){
-					$org = TIELABS_TEMPLATE_URL.'/assets/images/tie-empty-wide.png';
-					$src = 'src="'. $org .'" data-src="'. $instance['img'] .'"';
+					$src = 'src="'. tie_lazyload_placeholder('wide') .'" data-src="'. $instance['img'] .'"';
 					$img_class .= ' lazy-img';
 				}
 				else{
@@ -75,7 +77,7 @@ if( ! class_exists( 'TIE_ABOUT_WIDGET' )){
 			$custom_class .= ! empty( $instance['center'] ) ? ' is-centered' : '';
 
 
-			# WPML
+			// WPML
 			$text_code = apply_filters( 'wpml_translate_single_string', $text_code, TIELABS_THEME_SLUG, 'widget_content_'.$this->id );
 
 
@@ -119,9 +121,9 @@ if( ! class_exists( 'TIE_ABOUT_WIDGET' )){
 			$instance['title']         = sanitize_text_field( $new_instance['title'] );
 			$instance['img']           = $new_instance['img'];
 			$instance['text_code']     = $new_instance['text_code'];
-			$instance['circle']        = $new_instance['circle'];
-			$instance['center']        = $new_instance['center'];
-			$instance['social_icons']  = $new_instance['social_icons'];
+			$instance['circle']        = ! empty( $new_instance['circle'] ) ? 'true' : 0;
+			$instance['center']        = ! empty( $new_instance['center'] ) ? 'true' : 0;
+			$instance['social_icons']  = ! empty( $new_instance['social_icons'] ) ? 'true' : 0;
 			$instance['margin_top']    = $new_instance['margin_top'];
 			$instance['margin_bottom'] = $new_instance['margin_bottom'];
 			$instance['width']         = $new_instance['width'];
@@ -140,16 +142,16 @@ if( ! class_exists( 'TIE_ABOUT_WIDGET' )){
 			$defaults = array( 'title' =>esc_html__( 'About', TIELABS_TEXTDOMAIN) );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title         = isset( $instance['title'] )         ? $instance['title'] : '';
-			$img           = isset( $instance['img'] )           ? $instance['img'] : '';
-			$text_code     = isset( $instance['text_code'] )     ? $instance['text_code'] : '';
-			$circle        = isset( $instance['circle'] )        ? $instance['circle'] : '';
-			$center        = isset( $instance['center'] )        ? $instance['center'] : '';
-			$social_icons  = isset( $instance['social_icons'] )  ? $instance['social_icons'] : '';
-			$margin_top    = isset( $instance['margin_top'] )    ? $instance['margin_top'] : '';
+			$title         = isset( $instance['title'] )         ? $instance['title']         : '';
+			$img           = isset( $instance['img'] )           ? $instance['img']           : '';
+			$text_code     = isset( $instance['text_code'] )     ? $instance['text_code']     : '';
+			$circle        = isset( $instance['circle'] )        ? $instance['circle']        : '';
+			$center        = isset( $instance['center'] )        ? $instance['center']        : '';
+			$social_icons  = isset( $instance['social_icons'] )  ? $instance['social_icons']  : '';
+			$margin_top    = isset( $instance['margin_top'] )    ? $instance['margin_top']    : '';
 			$margin_bottom = isset( $instance['margin_bottom'] ) ? $instance['margin_bottom'] : '';
-			$width         = isset( $instance['width'] )         ? $instance['width'] : '';
-			$height        = isset( $instance['height'] )        ? $instance['height'] : '';
+			$width         = isset( $instance['width'] )         ? $instance['width']         : '';
+			$height        = isset( $instance['height'] )        ? $instance['height']        : '';
 
 			?>
 

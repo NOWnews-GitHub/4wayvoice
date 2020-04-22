@@ -28,14 +28,16 @@ if( ! class_exists( 'TIE_INSTAGRAM_WIDGET' )){
 
 			// Instagram feed
 			$media_link   = ! empty( $instance['media_link'] )   ? $instance['media_link']   : 'file';
-			$source_id    = ! empty( $instance['source_id'] )    ? $instance['source_id']    : '';
+			$username     = ! empty( $instance['username'] )     ? $instance['username']     : '';
+			$userid       = ! empty( $instance['userid'] )       ? $instance['userid']       : '';
 			$media_number = ! empty( $instance['media_number'] ) ? $instance['media_number'] : 9;
 			$button_text  = ! empty( $instance['button_text'] )  ? $instance['button_text']  : '';
 			$button_url   = ! empty( $instance['button_url'] )   ? $instance['button_url']   : '';
 			$user_data    = ! empty( $instance['user_data'] )    ? true : false;
 
 			$atts = array(
-				'username'  => $source_id,
+				'username'  => $username,
+				'userid'    => $userid,
 				'number'    => $media_number,
 				'link'      => $media_link,
 				'user_data' => $user_data,
@@ -57,13 +59,13 @@ if( ! class_exists( 'TIE_INSTAGRAM_WIDGET' )){
 		public function update( $new_instance, $old_instance ){
 			$instance                 = $old_instance;
 			$instance['title']        = sanitize_text_field( $new_instance['title'] );
-			$instance['media_source'] = $new_instance['media_source'];
 			$instance['media_link']   = $new_instance['media_link'];
-			$instance['source_id']    = $new_instance['source_id'];
+			$instance['username']     = $new_instance['username'];
+			$instance['userid']       = $new_instance['userid'];
 			$instance['media_number'] = $new_instance['media_number'];
 			$instance['button_text']  = $new_instance['button_text'];
 			$instance['button_url']   = $new_instance['button_url'];
-			$instance['user_data']    = $new_instance['user_data'];
+			$instance['user_data']    = ! empty( $new_instance['user_data'] ) ? 'true' : false;
 			return $instance;
 		}
 
@@ -71,17 +73,17 @@ if( ! class_exists( 'TIE_INSTAGRAM_WIDGET' )){
 		 * Outputs the settings form for the widget.
 		 */
 		public function form( $instance ){
-			$defaults = array( 'title' => esc_html__( 'Follow Us', TIELABS_TEXTDOMAIN), 'media_number' => 9, 'media_link' => 'file', 'media_source' => 'user' );
+			$defaults = array( 'title' => esc_html__( 'Follow Us', TIELABS_TEXTDOMAIN), 'media_number' => 9, 'media_link' => 'file' );
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title        = isset( $instance['title'] )        ? $instance['title'] : '';
-			$media_source = isset( $instance['media_source'] ) ? $instance['media_source'] : 'user';
-			$media_link   = isset( $instance['media_link'] )   ? $instance['media_link'] : 'file';
-			$source_id    = isset( $instance['source_id'] )    ? $instance['source_id'] : '';
+			$title        = isset( $instance['title'] )        ? $instance['title']        : '';
+			$media_link   = isset( $instance['media_link'] )   ? $instance['media_link']   : 'file';
+			$username     = isset( $instance['username'] )     ? $instance['username']     : '';
+			$userid       = isset( $instance['userid'] )       ? $instance['userid']       : '';
 			$media_number = isset( $instance['media_number'] ) ? $instance['media_number'] : 9;
-			$button_text  = isset( $instance['button_text'] )  ? $instance['button_text'] : '';
-			$button_url   = isset( $instance['button_url'] )   ? $instance['button_url'] : '';
-			$user_data    = isset( $instance['user_data'] )    ? $instance['user_data'] : false;
+			$button_text  = isset( $instance['button_text'] )  ? $instance['button_text']  : '';
+			$button_url   = isset( $instance['button_url'] )   ? $instance['button_url']   : '';
+			$user_data    = isset( $instance['user_data'] )    ? $instance['user_data']    : false;
 
 			?>
 				<p>
@@ -89,8 +91,13 @@ if( ! class_exists( 'TIE_INSTAGRAM_WIDGET' )){
 					<input id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" value="<?php echo esc_attr( $title ); ?>" class="widefat" type="text" />
 				</p>
 				<p>
-					<label for="<?php echo esc_attr( $this->get_field_id( 'source_id' ) ); ?>"><?php esc_html_e( 'Username', TIELABS_TEXTDOMAIN) ?></label>
-					<input id="<?php echo esc_attr( $this->get_field_id( 'source_id' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'source_id' ) ); ?>" value="<?php echo esc_attr( $source_id ); ?>" class="widefat" type="text" />
+					<label for="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>"><?php esc_html_e( 'Username', TIELABS_TEXTDOMAIN) ?></label>
+					<input id="<?php echo esc_attr( $this->get_field_id( 'username' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'username' ) ); ?>" value="<?php echo esc_attr( $username ); ?>" class="widefat" type="text" />
+				</p>
+				<p>
+					<label for="<?php echo esc_attr( $this->get_field_id( 'userid' ) ); ?>"><?php esc_html_e( 'User ID', TIELABS_TEXTDOMAIN) ?></label>
+					<input id="<?php echo esc_attr( $this->get_field_id( 'userid' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'userid' ) ); ?>" value="<?php echo esc_attr( $userid ); ?>" class="widefat" type="text" />
+					<small><a href="<?php echo esc_url( 'https://tielabs.com/go/find-instagram-user-id' ); ?>" target="_blank" rel="nofollow noopener"><?php esc_html_e( 'Find your Instagram User ID.', TIELABS_TEXTDOMAIN ); ?></a></small>
 				</p>
 
 				<p>

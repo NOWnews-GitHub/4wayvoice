@@ -13,7 +13,7 @@ get_header(); ?>
 /**
  * Page Builder
  */
-if( tie_get_postdata( 'tie_builder_active' ) ):
+if( TIELABS_HELPER::has_builder() ):
 
 	// Get Blocks
 	TIELABS_HELPER::get_template_part( 'framework/blocks' );

@@ -78,7 +78,6 @@
 				'chars'	=>	esc_html__( 'Characters', TIELABS_TEXTDOMAIN ),
 			)));
 
-
 	tie_build_theme_option(
 		array(
 			'title' =>	esc_html__( 'Post format icon on hover', TIELABS_TEXTDOMAIN ),
@@ -104,6 +103,14 @@
 			'name' => esc_html__( 'Header Code', TIELABS_TEXTDOMAIN ),
 			'id'   => 'header_code',
 			'hint' => esc_html__( 'Will add to the &lt;head&gt; tag. Useful if you need to add additional codes such as CSS or JS.', TIELABS_TEXTDOMAIN ),
+			'type' => 'textarea',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'Body Code', TIELABS_TEXTDOMAIN ),
+			'id'   => 'body_code',
+			'hint' => esc_html__( 'Will add after opening the &lt;body&gt; tag.', TIELABS_TEXTDOMAIN ),
 			'type' => 'textarea',
 		));
 

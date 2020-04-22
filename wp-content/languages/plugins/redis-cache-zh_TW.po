@@ -1,0 +1,193 @@
+# Translation of Plugins - Redis Object Cache - Stable (latest release) in Chinese (Taiwan)
+# This file is distributed under the same license as the Plugins - Redis Object Cache - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2020-03-09 03:37:16+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
+"Language: zh_TW\n"
+"Project-Id-Version: Plugins - Redis Object Cache - Stable (latest release)\n"
+
+#: redis-cache.php:472
+msgid "Redis Cache Pro + WooCommerce = ❤️"
+msgstr "Redis Cache Pro + WooCommerce = ❤️"
+
+#: redis-cache.php:474
+msgid "Redis Cache Pro is a <u>business class</u> object cache that’s highly-optimized for WooCommerce to provide true reliability, peace of mind and faster load times for your store. <a style=\"color: #bb77ae;\" href=\"%1$s\">Learn more »</a>"
+msgstr "Redis Cache Pro 是一款為 WooCommerce 高度最佳化的<u>商務級</u>物件快取外掛，提供高可靠性、令人安心的功能及線上商店更快的載入時間。<a style=\"color: #bb77ae;\" href=\"%1$s\">進一步瞭解 »</a>"
+
+#: redis-cache.php:435
+msgid "Redis Cache Pro is out!"
+msgstr "Redis Cache Pro 已推出！"
+
+#: redis-cache.php:437
+msgid "A <u>business class</u> object cache backend. Truly reliable, highly-optimized and fully customizable, with a <u>dedicated engineer</u> when you most need it. <a href=\"%1$s\">Learn more »</a>"
+msgstr "Redis Cache Pro 是一款<u>商務級</u>後端物件快取外掛。高可靠性、高度最佳化，並可在需要時聯絡<u>專屬工程師</u>取得協助。<a href=\"%1$s\">進一步瞭解 »</a>"
+
+#: includes/admin-page.php:11
+msgid "Redis Cache Pro"
+msgstr "Redis Cache Pro"
+
+#: includes/admin-page.php:14
+msgid "<b>A business class object cache backend.</b> Truly reliable, highly-optimized and fully customizable, with a <u>dedicated engineer</u> when you most need it."
+msgstr "<b>Redis Cache Pro 是一款商務級後端物件快取外掛。</b>高可靠性、高度最佳化，並可在需要時聯絡<u>專屬工程師</u>取得協助。"
+
+#: includes/admin-page.php:28
+msgid "Learn more"
+msgstr "進一步瞭解"
+
+#: includes/admin-page.php:94
+msgid "Diagnostics"
+msgstr "診斷資料"
+
+#: includes/admin-page.php:100
+msgid "Show Diagnostics"
+msgstr "顯示診斷資料"
+
+#: includes/wp-cli-commands.php:67
+msgid "Redis object cache already enabled."
+msgstr "Redis 物件快取已啟用。"
+
+#: includes/wp-cli-commands.php:69 includes/wp-cli-commands.php:111
+msgid "An unknown object cache drop-in was found. To use Redis run: wp redis update-dropin."
+msgstr "已找到未知的物件快取強化外掛。如需使用 Redis，請執行 wp redis update-dropin 命令。"
+
+#: includes/wp-cli-commands.php:105
+msgid "No object cache drop-in found."
+msgstr "找不到物件快取強化外掛。"
+
+#: includes/wp-cli-commands.php:147 redis-cache.php:323
+msgid "Updated object cache drop-in and enabled Redis object cache."
+msgstr "物件快取外掛已更新，並已啟用 Redis 物件快取功能。"
+
+#: includes/wp-cli-commands.php:149 redis-cache.php:326
+msgid "Object cache drop-in could not be updated."
+msgstr "物件快取強化外掛無法更新。"
+
+#. Author URI of the plugin
+msgid "https://till.im/"
+msgstr "https://till.im/"
+
+#: includes/admin-page.php:36
+msgid "Overview"
+msgstr "概觀"
+
+#: includes/admin-page.php:87 includes/servers-list.php:8
+msgid "Servers"
+msgstr "伺服器"
+
+#: includes/servers-list.php:7
+msgid "Server"
+msgstr "伺服器"
+
+#: includes/servers-list.php:68
+msgid "Yes"
+msgstr "是"
+
+#: includes/servers-list.php:68
+msgid "No"
+msgstr "否"
+
+#. Description of the plugin
+msgid "A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, HHVM, replication, clustering and WP-CLI."
+msgstr "由後端 Redis 提供的永久物件快取。支援 Predis、PhpRedis、HHVM、複寫、叢集及 WP-CLI。"
+
+#: includes/wp-cli-commands.php:28 redis-cache.php:189
+msgid "Disabled"
+msgstr "已停用"
+
+#: includes/admin-page.php:41
+msgid "Status:"
+msgstr "狀態:"
+
+#: includes/wp-cli-commands.php:34 redis-cache.php:198
+msgid "Not Connected"
+msgstr "尚未連接"
+
+#: includes/wp-cli-commands.php:77 redis-cache.php:305
+msgid "Object cache enabled."
+msgstr "物件快取已啟用。"
+
+#: includes/wp-cli-commands.php:79 redis-cache.php:308
+msgid "Object cache could not be enabled."
+msgstr "物件快取無法啟用。"
+
+#: includes/wp-cli-commands.php:118 redis-cache.php:311
+msgid "Object cache disabled."
+msgstr "物件快取已停用。"
+
+#: includes/wp-cli-commands.php:120 redis-cache.php:314
+msgid "Object cache could not be disabled."
+msgstr "物件快取無法停用。"
+
+#: redis-cache.php:202
+msgid "Unknown"
+msgstr "未知"
+
+#: redis-cache.php:275
+msgid "The Redis object cache drop-in is outdated. Please <a href=\"%s\">update it now</a>."
+msgstr "Redis 物件快取強化外掛已過期。請<a href=\"%s\">立即更新</a>。"
+
+#: redis-cache.php:280
+msgid "An unknown object cache drop-in was found. To use Redis, <a href=\"%s\">please replace it now</a>."
+msgstr "已找到未知的物件快取強化外掛。如需使用 Redis，<a href=\"%s\">請立即置換這個強化外掛</a>。"
+
+#: redis-cache.php:296
+msgid "This plugin requires PHP 5.4 or greater."
+msgstr "這個外掛需要 PHP 5.4 或更新版本。"
+
+#: redis-cache.php:317
+msgid "Object cache flushed."
+msgstr "物件快取已清除。"
+
+#: redis-cache.php:320
+msgid "Object cache could not be flushed."
+msgstr "物件快取無法清除。"
+
+#. Plugin URI of the plugin
+msgid "https://wordpress.org/plugins/redis-cache/"
+msgstr "https://tw.wordpress.org/plugins/redis-cache/"
+
+#. Author of the plugin
+msgid "Till Krüss"
+msgstr "Till Krüss"
+
+#: includes/admin-page.php:54
+msgid "Key Prefix:"
+msgstr "索引鍵前置詞:"
+
+#: includes/admin-page.php:61
+msgid "Max. TTL:"
+msgstr "TTL 上限:"
+
+#: includes/admin-page.php:71
+msgid "Flush Cache"
+msgstr "清除快取"
+
+#: includes/admin-page.php:75
+msgid "Enable Object Cache"
+msgstr "啟用物件快取"
+
+#: includes/admin-page.php:77
+msgid "Disable Object Cache"
+msgstr "停用物件快取"
+
+#: includes/wp-cli-commands.php:31 redis-cache.php:194
+msgid "Connected"
+msgstr "已連接"
+
+#: redis-cache.php:68
+msgid "Redis"
+msgstr "Redis"
+
+#. Plugin Name of the plugin
+#: includes/admin-page.php:6 redis-cache.php:67
+msgid "Redis Object Cache"
+msgstr "Redis Object Cache"
+
+#: includes/admin-page.php:47
+msgid "Client:"
+msgstr "用戶端:"

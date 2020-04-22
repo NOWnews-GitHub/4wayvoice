@@ -21,8 +21,11 @@ get_header(); ?>
 					the_archive_title( '<h1 class="page-title">', '</h1>' );
 
 					if( tie_get_option( 'tag_desc' )){
-						the_archive_description( '<div class="taxonomy-description">', '</div>' );
+						the_archive_description( '<div class="taxonomy-description entry">', '</div>' );
 					}
+
+					do_action( 'TieLabs/after_archive_title' );
+
 				?>
 			</header><!-- .entry-header-outer /-->
 

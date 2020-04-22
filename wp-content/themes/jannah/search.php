@@ -17,6 +17,9 @@ get_header(); ?>
 				<?php do_action( 'TieLabs/before_archive_title' ); ?>
 
 				<h1 class="page-title"><?php printf( esc_html__( 'Search Results for: %s', TIELABS_TEXTDOMAIN ), '<span>' . esc_html( get_search_query() ) . '</span>' ); ?></h1>
+
+				<?php do_action( 'TieLabs/after_archive_title' ); ?>
+
 			</header><!-- .entry-header-outer /-->
 
 			<?php

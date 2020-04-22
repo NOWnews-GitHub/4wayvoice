@@ -7,15 +7,17 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
+/* ---------------------------------------
+		Note:
+		In this file, we replaced tgm with tie_tgm and TGM with TIE_TGM to Avoid conflict with the standard TGM included with some plugins
+   --------------------------------------*/
+
 
 if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 
 	class TIELABS_REQUIRED_PLUGINS{
 
-
 		public $menu_slug = 'tie-install-plugins';
-
-
 
 		/**
 		 * __construct
@@ -25,19 +27,18 @@ if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 		function __construct(){
 
 			// Check if the current user role
-			if( ! current_user_can( 'switch_themes' ) ){
+			if( ! current_user_can( 'install_plugins' ) ){
 				return;
 			}
 
 			// Include the main tgm activation file
-			locate_template( 'framework/vendor/tgm/class-tgm-plugin-activation.php', true, true );
+			require TIELABS_TEMPLATE_PATH . '/framework/vendor/tgm/class-tgm-plugin-activation.php';
 
-			add_action( 'tgmpa_register',        array( $this, '_register_plugins' ) );
-			add_filter( 'TieLabs/about_tabs',    array( $this, '_add_about_tabs'   ) );
-			add_filter( 'get_user_metadata',     array( $this, '_remove_notice'    ), 10, 4 );
-			add_filter( 'tgmpa_admin_menu_args', array( $this, '_admin_menu_args'  ) );
+			add_action( 'tie_tgmpa_register',        array( $this, '_register_plugins' ) ); // check the notice
+			add_filter( 'TieLabs/about_tabs',        array( $this, '_add_about_tabs'   ) );
+			add_filter( 'get_user_metadata',         array( $this, '_remove_notice'    ), 10, 4 );
+			add_filter( 'tie_tgmpa_admin_menu_args', array( $this, '_admin_menu_args'  ) ); // check the notice
 		}
-
 
 
 		/**
@@ -93,10 +94,9 @@ if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 					'message'      => '',
 				);
 
-				tgmpa( $plugins, $config );
+				tie_tgmpa( $plugins, $config ); // check the notice
 			}
 		}
-
 
 
 		/**
@@ -115,7 +115,6 @@ if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 		}
 
 
-
 		/**
 		 * _remove_notice
 		 *
@@ -123,13 +122,12 @@ if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 		 */
 		function _remove_notice( $val, $object_id, $meta_key, $single ){
 
-			if( $meta_key === 'tgmpa_dismissed_notice_'.TIELABS_THEME_SLUG ){
+			if( $meta_key === 'tie_tgmpa_dismissed_notice_'.TIELABS_THEME_SLUG ){ // check the notice
 				return true;
 			}
 
 			return null;
 		}
-
 
 
 		/**
@@ -143,9 +141,7 @@ if( ! class_exists( 'TIELABS_REQUIRED_PLUGINS' )){
 			$args['capability']  = 'switch_themes';
 			return $args;
 		}
-
 	}
-
 
 
 	new TIELABS_REQUIRED_PLUGINS();

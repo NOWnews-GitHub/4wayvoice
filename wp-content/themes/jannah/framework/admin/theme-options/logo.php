@@ -21,20 +21,11 @@
 			'type'    => 'radio',
 			'toggle'  => array(
 				'logo'  => '#logo-item, #logo_retina-item, #logo_retina_width-item, #logo_retina_height-item',
-				'title' => '#logo_text-item'),
+				'title' => ''),
 			'options'	=> array(
 				'logo'  => esc_html__( 'Image', TIELABS_TEXTDOMAIN ),
 				'title' => esc_html__( 'Site Title', TIELABS_TEXTDOMAIN ),
 			)));
-
-	tie_build_theme_option(
-		array(
-			'name'    => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
-			'id'      => 'logo_text',
-			'type'    => 'text',
-			'class'   => 'logo_setting',
-			'default' => get_bloginfo(),
-		));
 
 	tie_build_theme_option(
 		array(
@@ -69,6 +60,15 @@
 			'type'  => 'number',
 			'class' => 'logo_setting',
 			'hint'  => esc_html__( 'If retina logo is uploaded, please enter the standard logo (1x) version height, do not enter the retina logo height.', TIELABS_TEXTDOMAIN ),
+		));
+
+	tie_build_theme_option(
+		array(
+			'name'    => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
+			'id'      => 'logo_text',
+			'type'    => 'text',
+			'default' => get_bloginfo(),
+			'hint'    => esc_html__( 'In the Logo Image type this will be used as the ALT text.', TIELABS_TEXTDOMAIN ),
 		));
 
 	tie_build_theme_option(

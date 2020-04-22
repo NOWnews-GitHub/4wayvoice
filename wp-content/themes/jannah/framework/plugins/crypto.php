@@ -41,7 +41,7 @@ if ( TIELABS_CRYPTOALL_IS_ACTIVE || TIELABS_WPUC_IS_ACTIVE ){
 
 	add_action( 'wp_enqueue_scripts', 'tie_crypto_enqueue_styles' );
 	function tie_crypto_enqueue_styles(){
-		wp_enqueue_style( 'tie-css-crypto', TIELABS_TEMPLATE_URL.'/assets/css/crypto'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION );
+		wp_enqueue_style( 'tie-css-crypto', TIELABS_TEMPLATE_URL.'/assets/css/plugins/crypto'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION );
 	}
 }
 

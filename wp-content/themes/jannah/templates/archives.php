@@ -8,28 +8,28 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.2.0
+ * @version  4.0.4
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
-
 // Prepare the posts settings
 $b_args = array(
-	'uncropped_image' => isset( $uncropped_image ) ? $uncropped_image : TIELABS_THEME_SLUG.'-image-grid',
+	'uncropped_image' => isset( $uncropped_image ) ? $uncropped_image : TIELABS_THEME_SLUG.'-image-post',
 	'category_meta'   => isset( $category_meta )   ? $category_meta   : true,
 	'post_meta'       => isset( $post_meta )       ? $post_meta       : true,
 	'excerpt'         => isset( $excerpt )         ? $excerpt         : true,
 	'excerpt_length'  => isset( $excerpt_length )  ? $excerpt_length  : true,
 	'read_more'       => isset( $read_more )       ? $read_more       : true,
+	'media_overlay'   => isset( $media_overlay )   ? $media_overlay   : true,
 	'title_length'    => 0,
 	'is_full'         => ! TIELABS_HELPER::has_sidebar(),
+	'is_category'     => is_category(),
 );
 
 $count    = 0;
 $settings = str_replace( '"', '\'', wp_json_encode( $b_args ));
 $layout   = str_replace( '_', '-', $layout );
-
 
 // Overlay & Overlay with Spaces
 if( $layout == 'overlay' || $layout == 'overlay-spaces' || $layout == 'masonry' ){
@@ -65,9 +65,9 @@ if( $layout == 'overlay' || $layout == 'overlay-spaces' || $layout == 'masonry' 
 	wp_enqueue_script( 'jquery-masonry' );
 
 	$masonry_js = "
-		jQuery(window).load(function(){
+		jQuery(window).on( 'load', function(){
 			jQuery('#masonry-grid').masonry('layout');
-		})
+		});
 	";
 
 	TIELABS_HELPER::inline_script( 'jquery-masonry', $masonry_js );
@@ -140,7 +140,6 @@ else{
 }
 
 
-
 // Get the layout template
 echo ( $before );
 
@@ -149,12 +148,12 @@ while ( have_posts() ) : the_post();
 	$count++;
 	$GLOBALS['latest_post_count'] = $count;
 
-	$args = array(
+	$loop_args = array(
 		'block' => $b_args,
 		'count' => $count,
 	);
 
-	TIELABS_HELPER::get_template_part( 'templates/loops/loop', $layout, $args );
+	TIELABS_HELPER::get_template_part( 'templates/loops/loop', $layout, $loop_args );
 
 	do_action( 'TieLabs/after_post_in_archives', $layout, $count );
 

@@ -20,20 +20,17 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 		 */
 		private $remote_theme_version = '';
 
-
 		/**
 		 * Holds the current theme version.
 		 * @var string
 		 */
 		private $current_theme_version = '';
 
-
 		/**
 		 * Holds the theme's changelog page url.
 		 * @var string
 		 */
 		private $theme_changeLog_url = '';
-
 
 
 		/**
@@ -56,18 +53,16 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 			$this->theme_changeLog_url   = apply_filters( 'TieLabs/External/changelog', '' );
 
 			if( empty( $this->current_theme_version ) || version_compare( $this->remote_theme_version, $this->current_theme_version, '<=' ) ){
-
 				return;
 			}
 
-			# Filters
+			// Filters
 			add_filter( 'pre_set_site_transient_update_themes', array( $this, 'check_for_update' ) );
 
-			# Actions
+			// Actions
 			add_action( 'admin_menu', array( $this, 'update_notifier_menu' ), 11 );
 			add_action( 'TieLabs/after_theme_data_update', array( $this, 'update_cached_data' ) );
 		}
-
 
 
 		/**
@@ -78,7 +73,7 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 		 */
 		function check_for_update( $transient ){
 
-			if ( empty( $transient->checked ) ){
+			if ( empty( $transient->checked ) || ! tie_get_latest_theme_data( 'download_url' ) ){
 				return $transient;
 			}
 
@@ -96,19 +91,14 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 		}
 
 
-
-
-
 		/**
 		 * update_cached_data
 		 *
 		 * Update the theme's update URL after updating the theme data via the API
 		 */
 		function update_cached_data(){
-
 			set_site_transient( 'update_themes', null );
 		}
-
 
 
 		/**
@@ -127,11 +117,10 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 				array( $this, 'redirect_to_update_notifier' )
 			);
 
-			add_filter( 'TieLabs/options_tab_title',         array( $this, 'add_theme_updates_tab_title' ) );
+			add_filter( 'TieLabs/options_tab_title',           array( $this, 'add_theme_updates_tab_title' ) );
 			add_action( 'tie_theme_options_tab_theme-updates', array( $this, 'add_theme_updates_tab' ) );
 
 		}
-
 
 
 		/**
@@ -140,12 +129,9 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 		 * Redirect to the Notifier page
 		 */
 		function redirect_to_update_notifier(){
-
 			$updater_tab = add_query_arg( array( 'page' => 'tie-theme-options#tie-options-tab-theme-updates-target' ), admin_url( 'admin.php' ));
 			echo "<script>document.location.href='$updater_tab';</script>";
-
 		}
-
 
 
 		/**
@@ -164,13 +150,17 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 		}
 
 
-
 		/**
 		 * add_theme_updates_tab
 		 *
 		 * Add new section for the notifier in the theme options page
 		 */
 		function add_theme_updates_tab(){
+
+			if ( is_multisite() && current_user_can('update_themes') ) {
+				wp_clean_themes_cache( true );
+				wp_update_themes();
+			}
 
 			tie_build_theme_option(
 				array(
@@ -229,7 +219,7 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 				if( tie_get_latest_theme_data( 'sale_banner' ) ){
 					?>
 						<div class="renew-support-banner">
-							<a href="<?php echo tie_get_purchase_link( array( 'utm_medium' => 'sale-renew-support' )) ?>" target="_blank">
+							<a href="<?php echo tie_get_purchase_link( array( 'utm_medium' => 'sale-renew-support' ) ) ?>" target="_blank">
 								<img src="<?php echo esc_url( tie_get_latest_theme_data( 'sale_banner' ) ) ?>" alt="" />
 							</a>
 						</div>
@@ -242,7 +232,7 @@ if( ! class_exists( 'TIELABS_THEME_UPDATER' ) ){
 							esc_html__( 'Your Support Period has expired, %1$sAutomatic Theme Updates%2$s and %1$sSupport System Access%2$s have been disabled. %3$sRenew your Support Period%5$s. Once the support is renewed please go to the %4$stheme registration section%5$s and click on the %1$sRefresh expiration date%2$s button.', TIELABS_TEXTDOMAIN ),
 							'<strong>',
 							'</strong>',
-							'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'renew-support' )) .'">',
+							'<a target="_blank" href="'. tie_get_purchase_link( array( 'utm_medium' => 'renew-support' ) ) .'">',
 							'<a href="'. menu_page_url( 'tie-theme-welcome', false ) .'">',
 							'</a>'
 						),

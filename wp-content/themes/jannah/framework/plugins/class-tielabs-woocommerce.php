@@ -91,8 +91,10 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 
 			// Post Sidebars Settings
 			add_filter( 'TieLabs/Settings/Post/sidebar/defaults', array( $this, 'post_sidebar_settings' ) );
-		}
 
+			// Add Support for the the theme text styles in the short description area
+			add_filter( 'woocommerce_short_description', array( $this, 'short_description' ) );
+		}
 
 
 		/**
@@ -104,8 +106,9 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		function enqueue_styles( $styles ) {
 
 			$styles = array(); 		// Reset the default WooCommerce Styles
+
 			$styles['tie-css-woocommerce'] = array(
-				'src'     => TIELABS_TEMPLATE_URL.'/assets/css/woocommerce'. TIELABS_STYLES::is_minified() .'.css',
+				'src'     => TIELABS_TEMPLATE_URL.'/assets/css/plugins/woocommerce'. TIELABS_STYLES::is_minified() .'.css',
 				'deps'    => '',
 				'version' => TIELABS_DB_VERSION,
 				'media'   => 'all',
@@ -113,7 +116,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 
 			return $styles;
 		}
-
 
 
 		/*
@@ -137,7 +139,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 
 			return $logo_args;
 		}
-
 
 
 		/*
@@ -179,7 +180,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Open the theme wrapper.
 		 */
@@ -187,7 +187,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 			echo '<div '. tie_content_column_attr( false ) .'>';
 			echo '<div class="container-wrapper">';
 		}
-
 
 
 		/**
@@ -199,14 +198,12 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Add Clear before the Shop Loop.
 		 */
 		function before_shop_loop(){
 			echo '<div class="clearfix"></div>';
 		}
-
 
 
 		/**
@@ -217,14 +214,12 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Add Wrap around the Image in the Loop, End.
 		 */
 		function product_img_end(){
 			echo '</div>';
 		}
-
 
 
 		/**
@@ -239,7 +234,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Number of Products Per Page.
 		 */
@@ -250,7 +244,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Default Number of Column.
 		 */
@@ -259,14 +252,12 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Full Width Number Of Column.
 		 */
 		public static function full_width_loop_shop_columns(){
 			return 4;
 		}
-
 
 
 		/**
@@ -294,7 +285,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 
 			return false;
 		}
-
 
 
 		/**
@@ -325,7 +315,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Related Posts Number.
 		 */
@@ -339,7 +328,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Product Thumbnails slider.
 		 */
@@ -348,44 +336,49 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 			// Enqueue the Sliders Js file
 			wp_enqueue_script( 'tie-js-sliders' );
 
-			$products_script = "
-			 jQuery(document).ready(function(){
+			// Enqueue the LightBox Js file
+			wp_enqueue_script( 'tie-js-ilightbox' );
 
-					/* Lazy Load */
-					if(is_Lazy){
-						jQuery('.flex-control-nav').on('init', function(event, slick, direction){
-							jQuery('.flex-viewport .lazy-img').lazy();
+			$products_script = "
+				jQuery(document).ready(function(){
+
+					if( tie.lazyload ){
+						jQuery( '.woocommerce-product-gallery__image' ).each(function(){
+							var elem = jQuery(this).find('img');
+							if( typeof elem.data('src') !== 'undefined' ){
+								elem.attr('src', elem.data('src') );
+								elem.removeAttr('data-src');
+							}
 						});
 					}
 
 					/* Product Gallery */
-			    jQuery('.flex-control-nav').wrap('<div class=\"flex-control-nav-wrapper\"></div>').after('<div class=\"tie-slider-nav\">').slick({
-			        slide         : 'li',
-							speed         : 300,
-			        slidesToShow  : 4,
-			        slidesToScroll: 1,
-			        infinite      : false,
-			        rtl           : is_RTL,
-			        appendArrows  : '.images .tie-slider-nav',
-			        prevArrow     : '<li><span class=\"fa fa-angle-left\"></span></li>',
-			        nextArrow     : '<li><span class=\"fa fa-angle-right\"></span></li>',
-			    });
+					jQuery('.flex-control-nav').wrap('<div class=\"flex-control-nav-wrapper\"></div>').after('<div class=\"tie-slider-nav\">').slick({
+						slide         : 'li',
+						speed         : 300,
+						slidesToShow  : 4,
+						slidesToScroll: 1,
+						infinite      : false,
+						rtl           : is_RTL,
+						appendArrows  : '.images .tie-slider-nav',
+						prevArrow     : '<li><span class=\"fa fa-angle-left\"></span></li>',
+						nextArrow     : '<li><span class=\"fa fa-angle-right\"></span></li>',
+					});
 
-			    /* WooCommerce LightBox */
+					/* WooCommerce LightBox */
 					jQuery( '.woocommerce-product-gallery__trigger' ).iLightBox({
-			      skin: tie.lightbox_skin,
-			      path: tie.lightbox_thumb,
-			      controls: {
-			        arrows: tie.lightbox_arrows,
-			      }
-			    });
+						skin: tie.lightbox_skin,
+						path: tie.lightbox_thumb,
+						controls: {
+							arrows: tie.lightbox_arrows,
+						}
+					});
 
-	 			});
+				});
 			";
 
 			TIELABS_HELPER::inline_script( 'tie-scripts', $products_script );
 		}
-
 
 
 		/**
@@ -400,7 +393,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 
 			return $fragments;
 		}
-
 
 
 		/**
@@ -422,7 +414,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 		}
 
 
-
 		/**
 		 * Breadcrumb Args.
 		 */
@@ -436,7 +427,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 				'after'       => '',
 			);
 		}
-
 
 
 		/**
@@ -472,10 +462,16 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 								<div class="product-thumb">
 									<a href="<?php echo esc_url( $_product->get_permalink() ); ?>"><?php echo ( $product_img ); ?></a>
 								</div>
-								<h3 class="product-title"><a href="<?php echo esc_url( $_product->get_permalink() ); ?>"><?php echo ( $_product->get_title() ) ?></a></h3>
+								<h5 class="product-title"><a href="<?php echo esc_url( $_product->get_permalink() ); ?>"><?php echo ( $_product->get_title() ) ?></a></h5>
 								<div class="product-meta">
-									<div class="product-price"><?php esc_html_e( 'Price:', TIELABS_TEXTDOMAIN ); echo ' '. wc_price( $_product->get_price() ); ?></div>
-									<div class="product-quantity"><?php esc_html_e( 'Quantity:', TIELABS_TEXTDOMAIN ); echo ' '. $details['quantity'] ?></div>
+									<div class="product-quantity-price">
+										<?php printf(
+												esc_html__( '%1$s x %2$s.', TIELABS_TEXTDOMAIN ),
+												$details['quantity'],
+												wc_price( $_product->get_price() )
+											);
+										?>
+									</div>
 								</div>
 								<a href="<?php echo esc_url( $remove_url  ) ?>" class="remove"><span class="screen-reader-text"><?php esc_html_e( 'Remove', TIELABS_TEXTDOMAIN ); ?></span></a>
 							</li>
@@ -486,13 +482,11 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 				</ul>
 
 				<div class="shopping-subtotal">
-					<span class="tie-alignleft"><?php esc_html_e( 'Cart Subtotal:', TIELABS_TEXTDOMAIN ); ?></span><span class="tie-alignright"> <?php echo WC()->cart->get_cart_total(); ?></span>
+					<?php esc_html_e( 'Subtotal:', TIELABS_TEXTDOMAIN ); ?> <?php echo WC()->cart->get_total(); ?>
 				</div><!-- .shopping-subtotal /-->
 
-				<div class="clearfix"></div>
+				<a href="<?php echo wc_get_checkout_url() ?>" class="checkout-button button"><?php esc_html_e( 'Checkout', TIELABS_TEXTDOMAIN ); ?></a>
 				<a href="<?php echo wc_get_cart_url() ?>" class="view-cart-button button guest-btn"><?php esc_html_e( 'View Cart', TIELABS_TEXTDOMAIN ); ?></a>
-				<a href="<?php echo wc_get_checkout_url() ?>" class="checkout-button button"><?php esc_html_e( 'Proceed to Checkout', TIELABS_TEXTDOMAIN ); ?></a>
-
 				<?php
 			}
 			else{ ?>
@@ -507,7 +501,6 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 			</div><!-- shopping-cart-details -->
 		<?php
 		}
-
 
 
 		/**
@@ -529,6 +522,19 @@ if( ! class_exists( 'TIELABS_WOOCOMMERCE' )){
 					),
 					'type' => 'message',
 			));
+		}
+
+
+		/**
+		 * short_description
+		 */
+		function short_description( $short_description = false ){
+
+			if( empty( $short_description ) ){
+				return;
+			}
+
+			return '<div class="entry">'.$short_description.'</div>';
 		}
 
 	}

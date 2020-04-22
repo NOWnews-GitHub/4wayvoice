@@ -51,7 +51,7 @@ if (typeof window.n2SSIframeLoader !== "function") {
                     if (data.fullPage) {
                         if (this.fullpage !== data.fullPage) {
                             this.fullpage = data.fullPage;
-                            this.verticalOffsetSelectors = $(data.verticalOffsetSelectors);
+                            this.$verticalOffsetSelectors = $(data.focus.offsetTop).add(data.focus.offsetBottom);
                             this.resizeFullPage();
                             $(window).on("resize.n2-ss-iframe-" + this.i, $.proxy(this.resizeFullPage, this));
                             $(window).on("orientationchange.n2-ss-iframe-" + this.i, $.proxy(this.resizeFullPage, this));
@@ -70,10 +70,49 @@ if (typeof window.n2SSIframeLoader !== "function") {
                         var $container = $('body');
                         $container.css("overflow-x", "hidden");
 
+                        this.$fullWidthTo = $('.edit-post-visual-editor,.fl-responsive-preview .fl-builder-content');
+
                         this.resizeFullWidth();
                         $(window).on("resize.n2-ss-iframe-" + this.i, $.proxy(this.resizeFullWidth, this));
+                        this.watchWidth();
                     }
                     break;
+            }
+        };
+
+        S.prototype.watchWidth = function () {
+            if (this.$fullWidthTo.length) {
+                if (window.ResizeObserver !== undefined) {
+                    var width = 0;
+                    this.observer = new ResizeObserver($.proxy(function (entries) {
+                        entries.forEach($.proxy(function (entry) {
+                            if (width !== entry.contentRect.width) {
+                                width = entry.contentRect.width;
+                                this.resizeFullWidth();
+                            }
+                        }, this));
+                    }, this));
+
+                    this.observer.observe(this.$fullWidthTo[0]);
+                } else {
+                    try {
+                        /**
+                         * We can detect every width changes with a dummy iframe.
+                         */
+                        this.$resizeObserverIframe = $('<iframe class="bt_skip_resize" sandbox="allow-same-origin allow-scripts" style="margin:0 !important;padding:0;border:0;display:block;width:100%;height:0;min-height:0 !important;max-height:0;"/>')
+                            .on('load', $.proxy(function (e) {
+                                var width = 0,
+                                    $frame = $(e.target.contentWindow ? e.target.contentWindow : e.target.contentDocument.defaultView).on('resize', $.proxy(function (e) {
+                                        var newWidth = $frame.width();
+                                        if (width !== newWidth) {
+                                            width = newWidth;
+                                            this.resizeFullWidth();
+                                        }
+                                    }, this));
+                            }, this)).appendTo(this.$fullWidthTo[0]);
+                    } catch (e) {
+                    }
+                }
             }
         };
 
@@ -85,17 +124,26 @@ if (typeof window.n2SSIframeLoader !== "function") {
             frames[this.i] = false;
             $(window).off(".n2-ss-iframe-" + this.i);
 
+            if (this.observer) {
+                this.observer.unobserve(this.$fullWidthTo[0]);
+                delete this.observer;
+            }
+
+            if (this.$resizeObserverIframe) {
+                this.$resizeObserverIframe.remove();
+                delete this.$resizeObserverIframe;
+            }
+
             return false;
         };
 
-        S.prototype.resizeFullWidth = function (e) {
+        S.prototype.resizeFullWidth = function () {
             if (this.exists()) {
                 var customWidth = 0,
-                    adjustLeftOffset = 0,
-                    $fullWidthTo = $('.editor-writing-flow,.fl-responsive-preview .fl-builder-content');
-                if ($fullWidthTo.length) {
-                    customWidth = $fullWidthTo.width();
-                    adjustLeftOffset = $fullWidthTo.offset().left;
+                    adjustLeftOffset = 0;
+                if (this.$fullWidthTo.length) {
+                    customWidth = this.$fullWidthTo.width();
+                    adjustLeftOffset = this.$fullWidthTo.offset().left;
                 }
 
                 var windowWidth = customWidth > 0 ? customWidth : (document.body.clientWidth || document.documentElement.clientWidth),
@@ -117,8 +165,8 @@ if (typeof window.n2SSIframeLoader !== "function") {
         S.prototype.resizeFullPage = function (e) {
             if (this.exists()) {
                 var clientHeight = this.getClientHeight(e);
-                for (var i = 0; i < this.verticalOffsetSelectors.length; i++) {
-                    clientHeight -= this.verticalOffsetSelectors.eq(i).outerHeight();
+                for (var i = 0; i < this.$verticalOffsetSelectors.length; i++) {
+                    clientHeight -= this.$verticalOffsetSelectors.eq(i).outerHeight();
                 }
                 this.frameContent.postMessage({
                     key: "update",

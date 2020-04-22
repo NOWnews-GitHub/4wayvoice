@@ -47,7 +47,16 @@ N2D('SmartSliderWidgetAutoplayImage', function ($, undefined) {
                 })
                 .trigger('addWidget', this.deferred);
 
-            this.button.on('universalclick', $.proxy(this.switchState, this));
+            /**
+             * Chrome fires both keypress and click event when space or enter pressed, so we need to
+             * debounce the events as we need only one.
+             * @type {Function}
+             */
+            var switchState = NextendDeBounce($.proxy(this.switchState, this), 300, true);
+            this.button.on({
+                n2Activate: switchState,
+                universalclick: switchState
+            });
 
             this.desktopRatio = desktopRatio;
             this.tabletRatio = tabletRatio;
@@ -86,8 +95,12 @@ N2D('SmartSliderWidgetAutoplayImage', function ($, undefined) {
     };
 
     SmartSliderWidgetAutoplayImage.prototype.switchState = function (e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+
+        /**
+         * Mark the event already handled for Autoplay interaction
+         */
+        this.slider.controls.autoplay.preventClickHandle();
+
         if (!this.paused) {
             this.setPaused();
             this.slider.sliderElement.triggerHandler('autoplayExtraWait', 'autoplayButton');

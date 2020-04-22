@@ -8,17 +8,16 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.0.4
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-// Enqueue the Sliders Js file
-wp_enqueue_script( 'tie-js-sliders' );
-
 // Check if the breaking news is hidden on mobiles
-if( $type == 'header' && TIELABS_HELPER::is_mobile_and_hidden( 'breaking_news' )) return;
+if( $type == 'header' && TIELABS_HELPER::is_mobile_and_hidden( 'breaking_news' ) ){
+	return;
+}
 
 // Cache field key
 $cache_key = apply_filters( 'TieLabs/cache_key', '' );
@@ -29,13 +28,14 @@ $breaking_class = array( 'breaking' );
 
 
 // Effect type.
-if( ! empty( $breaking_effect ) ){
-	$breaking_attr[] = 'data-type="'. $breaking_effect .'"';
+$breaking_effect = ! empty( $breaking_effect ) ? $breaking_effect : 'flipY';
 
-	if( $breaking_effect == 'slideUp' || $breaking_effect == 'slideDown' ){
-		$breaking_class[] = 'up-down-controls';
-	}
+$breaking_attr[] = 'data-type="'. $breaking_effect .'"';
+
+if( $breaking_effect == 'slideUp' || $breaking_effect == 'slideDown' ){
+	$breaking_class[] = 'up-down-controls';
 }
+
 
 // Breaking News arrows.
 if( ! empty( $breaking_arrows ) ){
@@ -44,7 +44,15 @@ if( ! empty( $breaking_arrows ) ){
 }
 
 $breaking_class = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/class', $breaking_class ) ) );
-$breaking_attr = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/attr', $breaking_attr ) ) );
+$breaking_attr  = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/attr',  $breaking_attr  ) ) );
+
+
+// Enqueue the breaking news Js files
+if( $breaking_effect == 'slideRight' || $breaking_effect == 'slideLeft' || $breaking_effect == 'slideUp' || $breaking_effect == 'slideDown' ){
+	wp_enqueue_script( 'tie-js-velocity' );
+}
+
+wp_enqueue_script( 'tie-js-breaking' );
 
 ?>
 
@@ -52,7 +60,7 @@ $breaking_attr = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/
 
 	<span class="breaking-title">
 		<span class="fa fa-bolt" aria-hidden="true"></span>
-		<span class="breaking-title-text"><?php echo ! empty( $breaking_title ) ? $breaking_title : esc_html__( 'Trending', TIELABS_TEXTDOMAIN ); ?></span>
+		<span class="breaking-title-text"><?php echo ! empty( $breaking_title ) ? $breaking_title : esc_html__( 'Breaking News', TIELABS_TEXTDOMAIN ); ?></span>
 	</span>
 
 	<ul id="breaking-news-<?php echo esc_attr( $breaking_id ) ?>" class="breaking-news" <?php echo ( $breaking_attr ); ?>>
@@ -62,7 +70,7 @@ $breaking_attr = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/
 			if( $breaking_type != 'custom' ){
 
 				// Get the Cached data
-				if ( $type == 'header' && tie_get_option( 'cache' ) && ( false !== ( $cached_data = get_transient( $cache_key )) ) && ! ( defined( 'WP_CACHE' ) && WP_CACHE ) ){
+				if ( $type == 'header' && tie_get_option( 'jso_cache' ) && ( false !== ( $cached_data = get_transient( $cache_key )) ) && ! ( defined( 'WP_CACHE' ) && WP_CACHE ) ){
 					if( isset( $cached_data['breaking-news'] )){
 						$cached_breaking_news = $cached_data['breaking-news'];
 					}
@@ -99,7 +107,7 @@ $breaking_attr = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/
 						while( $breaking_query->have_posts() ){ $breaking_query->the_post(); ?>
 
 							<li class="news-item">
-								<a href="<?php the_permalink()?>" title="<?php the_title_attribute(); ?>"><?php the_title(); ?></a>
+								<a href="<?php the_permalink()?>"><?php the_title(); ?></a>
 							</li>
 
 							<?php
@@ -138,7 +146,7 @@ $breaking_attr = join( ' ', array_filter( apply_filters( 'TieLabs/Breaking_news/
 						?>
 
 						<li class="news-item">
-							<a href="<?php echo esc_url( $link ) ?>" title="<?php echo esc_attr( $text ) ?>"><?php echo esc_html( $text ); ?></a>
+							<a href="<?php echo esc_url( $link ) ?>"><?php echo esc_html( $text ); ?></a>
 						</li>
 
 						<?php

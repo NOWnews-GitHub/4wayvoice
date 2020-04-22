@@ -270,7 +270,7 @@
 
 	<div class="tie-section-title tie-section-tabs header-settings-tabs">
 		<a href="#main-nav-settings" class="active"><?php esc_html_e( 'Main Nav Settings', TIELABS_TEXTDOMAIN ) ?></a>
-		<a href="#top-nav-settings"><?php esc_html_e( 'Secondry Nav Settings',  TIELABS_TEXTDOMAIN ) ?></a>
+		<a href="#top-nav-settings"><?php esc_html_e( '​Secondary Nav Settings',  TIELABS_TEXTDOMAIN ) ?></a>
 	</div>
 
 
@@ -363,7 +363,7 @@
 
 		echo'<div class="clear"></div></div>';
 
-		tie_header_area_options( esc_html__( 'Secondry Nav Components', TIELABS_TEXTDOMAIN ), 'top-nav-components' );
+		tie_header_area_options( esc_html__( '​Secondary Nav Components', TIELABS_TEXTDOMAIN ), 'top-nav-components' );
 
 		echo'<div class="breaking-news-all-options top-nav-area-1-options">';
 
@@ -378,7 +378,7 @@
 			array(
 				'name'        => esc_html__( 'Title', TIELABS_TEXTDOMAIN ),
 				'id'          => 'breaking_title',
-				'placeholder'	=> esc_html__( 'Trending', TIELABS_TEXTDOMAIN ),
+				'placeholder'	=> esc_html__( 'Breaking News', TIELABS_TEXTDOMAIN ),
 				'type'        => 'text',
 			));
 
@@ -765,7 +765,7 @@ function tie_header_area_options( $text_field, $area_name ){ ?>
 		</div>
 	<?php
 
-			tie_build_theme_option(
+		tie_build_theme_option(
 			array(
 				'name'   => esc_html__( 'Weather', TIELABS_TEXTDOMAIN ),
 				'id'		 => $area_name.'_weather',
@@ -778,6 +778,15 @@ function tie_header_area_options( $text_field, $area_name ){ ?>
 	<div id="<?php echo esc_attr( $area_name ) ?>-weather">
 
 		<?php
+
+			if( ! tie_get_option( 'api_openweather' ) ){
+
+				tie_build_theme_option(
+					array(
+						'text'   => esc_html__( 'You need to set the Weather API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ),
+						'type'   => 'error',
+					));
+			}
 
 			tie_build_theme_option(
 				array(
@@ -792,15 +801,6 @@ function tie_header_area_options( $text_field, $area_name ){ ?>
 				array(
 					'name'  => esc_html__( 'Custom City Name', TIELABS_TEXTDOMAIN ),
 					'id'    => $area_name.'_wz_city_name',
-					'class' => 'header-weather',
-					'type'  => 'text',
-				));
-
-			tie_build_theme_option(
-				array(
-					'name'  => esc_html__( 'API Key', TIELABS_TEXTDOMAIN ),
-					'hint'  => '<a href="'. esc_url( 'http://openweathermap.org/appid#get' ) .'" target="_blank">'. esc_html__( 'How to get your API Key?', TIELABS_TEXTDOMAIN ) .'</a>',
-					'id'    => $area_name.'_wz_api_key',
 					'class' => 'header-weather',
 					'type'  => 'text',
 				));

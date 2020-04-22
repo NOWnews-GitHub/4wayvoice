@@ -19,11 +19,12 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		 */
 		function __construct(){
 
-			// Disable if the BuddtPress plugin is not active
-			if( ! TIELABS_BUDDYPRESS_IS_ACTIVE ) return;
+			// Disable if the BuddyPress plugin is not active
+			if( ! TIELABS_BUDDYPRESS_IS_ACTIVE ){
+				return;
+			}
 
 			// Wrapper Start
-
 			add_action( 'bp_before_group_body',                    array( $this, 'before_content' ) );
 			add_action( 'bp_before_member_body',                   array( $this, 'before_content' ) );
 			add_action( 'bp_before_register_page',                 array( $this, 'before_content' ) );
@@ -47,7 +48,10 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 
 			// Enqueue and Dequeue CSS files
 			add_action( 'wp_enqueue_scripts', array( $this, 'dequeue_styles' ), 10 );
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ), 5 );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_resources' ), 5 );
+
+			//
+			add_action( 'bp_nouveau_enqueue_styles', array( $this, 'remove_default_buddypress_dependency' ), 20 );
 
 			// Covers args
 			add_filter( 'bp_before_xprofile_cover_image_settings_parse_args',  array( $this, 'cover_image_css' ), 1 );
@@ -67,7 +71,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * BuddyPress Pages HTML markup | before content
 		 */
 		function before_content(){
@@ -79,7 +83,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * BuddyPress Pages HTML markup | after content
 		 */
 		function after_content(){
@@ -93,7 +97,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * Dequeue buddyPress Default Css files
 		 */
 		function dequeue_styles(){
@@ -102,17 +106,84 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
-		 * Enqueue and Dequeue CSS files
+		/**
+		 * remove_default_buddypress_dependency
 		 */
-		function enqueue_styles(){
+		function remove_default_buddypress_dependency( $styles ){
 
-			// Enqueue buddyPress Custom Css file
-			wp_enqueue_style( 'tie-css-buddypress', TIELABS_TEMPLATE_URL.'/assets/css/buddypress'. TIELABS_STYLES::is_minified() .'.css', array(), TIELABS_DB_VERSION, 'all' );
+			foreach ( $styles as $file => $attr ) {
+
+				$key = array_search( 'bp-nouveau', $attr['dependencies'], false );
+
+				if( isset( $key ) ){
+					$styles[$file]['dependencies'][$key] = 'tie-css-buddypress';
+				}
+			}
+
+			return $styles;
 		}
 
 
-		/*
+		/**
+		 * Enqueue JS and CSS files
+		 */
+		function enqueue_resources(){
+
+			// Enqueue buddyPress Custom Css file
+			wp_enqueue_style( 'tie-css-buddypress', TIELABS_TEMPLATE_URL.'/assets/css/plugins/buddypress'. TIELABS_STYLES::is_minified() .'.css', array('dashicons'), TIELABS_DB_VERSION, 'all' );
+
+			// For Grid Archives
+			if( ! is_buddypress() ){
+				return;
+			}
+
+			wp_enqueue_script( 'jquery-masonry' );
+
+			$masonry_js = "
+				jQuery(document).ready(function(){
+
+					console.log( 'document ready' );
+
+					jQuery( '#buddypress' ).on( 'bp_ajax_request', '.dir-list', function(){
+
+						console.log( 'ajax-request' );
+
+						if( jQuery.fn.masonry ){
+
+							console.log( 'masonry Loaded' );
+
+							var grid = jQuery('.bp-list.grid');
+
+							if( grid.length ){
+
+								grid.masonry({
+									percentPosition : true,
+									isInitLayout    : false, // v3
+									initLayout      : false, // v4
+									originLeft      : ! is_RTL,
+									isOriginLeft    : ! is_RTL
+								});
+
+								setTimeout(function(){
+									grid.masonry('layout');
+								}, 1);
+
+								if( jQuery.fn.imagesLoaded ){
+									grid.imagesLoaded().progress( function(){
+										grid.masonry('layout');
+									});
+								}
+							}
+						}
+					});
+				});
+			";
+
+			TIELABS_HELPER::inline_script( 'jquery-masonry', $masonry_js );
+		}
+
+
+		/**
 		 * Notifications Menu Content
 		 */
 		function get_notifications(){
@@ -143,7 +214,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * BuddyPress Cover Image
 		 */
 		function cover_image_css( $settings = array() ){
@@ -158,7 +229,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * BuddyPress Logo
 		 */
 		function logo_args( $logo_args, $logo_suffix ){
@@ -181,7 +252,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * Cover Image CSS
 		 */
 		function cover_image_callback( $params = array() ){
@@ -208,7 +279,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * BuddyPress Current Page ID
 		 */
 		public static function current_page_id(){
@@ -235,7 +306,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * Get BuddyPress Custom Option
 		 */
 		public static function get_page_data( $key, $default = false ){
@@ -255,7 +326,7 @@ if( ! class_exists( 'TIELABS_BUDDYPRESS' )){
 		}
 
 
-		/*
+		/**
 		 * Add is_buddypress to main tie js var
 		 */
 		public static function js_var( $array ){

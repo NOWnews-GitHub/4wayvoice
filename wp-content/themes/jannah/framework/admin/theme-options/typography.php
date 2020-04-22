@@ -28,10 +28,10 @@ foreach( $fonts_sections as $font_section_key => $font_section_text ){
 			'id'      => 'typography_'. $font_section_key .'_font_source',
 			'type'    => 'select',
 			'options' => array(
-				''           => esc_html__( 'Theme Defaults', TIELABS_TEXTDOMAIN ),
-				'standard'   => esc_html__( 'Standard Fonts', TIELABS_TEXTDOMAIN ),
-				'google'     => esc_html__( 'Google Fonts', TIELABS_TEXTDOMAIN ),
-				'fontfaceme' => esc_html__( 'FontFace.me Fonts', TIELABS_TEXTDOMAIN ),
+				''           => esc_html__( 'Theme Defaults',     TIELABS_TEXTDOMAIN ),
+				'standard'   => esc_html__( 'Standard Fonts',     TIELABS_TEXTDOMAIN ),
+				'google'     => esc_html__( 'Google Fonts',       TIELABS_TEXTDOMAIN ),
+				'fontfaceme' => esc_html__( 'FontFace.me Fonts',  TIELABS_TEXTDOMAIN ),
 				'custom'     => esc_html__( 'Upload Custom Font', TIELABS_TEXTDOMAIN ),
 				'external'   => esc_html__( 'Any external fonts (e.g. Typekit)', TIELABS_TEXTDOMAIN ),
 			),
@@ -223,38 +223,39 @@ tie_build_theme_option(
 	));
 
 $fonts_settings = array(
-	'body'                     => esc_html__( 'Body', TIELABS_TEXTDOMAIN ),
-	'site_title'               => esc_html__( 'Header Site name', TIELABS_TEXTDOMAIN ),
-	'top_menu'                 => esc_html__( 'Secondary Menu', TIELABS_TEXTDOMAIN ),
-	'top_menu_sub'             => esc_html__( 'Secondary sub menus', TIELABS_TEXTDOMAIN ),
-	'main_nav'                 => esc_html__( 'Main Navigation', TIELABS_TEXTDOMAIN ),
+	'body'                     => esc_html__( 'General Secondary Texts',   TIELABS_TEXTDOMAIN ),
+	'site_title'               => esc_html__( 'Header Site name',          TIELABS_TEXTDOMAIN ),
+	'top_menu'                 => esc_html__( 'Secondary Menu',            TIELABS_TEXTDOMAIN ),
+	'top_menu_sub'             => esc_html__( 'Secondary sub menus',       TIELABS_TEXTDOMAIN ),
+	'main_nav'                 => esc_html__( 'Main Navigation',           TIELABS_TEXTDOMAIN ),
 	'main_nav_sub'             => esc_html__( 'Main Navigation sub menus', TIELABS_TEXTDOMAIN ),
-	'mobile_menu'              => esc_html__( 'Mobile Menu', TIELABS_TEXTDOMAIN ),
-	'breaking_news'            => esc_html__( 'Breaking News Label', TIELABS_TEXTDOMAIN ),
+	'mobile_menu'              => esc_html__( 'Mobile Menu',               TIELABS_TEXTDOMAIN ),
+	'breaking_news'            => esc_html__( 'Breaking News Label',       TIELABS_TEXTDOMAIN ),
 	'breaking_news_posts'      => esc_html__( 'Breaking News post titles', TIELABS_TEXTDOMAIN ),
-	'breadcrumbs'              => esc_html__( 'Breadcrumbs', TIELABS_TEXTDOMAIN ),
-	'buttons'                  => esc_html__( 'Buttons', TIELABS_TEXTDOMAIN ),
-	'post_cat_label'           => esc_html__( 'Post Categories Label', TIELABS_TEXTDOMAIN ),
-	'single_post_title'        => esc_html__( 'Single Post Title', TIELABS_TEXTDOMAIN ),
-	'single_archive_title'     => esc_html__( 'Archive Page Title', TIELABS_TEXTDOMAIN ),
+	'breadcrumbs'              => esc_html__( 'Breadcrumbs',               TIELABS_TEXTDOMAIN ),
+	'buttons'                  => esc_html__( 'Buttons',                   TIELABS_TEXTDOMAIN ),
+	'post_cat_label'           => esc_html__( 'Post Categories Label',     TIELABS_TEXTDOMAIN ),
+	'single_post_title'        => esc_html__( 'Single Post Title',         TIELABS_TEXTDOMAIN ),
+	'single_archive_title'     => esc_html__( 'Archive Page Title',        TIELABS_TEXTDOMAIN ),
 
-	'post_title_sliders'        => esc_html__( 'Post Titles in Homepage Sliders', TIELABS_TEXTDOMAIN ),
+	'post_title_sliders'        => esc_html__( 'Post Titles in Homepage Sliders',        TIELABS_TEXTDOMAIN ),
 	'post_medium_title_sliders' => esc_html__( 'Medium Post Titles in Homepage Sliders', TIELABS_TEXTDOMAIN ),
-	'post_small_title_sliders'  => esc_html__( 'Small Post Titles in Homepage Sliders', TIELABS_TEXTDOMAIN ),
+	'post_small_title_sliders'  => esc_html__( 'Small Post Titles in Homepage Sliders',  TIELABS_TEXTDOMAIN ),
 
-	'post_title_blocks'        => esc_html__( 'Post Titles in Homepage Blocks', TIELABS_TEXTDOMAIN ),
+	'post_title_blocks'        => esc_html__( 'Post Titles in Homepage Blocks',        TIELABS_TEXTDOMAIN ),
 	'post_medium_title_blocks' => esc_html__( 'Medium Post Titles in Homepage Blocks', TIELABS_TEXTDOMAIN ),
-	'post_small_title_blocks'  => esc_html__( 'Small Post Titles in Homepage Blocks', TIELABS_TEXTDOMAIN ),
+	'post_small_title_blocks'  => esc_html__( 'Small Post Titles in Homepage Blocks',  TIELABS_TEXTDOMAIN ),
 
 	'post_entry'               => esc_html__( 'Single Post Page Content', TIELABS_TEXTDOMAIN ),
-	'blockquote'               => esc_html__( 'Blockquotes', TIELABS_TEXTDOMAIN ),
+	'blockquote'               => esc_html__( 'Blockquotes',              TIELABS_TEXTDOMAIN ),
 	'sections_title_default'   => esc_html__( 'Sections Titles: Default & Centered Styles', TIELABS_TEXTDOMAIN ),
 	'sections_title_big'       => esc_html__( 'Sections Titles: Big Style', TIELABS_TEXTDOMAIN ),
-	'boxes_title'              => esc_html__( 'Blocks Titles', TIELABS_TEXTDOMAIN ),
+	'boxes_title'              => esc_html__( 'Blocks Titles',  TIELABS_TEXTDOMAIN ),
 	'widgets_title'            => esc_html__( 'Widgets Titles', TIELABS_TEXTDOMAIN ),
 	'widgets_post_title'       => esc_html__( 'Post title in widgets', TIELABS_TEXTDOMAIN ),
-	'copyright'                => esc_html__( 'Copyright Area', TIELABS_TEXTDOMAIN ),
+	'copyright'                => esc_html__( 'Copyright Area',        TIELABS_TEXTDOMAIN ),
 	'footer_widgets_title'     => esc_html__( 'Footer Widgets Titles', TIELABS_TEXTDOMAIN ),
+
 	'post_heading_h1'          => esc_html__( 'Post Heading:', TIELABS_TEXTDOMAIN ) .' H1',
 	'post_heading_h2'          => esc_html__( 'Post Heading:', TIELABS_TEXTDOMAIN ) .' H2',
 	'post_heading_h3'          => esc_html__( 'Post Heading:', TIELABS_TEXTDOMAIN ) .' H3',
@@ -272,6 +273,3 @@ foreach( $fonts_settings as $font_section_key => $font_section_text ){
 			'type'  => 'typography',
 		));
 }
-
-
-?>

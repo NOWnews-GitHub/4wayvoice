@@ -14,6 +14,10 @@
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
+/**
+ * TieLabs/before_post_head hook.
+ *
+ */
 do_action( 'TieLabs/before_post_head' ); ?>
 
 <header class="entry-header-outer">

@@ -18,7 +18,9 @@ get_header(); ?>
 					do_action( 'TieLabs/before_archive_title' );
 
 					the_archive_title( '<h1 class="page-title">', '</h1>' );
-					the_archive_description( '<div class="taxonomy-description">', '</div>' );
+					the_archive_description( '<div class="taxonomy-description entry">', '</div>' );
+
+					do_action( 'TieLabs/after_archive_title' );
 
 				?>
 			</header><!-- .entry-header-outer /-->

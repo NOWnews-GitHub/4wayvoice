@@ -16,7 +16,6 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 		public $menu_slug = 'tie-theme-welcome';
 
 
-
 		/**
 		 * __construct
 		 *
@@ -27,7 +26,6 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 			add_filter( 'TieLabs/panel_submenus', array( $this, '_add_options_menu' ));
 			add_filter( 'TieLabs/about_tabs',     array( $this, '_add_about_tabs' ), 9 );
 		}
-
 
 
 		/**
@@ -48,9 +46,8 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 		}
 
 
-
 		/**
-		 * _add_bout_tabs
+		 * _add_about_tabs
 		 *
 		 * Add the Getting Started Page to the about page's tabs
 		 */
@@ -65,9 +62,8 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 		}
 
 
-
 		/**
-		 * _out
+		 * _page_content
 		 *
 		 */
 		function _page_content() {
@@ -85,7 +81,7 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 
 
 		/**
-		 * _welcome_head
+		 * _head_section
 		 *
 		 * Show the Welcome Page head
 		 */
@@ -151,11 +147,10 @@ if( ! class_exists( 'TIELABS_WELCOME_PAGE' )){
 			<?php
 		}
 
-
 	}
 
 
-	# Instantiate the class
+	// Instantiate the class
 	new TIELABS_WELCOME_PAGE();
 
 }

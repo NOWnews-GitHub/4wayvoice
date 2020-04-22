@@ -8,13 +8,13 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 
-# Set custom class for the post without thumb
+// Set custom class for the post without thumb
 $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] )) ? 'no-small-thumbs' : '';
 
 ?>
@@ -27,19 +27,16 @@ $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] )) ? 'no-sm
 		if( ! empty( $block['post_meta'] )){
 			tie_the_post_meta( array( 'trending' => true, 'author' => false, 'comments' => false, 'review' => true ) );
 		}
-
 	?>
 
-	<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+	<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 
 	<?php
 
-		# Get the post thumbnail
+		// Get the post thumbnail
 		if ( has_post_thumbnail() && empty( $block['thumb_all'] ) ){
-
-			tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-small', false );
+			tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-small', false, false, true, $block['media_overlay'] );
 		}
-
 
 		if( ! empty( $block['excerpt'] )){ ?>
 			<div class="post-details">
@@ -47,7 +44,5 @@ $no_thumb = ( ! has_post_thumbnail() || ! empty( $block['thumb_all'] )) ? 'no-sm
 			</div>
 			<?php
 		}
-
 	?>
-
 </li>

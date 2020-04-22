@@ -12,7 +12,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 	class TIELABS_SETTINGS_POST{
 
-		private $default_post_types;
 
 		/**
 		 * __construct
@@ -21,27 +20,26 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		 */
 		function __construct(){
 
-			$this->default_post_types = apply_filters( 'TieLabs/Settings/default_post_types', array( 'post' ) );
+			add_action( 'admin_head',     array( $this, 'post_subtitle' ) );
+			add_action( 'save_post',      array( $this, 'save' ) );
+			add_action( 'add_meta_boxes', array( $this, 'meta_boxes' ), 3 );
 
-			add_action( 'admin_head',      array( $this, 'post_subtitle' ) );
-			add_action( 'save_post',       array( $this, 'save' ) );
-			add_action( 'add_meta_boxes',  array( $this, 'meta_boxes' ), 3 );
+			add_filter( 'TieLabs/Settings/Post/general', array( $this, 'posts_page_template' ) );
+			add_filter( 'TieLabs/Settings/Post/general', array( $this, 'authors_page_template' ) );
 
-			add_filter( 'TieLabs/Settings/Post/general',          array( $this, 'posts_page_template' ) );
-			add_filter( 'TieLabs/Settings/Post/general',          array( $this, 'authors_page_template' ) );
+			add_filter( 'TieLabs/Settings/Post/general', array( $this, 'general_page_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/general', array( $this, 'general_post_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/general', array( $this, 'post_format_settings' ) );
 
-			add_filter( 'TieLabs/Settings/Post/general',          array( $this, 'general_page_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/general',          array( $this, 'general_post_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/general',          array( $this, 'post_format_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/layout',  array( $this, 'layout_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/logo',    array( $this, 'logo_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/sidebar', array( $this, 'sidebar_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/styles',  array( $this, 'styles_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/menu',    array( $this, 'menu_settings' ) );
 
-			add_filter( 'TieLabs/Settings/Post/layout',           array( $this, 'layout_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/logo',             array( $this, 'logo_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/sidebar',          array( $this, 'sidebar_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/styles',           array( $this, 'styles_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/menu',             array( $this, 'menu_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/components',       array( $this, 'components_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/components',       array( $this, 'post_components_settings' ) );
-			add_filter( 'TieLabs/Settings/Post/e3lan',            array( $this, 'e3lan_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/components', array( $this, 'components_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/components', array( $this, 'post_components_settings' ) );
+			add_filter( 'TieLabs/Settings/Post/e3lan',      array( $this, 'e3lan_settings' ) );
 
 			add_action( 'TieLabs/Settings/Post/after_source-via', array( $this, 'source_settings' ) );
 			add_action( 'TieLabs/Settings/Post/after_source-via', array( $this, 'via_settings' ) );
@@ -56,13 +54,19 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		 */
 		function post_subtitle(){
 
+			// Enable/Disable Sub Title
+			if( ! apply_filters( 'TieLabs/Settings/Post/is_subtitle', true ) ){
+				return;
+			}
+
+			// is Gutenberg?
 			if( TIELABS_ADMIN_HELPER::is_edit_gutenberg() ){
 
 				add_meta_box(
 					'tie_post_secondry_title',
 					esc_html__( 'Subtitle', TIELABS_TEXTDOMAIN ),
 					array( $this, 'secondry_title' ),
-					'post',
+					TIELABS_HELPER::get_supported_post_types(),
 					'side',
 					'high'
 				);
@@ -71,7 +75,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				add_action( 'edit_form_after_title', array( $this, 'secondry_title' ), 40 );
 			}
 		}
-
 
 
 		/**
@@ -99,7 +102,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Secondry post title
 		 *
@@ -109,7 +111,17 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			$post_id = get_the_id();
 
-			if( ( ! empty( $post_id ) && get_post_type( $post_id ) != 'post' ) || get_current_screen()->post_type != 'post' ){
+			// Get current post type
+			if( ! empty( $post_id ) ){
+				$current_post_type = get_post_type( $post_id );
+			}
+
+			if( empty( $current_post_type ) && get_current_screen()->post_type ){
+				$current_post_type = get_current_screen()->post_type;
+			}
+
+			// return if it is not supported
+			if( ! in_array( $current_post_type, TIELABS_HELPER::get_supported_post_types() ) ){
 				return;
 			}
 
@@ -124,7 +136,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			<?php
 		}
-
 
 
 		/**
@@ -164,7 +175,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Add Button in the Gutenburg page to the TieLabs Builder
 		 */
@@ -173,7 +183,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				<a class="tie-primary-button button button-hero button-primary" id="gutenburg-use-classic-builder" style="width: 100%;"><?php echo esc_html__( 'Use the TieLabs Builder', TIELABS_TEXTDOMAIN ); ?></a>
 			<?php
 		}
-
 
 
 		/**
@@ -186,7 +195,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			tie_build_option( $option, $id, $data );
 		}
-
 
 
 		/**
@@ -256,19 +264,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'logo_url',
 				),
 
-				// Post Components
-				'tie_hide_meta',
-				'tie_hide_tags',
-				'tie_hide_categories',
-				'tie_hide_author',
-				'tie_hide_nav',
-				'tie_hide_share_top',
-				'tie_hide_share_bottom',
-				'tie_hide_newsletter',
-				'tie_hide_related',
-				'tie_hide_read_next',
-				'tie_hide_check_also',
-
 				// Post Sidebar
 				'tie_sidebar_pos',
 				'tie_sidebar_post',
@@ -306,6 +301,18 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				'tie_hide_below_content',
 				'tie_get_banner_below_content',
 
+				// Post Components
+				'tie_hide_meta',
+				'tie_hide_tags',
+				'tie_hide_categories',
+				'tie_hide_author',
+				'tie_hide_nav',
+				'tie_hide_share_top',
+				'tie_hide_share_bottom',
+				'tie_hide_newsletter',
+				'tie_hide_related',
+				'tie_hide_read_next',
+				'tie_hide_check_also',
 
 				// Story Highlights
 				'tie_highlights_text',
@@ -346,7 +353,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				'tie_blog_pagination',
 			));
 
-
 			foreach( $custom_meta_fields as $key => $custom_meta_field ){
 
 				// Dependency Options fields
@@ -380,9 +386,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					}
 				}
 			}
-
 		}
-
 
 
 		/**
@@ -433,7 +437,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				),
 			);
 
-			if( get_post_type() && in_array( get_post_type(), $this->default_post_types ) ){
+			if( TIELABS_HELPER::is_supported_post_type() ){
 
 				$settings_tabs['highlights'] = array(
 					'icon'  => 'editor-alignleft',
@@ -512,8 +516,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			<?php
 		}
-
-
 
 
 		/**
@@ -619,7 +621,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Authors Templates Settings
 		 */
@@ -666,7 +667,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 			}
 
 			return apply_filters( 'TieLabs/Settings/Post/authors_page_template/defaults', $settings );
-
 		}
 
 
@@ -727,6 +727,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'content' => '<div id="tie_do_not_dublicate_option">',
 					'type'    => 'html',
 				),
+
 				array(
 					'title' => esc_html__( 'Don\'t duplicate posts', TIELABS_TEXTDOMAIN ),
 					'type'  => 'header',
@@ -736,7 +737,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'name' => esc_html__( 'Don\'t duplicate posts', TIELABS_TEXTDOMAIN ),
 					'id'   => 'tie_do_not_dublicate',
 					'type' => 'checkbox',
-					'hint' => esc_html__( 'Note: This option doesn\'t work with the AJAX pagination option in the blocks.', TIELABS_TEXTDOMAIN ),
+					'hint' => esc_html__( 'Note: This option doesn\'t work with the AJAX pagination.', TIELABS_TEXTDOMAIN ),
 				),
 
 				array(
@@ -754,16 +755,14 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * General Post Settings
 		 */
 		function general_post_settings( $current_settings ){
 
-			if( ! get_post_type() || ! in_array( get_post_type(), $this->default_post_types ) ){
+			if( ! TIELABS_HELPER::is_supported_post_type() ){
 				return $current_settings;
 			}
-
 
 			$settings = array(
 
@@ -815,9 +814,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 			}
 
 			return apply_filters( 'TieLabs/Settings/Post/general/defaults', $settings );
-
 		}
-
 
 
 		/**
@@ -825,10 +822,9 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		 */
 		function post_format_settings( $current_settings ){
 
-			if( ! get_post_type() || ! in_array( get_post_type(), $this->default_post_types ) ){
+			if( ! TIELABS_HELPER::is_supported_post_type() ){
 				return $current_settings;
 			}
-
 
 			$settings = array(
 
@@ -847,7 +843,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 						'video'    => '#tie_embed_code-item, #tie_video_url-item, #tie_video_self-item',
 						'audio'    => '#tie_audio_embed-item, #tie_audio_mp3-item, #tie_audio_m4a-item, #tie_audio_oga-item, #tie_audio_soundcloud-item, #tie_audio_soundcloud_play-item , #tie_audio_soundcloud_visual-item',
 						'slider'   => '#tie_post_slider-item, #tie_post_gallery-item',
-						'map'      => '#tie_googlemap_url-item',),
+						'map'      => '#tie_googlemap_url-item, #tie_googlemap_notice-item', ),
 					'options' => array(
 						'standard' => array( esc_html__( 'Standard', TIELABS_TEXTDOMAIN ) => 'formats/format-standard.png' ),
 						'thumb'    => array( esc_html__( 'Image',    TIELABS_TEXTDOMAIN ) => 'formats/format-img.png' ),
@@ -955,14 +951,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'class'    => 'tie_post_head',
 				),
 
-				// Maps
-				array(
-					'name'  => esc_html__( 'Google Maps URL', TIELABS_TEXTDOMAIN ),
-					'id'    => 'tie_googlemap_url',
-					'type'  => 'text',
-					'class' => 'tie_post_head',
-				),
-
 				// Slider
 				array(
 					'id'    => 'tie_post_gallery',
@@ -980,15 +968,30 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 				),
 			);
 
+			// Maps
+			if( ! tie_get_option( 'api_google_maps' ) ){
+				$settings[] = array(
+					'id'    => 'tie_googlemap_notice',
+					'type'  => 'error',
+					'class' => 'tie_post_head',
+					'text' => esc_html__( 'You need to set the Google Map API Key in the theme options page > API Keys.', TIELABS_TEXTDOMAIN ),
+				);
+			}
+
+			$settings[] = array(
+				'name'  => esc_html__( 'Google Maps URL', TIELABS_TEXTDOMAIN ),
+				'id'    => 'tie_googlemap_url',
+				'type'  => 'text',
+				'class' => 'tie_post_head',
+			);
+
 
 			if( ! empty( $current_settings ) && is_array( $current_settings ) ){
 				$settings = array_merge( $current_settings, $settings );
 			}
 
 			return apply_filters( 'TieLabs/Settings/Post/formats/defaults', $settings );
-
 		}
-
 
 
 		/**
@@ -1019,7 +1022,7 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 
 			// Post layout
-			if( get_post_type() && in_array( get_post_type(), $this->default_post_types ) ){
+			if( TIELABS_HELPER::is_supported_post_type() ){
 
 				$settings[] =	array(
 					'title' => esc_html__( 'Post Layout', TIELABS_TEXTDOMAIN ),
@@ -1091,7 +1094,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Post Logo Settings
 		 */
@@ -1122,18 +1124,11 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'type'    => 'radio',
 					'toggle'  => array(
 						'logo'  => '#logo-item, #logo_retina-item, #logo_retina_width-item, #logo_retina_height-item',
-						'title' => '#logo_text-item'),
+						'title' => ''),
 					'options'	=> array(
 						'logo'  => esc_html__( 'Image',      TIELABS_TEXTDOMAIN ),
 						'title' => esc_html__( 'Site Title', TIELABS_TEXTDOMAIN ),
 				)),
-
-				array(
-					'name'    => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
-					'id'      => 'logo_text',
-					'type'    => 'text',
-					'class'   => 'logo_setting',
-				),
 
 				array(
 					'name'  => esc_html__( 'Logo Image', TIELABS_TEXTDOMAIN ),
@@ -1164,6 +1159,13 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 					'type'  => 'number',
 					'class' => 'logo_setting',
 					'hint'  => esc_html__( 'If retina logo is uploaded, please enter the standard logo (1x) version height, do not enter the retina logo height.', TIELABS_TEXTDOMAIN ),
+				),
+
+				array(
+					'name'  => esc_html__( 'Logo Text', TIELABS_TEXTDOMAIN ),
+					'id'    => 'logo_text',
+					'type'  => 'text',
+					'hint'  => esc_html__( 'In the Logo Image type this will be used as the ALT text.', TIELABS_TEXTDOMAIN ),
 				),
 
 				array(
@@ -1201,7 +1203,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			return apply_filters( 'TieLabs/Settings/Post/logo/defaults', $settings );
 		}
-
 
 
 		/**
@@ -1258,7 +1259,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			return apply_filters( 'TieLabs/Settings/Post/sidebar/defaults', $settings );
 		}
-
 
 
 		/**
@@ -1413,7 +1413,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Post Menu Settings
 		 */
@@ -1441,7 +1440,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			return apply_filters( 'TieLabs/Settings/Post/components/defaults', $settings );
 		}
-
 
 
 		/**
@@ -1487,16 +1485,14 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Post Components Settings
 		 */
 		function post_components_settings( $current_settings ){
 
-			if( ! get_post_type() || ! in_array( get_post_type(), $this->default_post_types ) ){
+			if( ! TIELABS_HELPER::is_supported_post_type() ){
 				return $current_settings;
 			}
-
 
 			$settings = array(
 
@@ -1601,7 +1597,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Post Ads Settings
 		 */
@@ -1670,7 +1665,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 
 			return apply_filters( 'TieLabs/Settings/Post/e3lan/defaults', $settings );
 		}
-
 
 
 		/**
@@ -1752,7 +1746,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 		}
 
 
-
 		/**
 		 * Via Settings
 		 */
@@ -1827,7 +1820,6 @@ if( ! class_exists( 'TIELABS_SETTINGS_POST' )){
 			</div>
 			<?php
 		}
-
 
 
 		/**

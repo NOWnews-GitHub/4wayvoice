@@ -233,10 +233,12 @@ span.video-close-btn{
 		margin-left: 20px;
 	}
 
-	.reply{
+	.has-avatar .reply{
 		margin-left: 0;
 		margin-right: 90px;
+	}
 
+	.reply{
 		a{
 			float: right;
 		}

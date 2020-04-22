@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  3.0.0
+ * @version  4.0.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -44,16 +44,31 @@ if( is_category() && tie_get_category_option( 'featured_posts' )){
 			$section_styles[] = 'background-color: '. $background_color .';';
 		}
 
-		if( $background_video ){
-			$section_video_bg = 'data-jarallax-video="'. $background_video .'"';
-			$classes[] = 'has-video-background';
-		}
-		elseif( $background_img ){
+		if( $background_img ){
 			$section_styles[] = 'background-image: url( '. $background_img .');';
 		}
 
-		if( $parallax ){
+		if( $background_video ){
 
+			// Check if the URL contains an mp4 file
+			if( strpos( $background_video, '.mp4' ) !== false ){
+
+				// Make sure that there is no mp4: added before
+				if( substr( $background_video, 0, 4 ) !== "mp4:" ){
+
+					// Add mp4:
+					$background_video = 'mp4:'.background_video;
+				}
+			}
+
+			$section_video_bg = 'data-jarallax-video="'. $background_video .'"';
+			$classes[] = 'has-video-background';
+		}
+
+
+		if( $parallax || $background_video ){ // If video is active enable the parallax
+
+			# Get the parallax js file
 			wp_enqueue_script( 'tie-js-parallax' );
 
 			$classes[] = 'tie-parallax';
@@ -88,4 +103,6 @@ if( is_category() && tie_get_category_option( 'featured_posts' )){
 			</div><!-- .section-item /-->
 		</div><!-- #category-slider /-->
 	<?php
+
+	do_action( 'TieLabs/Category/after_slider' );
 }

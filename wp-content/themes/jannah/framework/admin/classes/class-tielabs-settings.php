@@ -22,7 +22,6 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 		public $option_type;
 		public $settings;
 
-
 		/**
 		 * __construct
 		 */
@@ -36,6 +35,7 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 
 			// Options Without Labels
 			$with_label = false;
+
 			switch ( $this->option_type ) {
 				case 'tab-title':
 					$this->tab_title();
@@ -139,6 +139,10 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 
 					case 'gallery':
 						$this->gallery();
+						break;
+
+					case 'icon':
+						$this->icon();
 						break;
 
 					default:
@@ -292,6 +296,7 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 							</label>
 						<?php
 					}
+
 				?>
 			</div>
 			<div class="clear"></div>
@@ -306,9 +311,11 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 				jQuery(document).ready(function(){
 					jQuery( '.<?php echo esc_js( $this->item_id ) ?>-options' ).hide();
 					<?php
-						if( ! empty( $this->settings['toggle'][ $this->current_value ] )){ ?>
+						if( isset( $this->settings['toggle'][ $this->current_value ] ) ){ // For the option that doesn't have sub option such as the Logo > Title option
+							if( ! empty( $this->settings['toggle'][ $this->current_value ] ) ){ ?>
 							jQuery( '<?php echo esc_js( $this->settings['toggle'][ $this->current_value ] ) ?>' ).show();
 							<?php
+							}
 						}
 						elseif( is_array( $this->settings['toggle'] ) ){
 							$first_elem = reset( $this->settings['toggle'] ) ?>
@@ -397,15 +404,18 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 		 */
 		private function editor(){
 
+			// Settings
+			$settings = ! empty( $this->settings['editor'] ) ? $this->settings['editor'] : array( 'editor_height' => '400px', 'media_buttons' => false );
+			$settings['textarea_name'] = $this->option_name;
+
+			$this->current_value = ! empty( $this->settings['kses'] ) ? wp_kses_stripslashes( stripslashes( $this->current_value ) ) : $this->current_value;
+
 			wp_editor(
 				$this->current_value,
 				$this->item_id,
-				array(
-					'textarea_name' => $this->option_name,
-					'editor_height' => '400px',
-					'media_buttons' => false
-				)
+				$settings
 			);
+
 		}
 
 
@@ -541,7 +551,7 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 
 				$i = 0;
 
-				$images_path = empty( $external_images ) ? TIELABS_TEMPLATE_URL .'/framework/admin/assets/images/' : '';
+				$images_path = ! isset( $this->settings['external_images'] ) ? TIELABS_TEMPLATE_URL .'/framework/admin/assets/images/' : '';
 
 				foreach ( $this->settings['options'] as $option_key => $option ){
 					$i++;
@@ -729,6 +739,19 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 
 
 		/**
+		 * Icon
+		 */
+		private function icon(){
+			?>
+				<input <?php echo $this->item_id_attr ?> <?php echo $this->name_attr ?> type="hidden" value="<?php echo esc_attr( $this->current_value ) ?>">
+				<div class="icon-picker-wrapper">
+					<div id="preview-edit-icon-<?php echo esc_attr( $this->item_id ) ?>" data-target="#<?php echo esc_attr( $this->item_id ) ?>" class="button icon-picker fa <?php echo esc_attr( $this->current_value ) ?>"></div>
+				</div>
+			<?php
+		}
+
+
+		/**
 		 * Select
 		 */
 		private function select(){
@@ -868,8 +891,8 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 
 					<option <?php selected( $current_value['size'], '' ); ?> <?php disabled(1,1); ?>><?php esc_html_e( 'Font Size in Pixels', TIELABS_TEXTDOMAIN ); ?></option>
 					<option value=""><?php esc_html_e( 'Default', TIELABS_TEXTDOMAIN ); ?></option>
-					<?php for( $i=7 ; $i<61 ; $i++){ ?>
-						<option value="<?php echo esc_attr( $i ) ?>" <?php selected( $current_value['size'], $i ); ?>><?php echo esc_html( $i ) ?></option>
+					<?php for( $i=8 ; $i<61 ; $i+=1){ ?>
+						<option value="<?php echo ( $i ) ?>" <?php selected( $current_value['size'], $i ); ?>><?php echo ( $i ) ?></option>
 					<?php } ?>
 				</select>
 			</div>
@@ -880,8 +903,10 @@ if( ! class_exists( 'TIELABS_SETTINGS' )){
 					<option <?php selected( $current_value['line_height'], '' ); ?> <?php disabled(1,1); ?>><?php esc_html_e( 'Line Height', TIELABS_TEXTDOMAIN ); ?></option>
 					<option value=""><?php esc_html_e( 'Default', TIELABS_TEXTDOMAIN ); ?></option>
 
-					<?php for( $i=10 ; $i<=60 ; $i+=0.5 ){ ?>
-						<option value="<?php echo esc_attr( $i/10 ) ?>" <?php selected( $current_value['line_height'], ($i/10) ); ?>><?php echo number_format_i18n( $i/10 , 2 )?></option>
+					<?php for( $i=10 ; $i<=60 ; $i+=2.5 ){
+						$line_height = $i/10;
+						?>
+						<option value="<?php echo ( $line_height ) ?>" <?php selected( $current_value['line_height'], $line_height ); ?>><?php echo ( $line_height ) ?></option>
 					<?php } ?>
 				</select>
 			</div>

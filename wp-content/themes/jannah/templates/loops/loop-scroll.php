@@ -8,7 +8,7 @@
  * will need to copy the new files to your child theme to maintain compatibility.
  *
  * @author   TieLabs
- * @version  2.1.0
+ * @version  4.5.0
  */
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -19,7 +19,9 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 	<?php if ( has_post_thumbnail() ): ?>
 		<div class="slide-img">
-			<?php tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large' ); ?>
+			<?php
+				tie_post_thumbnail( TIELABS_THEME_SLUG.'-image-large', 'small', false, true, $block['media_overlay'] );
+			?>
 		</div><!-- .slide-img /-->
 	<?php endif; ?>
 
@@ -27,24 +29,20 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 		<?php
 
-			# Get the Post Meta info
+			// Get the Post Meta info
 			if( ! empty( $block['post_meta'] )){
-
 				tie_the_post_meta( array( 'author' => false ) );
 			}
-
 		?>
 
-		<h3 class="post-title"><a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h3>
+		<h2 class="post-title"><a href="<?php the_permalink(); ?>"><?php tie_the_title( $block['title_length'] ); ?></a></h2>
 
 		<?php
 
-			# Get the review score for the posts with stars
+			// Get the review score for the posts with stars
 			if( ! empty( $block['post_meta'] )){
-
 				echo '<div class="post-meta">'. tie_get_score( 'stars' ) .'</div>';
 			}
-
 		?>
 
 	</div>

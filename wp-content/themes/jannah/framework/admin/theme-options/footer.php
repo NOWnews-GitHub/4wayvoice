@@ -26,9 +26,17 @@
 
 	tie_build_theme_option(
 		array(
-			'name'    => esc_html__( 'Username', TIELABS_TEXTDOMAIN ),
-			'id'      => 'footer_instagram_source_id',
-			'type'    => 'text',
+			'name' => esc_html__( 'Username', TIELABS_TEXTDOMAIN ),
+			'id'   => 'footer_instagram_username',
+			'type' => 'text',
+		));
+
+	tie_build_theme_option(
+		array(
+			'name' => esc_html__( 'User ID', TIELABS_TEXTDOMAIN ),
+			'id'   => 'footer_instagram_userid',
+			'hint' => '<a href="https://tielabs.com/go/find-instagram-user-id" target="_blank" rel="nofollow noopener">'. esc_html__( 'Find your Instagram User ID.', TIELABS_TEXTDOMAIN ) .'</a>',
+			'type' => 'text',
 		));
 
 	tie_build_theme_option(
@@ -62,9 +70,9 @@
 
 	tie_build_theme_option(
 		array(
-			'name'    => esc_html__( 'Follow Us Button Text', TIELABS_TEXTDOMAIN ),
-			'id'      => 'footer_instagram_button_text',
-			'type'    => 'text',
+			'name' => esc_html__( 'Follow Us Button Text', TIELABS_TEXTDOMAIN ),
+			'id'   => 'footer_instagram_button_text',
+			'type' => 'text',
 		));
 
 	tie_build_theme_option(
@@ -95,9 +103,9 @@
 
 	tie_build_theme_option(
 		array(
-			'name'   => esc_html__( 'Add border around the widgets area', TIELABS_TEXTDOMAIN ),
-			'id'     => 'footer_widgets_border_area_1',
-			'type'   => 'checkbox',
+			'name' => esc_html__( 'Add border around the widgets area', TIELABS_TEXTDOMAIN ),
+			'id'   => 'footer_widgets_border_area_1',
+			'type' => 'checkbox',
 		));
 
 
@@ -155,9 +163,9 @@
 
 	tie_build_theme_option(
 		array(
-			'name' => esc_html__( 'Enable', TIELABS_TEXTDOMAIN ),
-			'id'   => 'copyright_area',
-			'type' => 'checkbox',
+			'name'   => esc_html__( 'Enable', TIELABS_TEXTDOMAIN ),
+			'id'     => 'copyright_area',
+			'type'   => 'checkbox',
 			'toggle' => '#copyright_area_options',
 		));
 
@@ -195,18 +203,18 @@
 
 		tie_build_theme_option(
 			array(
-				'name'  => esc_html__( 'Footer Text One', TIELABS_TEXTDOMAIN ),
-				'id'    => 'footer_one',
-				'hint'  => $footer_codes,
-				'type'  => 'textarea',
+				'name' => esc_html__( 'Footer Text One', TIELABS_TEXTDOMAIN ),
+				'id'   => 'footer_one',
+				'hint' => $footer_codes,
+				'type' => 'textarea',
 			));
 
 		tie_build_theme_option(
 			array(
-				'name'  => esc_html__( 'Footer Text Two', TIELABS_TEXTDOMAIN ),
-				'id'    => 'footer_two',
-				'hint'  => $footer_codes,
-				'type'  => 'textarea',
+				'name' => esc_html__( 'Footer Text Two', TIELABS_TEXTDOMAIN ),
+				'id'   => 'footer_two',
+				'hint' => $footer_codes,
+				'type' => 'textarea',
 			));
 
 	echo '</div>';

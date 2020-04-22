@@ -18,20 +18,20 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 		function __construct() {
 
 			// Block Load More
-			add_action( 'wp_ajax_nopriv_tie_blocks_load_more', array( $this, 'block_load_more' ) );
-			add_action( 'wp_ajax_tie_blocks_load_more',        array( $this, 'block_load_more' ) );
+			add_action( 'wp_ajax_nopriv_tie_blocks_load_more',    array( $this, 'block_load_more' ) );
+			add_action( 'wp_ajax_tie_blocks_load_more',           array( $this, 'block_load_more' ) );
 
 			// Archive Load More
-			add_action( 'wp_ajax_nopriv_tie_archives_load_more', array( $this, 'archive_load_more' ) );
-			add_action( 'wp_ajax_tie_archives_load_more',        array( $this, 'archive_load_more' ) );
+			add_action( 'wp_ajax_nopriv_tie_archives_load_more',  array( $this, 'archive_load_more' ) );
+			add_action( 'wp_ajax_tie_archives_load_more',         array( $this, 'archive_load_more' ) );
 
 			// Mega Menu
 			add_action( 'wp_ajax_nopriv_tie_mega_menu_load_ajax', array( $this, 'mega_menu' ) );
 			add_action( 'wp_ajax_tie_mega_menu_load_ajax',        array( $this, 'mega_menu' ) );
 
 			// Live Search
-			add_action( 'wp_ajax_nopriv_tie_ajax_search',  array( $this, 'live_search' ) );
-			add_action( 'wp_ajax_tie_ajax_search',         array( $this, 'live_search' ) );
+			add_action( 'wp_ajax_nopriv_tie_ajax_search',         array( $this, 'live_search' ) );
+			add_action( 'wp_ajax_tie_ajax_search',                array( $this, 'live_search' ) );
 		}
 
 
@@ -72,7 +72,6 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 					$count++;
 
 					if( $block['style'] == 'woocommerce' && TIELABS_WOOCOMMERCE_IS_ACTIVE ){
-
 						wc_get_template_part( 'content', 'product' );
 					}
 					else{
@@ -117,14 +116,27 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 		 */
 		function archive_load_more(){
 
-			$query       = stripslashes( $_REQUEST['query'] );
-			$query       = json_decode ( str_replace( '\'', '"', $query ), true );
+			// is_archive() doesn't available in the Ajax requests
+			define( 'TIE_IS_ARCHIVE', true );
+
+			// General
 			$max_pages   = $_REQUEST['max'];
 			$layout      = $_REQUEST['layout'];
 			$latest_post = ! empty( $_REQUEST['latest_post'] ) ? $_REQUEST['latest_post'] : 0;
-			$settings    = stripslashes( $_REQUEST['settings'] );
-			$settings    = json_decode( str_replace( '\'', '"', $settings ), true );
 
+			// Settings
+			$settings = stripslashes( $_REQUEST['settings'] );
+			$settings = json_decode( str_replace( '\'', '"', $settings ), true );
+			$settings['is_archive'] = true;
+
+			// Hide the category label on category pages
+			if( ! empty( $settings['is_category'] ) ){
+				add_filter( 'TieLabs/Archive_Thumbnail/category_meta', '__return_false' );
+			}
+
+			// Query
+			$query = stripslashes( $_REQUEST['query'] );
+			$query = json_decode ( str_replace( '\'', '"', $query ), true );
 			$query['paged'] = (int) $_REQUEST['page'];
 			$query['post_status'] = 'publish';
 
@@ -142,16 +154,14 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 					TIELABS_HELPER::get_template_part( 'templates/loops/loop', $layout, array( 'block' => $settings ) );
 
 					do_action( 'TieLabs/after_post_in_archives', $layout, $latest_post );
-
 				}
 
-				# Disable the Load more button
+				// Disable the Load more button
 				$hide_next = false;
 
 				if( $block_query->max_num_pages == 1 || ( $block_query->max_num_pages == $block_query->query_vars['paged'] )){
 					$hide_next = true;
 				}
-
 
 				wp_send_json( wp_json_encode(
 					array(
@@ -180,45 +190,61 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 		 */
 		function mega_menu(){
 
-			$block['id']       = $_REQUEST['id'];
-			$block['number']   = $_REQUEST['number'];
-			$is_featurd_layout = false;
-			$thumbnail         = TIELABS_THEME_SLUG.'-image-large';
-			$count = 0;
+			$block = array(
+				'id'     => $_REQUEST['id'],
+				'number' => $_REQUEST['number'],
+			);
+
+			$block = apply_filters( 'TieLabs/mega_menu/posts_query/args', $block );
+
+			$count      = 0;
+			$is_featurd = false;
+			$thumbnail  = TIELABS_THEME_SLUG.'-image-large';
+			$media_icon = ! empty( $_REQUEST['post_icon'] ) ? true : false;
 
 			if( ! empty( $_REQUEST['featured'] ) && 'false' !== $_REQUEST['featured'] ){
-				$is_featurd_layout = true;
-				$thumbnail         = TIELABS_THEME_SLUG.'-image-small';
+				$is_featurd = true;
+				$thumbnail  = TIELABS_THEME_SLUG.'-image-small';
 			}
 
-			$block_query = tie_query( $block );
+			// Cache key
+			$cache_key = apply_filters( 'TieLabs/cache_key', '' ) . '_mega_'.implode( '_', $block ) .'_'. (int) $is_featurd .'_'. $thumbnail;
 
-			if( $block_query->have_posts() ){
-				while ( $block_query->have_posts() ){
+			// Get the Cached data
+			if ( ! tie_get_option( 'jso_cache' ) || false === ( $cached_data = get_transient( $cache_key ) ) ){
 
-					$block_query->the_post();
-					$count++;
+				ob_start();
 
-					if( $is_featurd_layout && $count == 1 ){
+				$block_query = tie_query( $block );
 
-						TIELABS_HELPER::get_template_part( 'templates/loops/loop', 'mega-menu-featured' );
+				if( $block_query->have_posts() ){
+					while ( $block_query->have_posts() ){
 
-						echo " <div class=\"mega-check-also\">\n<ul>";
+						$block_query->the_post();
+						$count++;
+
+						if( $is_featurd && $count == 1 ){
+							TIELABS_HELPER::get_template_part( 'templates/loops/loop', 'mega-menu-featured', array( 'media_icon' => $media_icon ) );
+							echo " <div class=\"mega-check-also\">\n<ul>";
+						}
+						else{
+							TIELABS_HELPER::get_template_part( 'templates/loops/loop', 'mega-menu-default', array( 'thumbnail' => $thumbnail, 'media_icon' => $media_icon ) );
+						}
 					}
-					else{
 
-						TIELABS_HELPER::get_template_part( 'templates/loops/loop', 'mega-menu-default', array( 'thumbnail' => $thumbnail ) );
-
+					if( $is_featurd ){
+						echo "</ul>\n</div><!-- mega-check-also -->\n";
 					}
 				}
-
-				if( $is_featurd_layout ){
-					echo "</ul>\n</div><!-- mega-check-also -->\n";
+				else{
+					echo '<div class="ajax-no-more-posts">'. esc_html__( 'Nothing Found', TIELABS_TEXTDOMAIN ) .'</div>';
 				}
+
+				$cached_data = ob_get_clean();
+				set_transient( $cache_key, $cached_data, 24 * HOUR_IN_SECONDS );
 			}
-			else{
-				echo '<div class="ajax-no-more-posts">'. esc_html__( 'Nothing Found', TIELABS_TEXTDOMAIN ) .'</div>';
-			}
+
+			echo $cached_data;
 
 			die;
 		}
@@ -254,7 +280,7 @@ if( ! class_exists( 'TIELABS_AJAX' )){
 				'ignore_sticky_posts' => true,
 			);
 
-			# Exclude specific categories from search
+			// Exclude specific categories from search
 			if ( tie_get_option( 'search_cats' ) ){
 				$args['cat'] = tie_get_option( 'search_cats' );
 			}

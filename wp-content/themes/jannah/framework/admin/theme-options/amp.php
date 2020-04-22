@@ -161,6 +161,32 @@
 
 			tie_build_theme_option(
 				array(
+					'name'  => esc_html__( 'Below Header', TIELABS_TEXTDOMAIN ),
+					'id'    => 'amp_ad_below_header',
+					'hint'  => sprintf(
+						esc_html__( 'Enter your Ad code, AMP pages support %1$s tag only, %2$sClick Here%3$s For More info.', TIELABS_TEXTDOMAIN ),
+						'<code>&lt;amp-ad&gt;</code>',
+						'<a href="https://www.ampproject.org/docs/reference/extended/amp-ad.html" target="_blank">',
+						'</a>'
+					),
+					'type'  => 'textarea',
+				));
+
+			tie_build_theme_option(
+				array(
+					'name'  => esc_html__( 'Above Footer', TIELABS_TEXTDOMAIN ),
+					'id'    => 'amp_ad_above_footer',
+					'hint'  => sprintf(
+						esc_html__( 'Enter your Ad code, AMP pages support %1$s tag only, %2$sClick Here%3$s For More info.', TIELABS_TEXTDOMAIN ),
+						'<code>&lt;amp-ad&gt;</code>',
+						'<a href="https://www.ampproject.org/docs/reference/extended/amp-ad.html" target="_blank">',
+						'</a>'
+					),
+					'type'  => 'textarea',
+				));
+
+			tie_build_theme_option(
+				array(
 					'name'  => esc_html__( 'Above Content', TIELABS_TEXTDOMAIN ),
 					'id'    => 'amp_ad_above',
 					'hint'  => sprintf(
@@ -239,6 +265,16 @@
 					'name' => esc_html__( 'Underline text links on hover', TIELABS_TEXTDOMAIN ),
 					'id'   => 'amp_links_underline',
 					'type' => 'checkbox',
+				));
+
+
+			tie_build_theme_option(
+				array(
+					'name'  => esc_html__( 'Custom CSS', TIELABS_TEXTDOMAIN ),
+					'id'    => 'css_amp',
+					'class' => 'tie-css',
+					'type'  => 'textarea',
+					'hint'  => esc_html__( 'Paste your CSS code, do not include any tags or HTML in the field. Any custom CSS entered here will override the theme CSS. In some cases, the !important tag may be needed.', TIELABS_TEXTDOMAIN ),
 				));
 
 		echo '</div>';

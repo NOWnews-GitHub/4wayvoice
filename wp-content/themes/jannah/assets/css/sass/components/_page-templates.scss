@@ -212,6 +212,12 @@
 		margin-bottom: 30px;
 	}
 
+	.entry-header-inner{
+		.post-cat{
+			margin-bottom: 10px;
+		}
+	}
+
 	.entry-content.entry{
 		padding: 30px;
 	}
@@ -227,7 +233,7 @@
 	}
 }
 
-.post-element{
+div.post-element{
 	padding: 0;
 	position: relative;
 	margin-bottom: 50px;
@@ -251,6 +257,10 @@
 
 .masonry-grid-wrapper{
 	position: relative;
+
+	img {
+		aspect-ratio: attr(width) / attr(height);
+	}
 }
 
 .masonry-with-spaces{
@@ -409,10 +419,6 @@
 	margin-top: 40px;
 }
 
-// body:not(.magazine2) .masonry-page-content + .post-footer-on-bottom{
-// 	margin-top: 30px;
-// }
-
 
 //Category Layout3 : Media page*/
 .media-page-layout{
@@ -420,10 +426,6 @@
 
 	.post-element {
 		border: 0!important;
-
-		&:not(.masonry-brick){
-			opacity: 0;
-		}
 
 		.slide{
 			height: 300px;
@@ -565,13 +567,14 @@
 			width: 100%;
 		}
 	}
+}
 
-	#masonry-grid {
-		// Fix the pre-js load issue
-		&:not(.masonry-loaded){
-			.post-element{
-				float: left;
-			}
+#masonry-grid {
+	// Fix the pre-js load issue
+	&:not(.masonry-loaded){
+		.post-element{
+			float: left;
+			opacity: 0;
 		}
 	}
 }
@@ -589,5 +592,13 @@
 
 	.one-column-no-sidebar .wide-post-box .container-wrapper{
 		padding-top: 15px;
+	}
+}
+
+#category-footer-description{
+	margin-top: 30px;
+
+	.entry *:last-child{
+		margin-bottom: 0;
 	}
 }

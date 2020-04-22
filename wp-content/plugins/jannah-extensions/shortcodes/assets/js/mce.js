@@ -410,11 +410,6 @@
 							},
 							{
 								type: 'checkbox',
-								name: 'Google',
-								label: jannah_extensions_lang.shortcode_google,
-							},
-							{
-								type: 'checkbox',
 								name: 'Pinterest',
 								label: jannah_extensions_lang.shortcode_pinterest,
 							},
@@ -447,9 +442,6 @@
 							}
 							if( e.data.Stumble ) {
 								editor.insertContent( '[stumble]');
-							}
-							if( e.data.Google ) {
-								editor.insertContent( '[Google]');
 							}
 							if( e.data.Pinterest ) {
 								editor.insertContent( '[pinterest]');

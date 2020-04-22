@@ -3,18 +3,17 @@
 	padding: 10px 30px 30px;
 
 	.components{
-		float: none; 
-		text-align: center;
+		float: none;
 		line-height: 50px;
 		margin-top: 20px;
+		margin-bottom: 10px;
 		display: flex;
+		border-bottom: $base-border-in-white;
 
 		li{
 			display: inline-block;
 			float: none;
-			margin: 3px;
 			flex-grow: 1;
-			border: $base-border-in-white;
 
 			a{
 				width: 100%;
@@ -27,9 +26,16 @@
 					right: calc(50% - 15px);
 				}
 			}
-		} 
+		}
+
+		.comp-sub-menu{
+			background: #333333;
+
+			li{
+				display: block;
+			}
+		}
 	}
-	
 }
 
 #mobile-menu{
@@ -67,10 +73,11 @@
 		&:only-child{
 			border-bottom: none;
 
-			> a,
-			> span{
-				display: none;
-			}
+			// what was the use of this code?
+			//> a,
+			//> span{
+				//display: none;
+			//}
 
 			li{
 				padding: 0;
@@ -111,7 +118,7 @@
 			}
 
 			> .fa{
-				margin-right: 10px;
+				margin-right: 3px;
 				width: 25px;
 				text-align: center;
 			}
@@ -126,6 +133,7 @@
 			opacity: 1 !important;
 			background-image: none !important;
 			padding: 0 !important;
+			min-height: unset !important;
 		}
 
 		ul{
@@ -247,7 +255,7 @@
 		background-color: $base-color;
 		position: relative;
 		top: -4px;
-		transition:  background 0.2s ease;
+		transition:  background 0.4s ease;
 
 		&:before,
 		&:after{
@@ -261,7 +269,7 @@
 			transition: transform 0.4s, background 0.4s, right .2s ease;
 			transform: translateZ(0);
 			backface-visibility: hidden;
-		}	
+		}
 
 		&:before{
 			transform: translateY(-6px);
@@ -270,7 +278,7 @@
 		&:after{
 			transform: translateY(6px);
 		}
-		
+
 		.dark-skin &,
 		.main-nav-dark.header-layout-1 &{
 			&,

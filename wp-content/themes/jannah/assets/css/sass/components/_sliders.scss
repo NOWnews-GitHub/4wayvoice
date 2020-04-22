@@ -220,9 +220,9 @@
     float: right;
   }
 
-	.post-cat-wrap{
-		float: left;
-	}
+	//.post-cat-wrap{
+		//float: left;
+	//}
 
   .icon,
   .post-cat-wrap,
@@ -313,6 +313,7 @@
 
 	.tie-main-slider & img{
 		display: none;
+		max-width: none;
 	}
 
 	&.slick-loading img {
@@ -473,6 +474,7 @@
 	.thumb-meta{
 		color: #ffffff;
 
+		a:not(:hover),
 		.post-meta a:not(:hover){
 			color: #ffffff;
 
@@ -564,8 +566,9 @@
     margin: -5px 0 0 0;
   }
 
-	h5.post-cat-wrap{ // Override RTL
+	span.post-cat-wrap{ // Override RTL
 		float: none;
+		clear: both;
 	}
 
 	@include breakpoint(md){
@@ -718,11 +721,6 @@
 	.post-cat-wrap{
 		margin-bottom: 20px;
 		width: 100%;
-	}
-
-	.thumb-meta,
-	span.sep{
-		color: $base-border-opic-color;
 	}
 
 	@include breakpoint(max_min_sm){
@@ -1336,7 +1334,7 @@
 
 	@include breakpoint(md){
 		.full-width & .slide{
-			height: 500px;
+			height: 470px;
 		}
 	}
 
@@ -1361,10 +1359,6 @@
 .grid-3-slides-half-first{
 	@include breakpoint(md){
 		.full-width & {
-			.slide{
-				height: 500px;
-			}
-
 			.grid-item{
 				&:nth-child(1){
 					width: calc(50% - 1px);
@@ -1431,7 +1425,7 @@
 	.full-width{
 		.grid-4-big-first-half-second{
 			.slide{
-				height: 480px;
+				height: 470px;
 			}
 
 			.grid-item{
@@ -1684,7 +1678,7 @@
 
 	.slide{
 		@include breakpoint(max_min_xs){
-			height: 480px;
+			height: 470px;
 		}
 	}
 }
@@ -1701,7 +1695,7 @@
 
 		.grid-5-slider{
 			.slide{
-				height: 480px;
+				height: 470px;
 			}
 
 			.grid-item{
@@ -1797,6 +1791,95 @@
 	}
 }
 
+
+// Slider #18 ---------------------------------------------------
+.slider-vertical-navigation{
+	position: relative;
+	z-index: 1;
+
+	.post-cat-wrap{
+		margin-bottom: 10px;
+	}
+
+	.thumb-meta{
+		display: flex;
+	}
+
+	span.icon{
+		float: left;
+		margin-right: 10px;
+	}
+
+	div.post-rating{
+		top: 5px;
+	}
+
+	.slider-main-container{
+
+		@include breakpoint(sm){
+			.thumb-overlay {
+				padding-top: 90px;
+
+				.container{
+					top: 20px;
+					transform: none;
+					width: 60%;
+					margin-left: 0;
+					padding: 0;
+				}
+			}
+		}
+	}
+
+	// Animate elements in active slide
+	.thumb-meta > span{
+		display: inline-block;
+	}
+
+	.slick-initialized{
+		.post-cat-wrap,
+		.thumb-meta,
+		.thumb-title{
+			overflow: hidden;
+		}
+
+		.post-cat-wrap a,
+		.thumb-meta > span,
+		.thumb-title a,
+		.read-next-button{
+			opacity: 0;
+			transform: translateY(40px);
+			transition: 1s;
+		}
+
+		.thumb-title a{
+			display: block;
+			transform: translateY(140px);
+		}
+	}
+
+	.slick-current{
+		.post-cat-wrap a,
+		.thumb-meta > span,
+		.thumb-title a,
+		.read-next-button{
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.thumb-content{
+		padding: 0;
+		position: relative;
+	}
+
+	// In Two column layout
+	.has-sidebar &{
+		.wide-slider-nav-wrapper{
+			padding: 0 15px 0 0;
+		}
+	}
+}
 
 // General For Sliders -----------------------------------------
 // General For Sliders -----------------------------------------
@@ -1913,182 +1996,6 @@
 }
 
 
-// POST GALLERY ------------------------------------------------
-// Defaut for post sliders [Fullwidth slider]
-.post-gallery{
-	.tie-slick-slider{
-		height: auto;
-	}
-
-	.tie-slick-slider:not(.slick-initialized) {
-		.slide{
-			display: none;
-		}
-	}
-
-	.slick-list{
-		width: 100%;
-	}
-
-	.slide{
-		position: relative;
-		overflow: hidden;
-	}
-
-	img{
-		display: block;
-	}
-
-	.is-lazyload & img{
-		opacity: 0;
-		visibility: hidden;
-	}
-
-	.thumb-overlay{
-		pointer-events: none;
-
-		&:after{
-			opacity: 0;
-		}
-	}
-
-	.thumb-content{
-		opacity: 0;
-		bottom: 0;
-		width: 100%;
-		padding-bottom: 0;
-		transition: 0.15s;
-	}
-
-	.thumb-desc{
-		opacity: 1;
-		max-height: none;
-		height: auto;
-	}
-
-	@include breakpoint(max_min_md){
-		.thumb-content{
-			opacity: 1;
-			bottom: 30px;
-		}
-
-		.thumb-overlay:after{
-			opacity: 0.8;
-		}
-	}
-
-	@include breakpoint(max_min_sm){
-		.thumb-title{
-			font-size: 20px;
-		}
-	}
-
-	@include breakpoint(max_min_xs){
-		.thumb-overlay{
-			padding: 20px;
-		}
-
-		.thumb-content{
-			bottom: 20px;
-		}
-	}
-
-	.tie-slider-nav{
-		opacity: 1;
-	}
-}
-
-// Normal slider
-#tie-post-normal-gallery{
-	.tie-slick-slider:not(.slick-initialized) {
-		.tie-slider-nav + .slide{
-			display: block;
-		}
-	}
-
-	.is-lazyload & img{
-		display: none;
-	}
-
-	.slide-bg{
-		height: 405px;
-		position: relative;
-
-		@include breakpoint(md){
-			.full-width &{
-				height: 600px;
-			}
-		}
-
-		@include breakpoint(max_min_sm){
-			height: 300px;
-		}
-
-		@include breakpoint(max_min_xs){
-			height: 220px;
-		}
-	}
-}
-
-// Fullwidth slider
-#tie-post-fullwidth-gallery{
-	margin-bottom: 35px;
-	height: 600px;
-
-	.slide-bg{
-		background-position: center center;
-	}
-
-	img{
-		width: auto;
-		height: 600px;
-	}
-
-	@include breakpoint(max_min_md){
-		margin-bottom: 20px;
-
-		.thumb-content {
-	    width: 100%;
-	    max-width: calc(100vw - 10px);
-	    transform: translateX(-50%);
-	    left: 50%;
-	    padding: 0 30px;
-		}
-
-		&,
-		img{
-			height: 480px;
-		}
-	}
-
-	@include breakpoint(max_min_sm){
-		&,
-		img{
-			height: 380px;
-		}
-	}
-
-	@include breakpoint(max_min_xs){
-		&,
-		img{
-			height: 250px;
-		}
-	}
-}
-
-// slides on hover
-#tie-post-normal-gallery .tie-slick-slider:hover,
-.post-gallery .slide:hover{
-	.thumb-content{
-		opacity: 1;
-		bottom: 30px;
-	}
-
-	.thumb-overlay:after{
-		opacity: 0.8;
-	}
-}
-
 // Widget Slider -----------------------------------------------
 .tie-slider-widget {
 	.main-slider{
@@ -2157,148 +2064,6 @@
 		display: none !important;
 	}
 }
-
-
-
-// Read Next Slider --------------------------------------------
-#read-next-block{
-	border: 0;
-	padding: 0;
-	position: relative;
-}
-
-.read-next-block-title{
-	position: absolute;
-	top: 30px;
-	left: 40px;
-	z-index: 4;
-	color: #fff;
-	padding-bottom: 5px;
-	font-size: 18px;
-
-	&:after{
-		content: '';
-		width: 40px;
-		height: 2px;
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		background-color: #fff;
-	}
-
-	.read-next-slider-4 &{
-		width: 100%;
-    text-align: center;
-		left: 0;
-		right: 0;
-
-		&:after{
-			left: calc(50% - 20px);
-			right: calc(50% - 20px);
-		}
-	}
-}
-
-.read-next-button-wrap{
-	margin-top: 30px;
-}
-
-.read-next-button{
-	pointer-events: auto;
-	z-index: 1;
-	background: transparent;
-	color: #fff;
-	border: 1px solid #fff;
-}
-
-.slider-vertical-navigation{
-	position: relative;
-	z-index: 1;
-
-	.post-cat-wrap{
-		margin-bottom: 10px;
-	}
-
-	.thumb-meta{
-		display: flex;
-	}
-
-	span.icon{
-		float: left;
-		margin-right: 10px;
-	}
-
-	div.post-rating{
-		top: 5px;
-	}
-
-	.slider-main-container{
-
-		@include breakpoint(sm){
-			.thumb-overlay {
-				padding-top: 90px;
-
-				.container{
-					top: 20px;
-					transform: none;
-					width: 60%;
-					margin-left: 0;
-					padding: 0;
-				}
-			}
-		}
-	}
-
-	// Animate elements in active slide
-	.thumb-meta > span{
-		display: inline-block;
-	}
-
-	.slick-initialized{
-		.post-cat-wrap,
-		.thumb-meta,
-		.thumb-title{
-			overflow: hidden;
-		}
-
-		.post-cat-wrap a,
-		.thumb-meta > span,
-		.thumb-title a,
-		.read-next-button{
-			opacity: 0;
-			transform: translateY(40px);
-			transition: 1s;
-		}
-
-		.thumb-title a{
-			display: block;
-			transform: translateY(140px);
-		}
-	}
-
-	.slick-current{
-		.post-cat-wrap a,
-		.thumb-meta > span,
-		.thumb-title a,
-		.read-next-button{
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.thumb-content{
-		padding: 0;
-		position: relative;
-	}
-
-	// In Two column layout
-	.has-sidebar &{
-		.wide-slider-nav-wrapper{
-			padding: 0 15px 0 0;
-		}
-	}
-}
-
 
 // Slider Vertical Nav -----------------------------------------
 .vertical-slider-nav{

@@ -4,21 +4,26 @@
 	Plugin URI: http://codecanyon.net/item/taqyeem-wordpress-review-plugin/4558799?ref=tielabs
 	Description: WordPress Review Plugin -  adding lovely ratings and reviews to your posts, pages, and custom post types.
 	Author: TieLabs
-	Version: 2.2.6
+	Version: 2.6.2
 	Author URI: http://tielabs.com/
 */
 
 require_once( 'taqyeem-panel.php' );
 require_once( 'taqyeem-posts.php' );
 require_once( 'taqyeem-widgets.php' );
+require_once( 'verification.php' );
+require_once( 'updater.php' );
 
-define ('TIE_TAQYEEM', 'Taqyeem' );
-define ('TIE_Plugin_ver', '2.1.0' );
+
+define ('TIE_TAQYEEM',       'Taqyeem' );
+define ('TIE_Plugin_ver',    '2.6.2' );
+define ('TAQYEEM_PLUGIN_ID', '4558799' );
 
 $taqyeem_default_data = array(
 	'taqyeem_options'	=> array(
-		'allowtorate'  => 'both',
-		'rating_image' => 'stars'
+		'allowtorate'     => 'both',
+		'rating_image'    => 'stars',
+		'structured_data' => 'true'
 	)
 );
 
@@ -26,7 +31,7 @@ $taqyeem_default_data = array(
 /*-----------------------------------------------------------------------------------*/
 # Load Text Domain
 /*-----------------------------------------------------------------------------------*/
-add_action('plugins_loaded', 'taqyeem_init');
+add_action( 'plugins_loaded', 'taqyeem_init' );
 function taqyeem_init() {
 	load_plugin_textdomain( 'taq', false, dirname( plugin_basename( __FILE__ ) ).'/languages' );
 }
@@ -37,7 +42,7 @@ function taqyeem_init() {
 /*-----------------------------------------------------------------------------------*/
 if ( is_admin() && isset($_GET['activate'] ) && $pagenow == 'plugins.php' ) {
 	global $taqyeem_default_data;
-	if( !get_option('taq_active') ){
+	if( ! get_option('taq_active') ){
 		taqyeem_save_settings( $taqyeem_default_data );
 		update_option( 'taq_active' , TIE_Plugin_ver );
 	}
@@ -68,6 +73,18 @@ function taqyeem_scripts_styles(){
 
 
 /*-----------------------------------------------------------------------------------*/
+# Disable Updater and Verification for TieLabs themes
+/*-----------------------------------------------------------------------------------*/
+add_action( 'init', 'taqyeem_disable_updater_verification' );
+function taqyeem_disable_updater_verification(){
+	if( function_exists( 'tie_get_option' ) ){
+		add_filter( 'Taqyeem/Updater/disable',      '__return_true' );
+		add_filter( 'Taqyeem/Verification/disable', '__return_true' );
+	}
+}
+
+
+/*-----------------------------------------------------------------------------------*/
 # Get Reviews Box
 /*-----------------------------------------------------------------------------------*/
 function taqyeem_get_review( $position = 'review-top' ){
@@ -84,22 +101,21 @@ function taqyeem_get_review( $position = 'review-top' ){
 		$get_criteria = unserialize( $get_meta['taq_review_criteria'][0] );
 	}
 
-	# Review Data ----------
-	$summary          = ! empty( $get_meta['taq_review_summary'][0] ) ? htmlspecialchars_decode( $get_meta['taq_review_summary'][0] ) : '';
-	$short_summary    = ! empty( $get_meta['taq_review_total'][0] ) ? $get_meta['taq_review_total'][0] : '';
-	$style            = ! empty( $get_meta['taq_review_style'][0] ) ? $get_meta['taq_review_style'][0] : 'stars';
-	$post_description = ! empty( $post->post_content ) ? strip_shortcodes( apply_filters('taqyeem_exclude_content', $post->post_content )) : '';
-	$image_style      = taqyeem_get_option('rating_image') ? taqyeem_get_option('rating_image') : 'stars';
+	// Review Data
+	$summary       = ! empty( $get_meta['taq_review_summary'][0] ) ? htmlspecialchars_decode( $get_meta['taq_review_summary'][0] ) : '';
+	$short_summary = ! empty( $get_meta['taq_review_total'][0] ) ? $get_meta['taq_review_total'][0] : '';
+	$style         = ! empty( $get_meta['taq_review_style'][0] ) ? $get_meta['taq_review_style'][0] : 'stars';
+	$image_style   = taqyeem_get_option('rating_image')          ? taqyeem_get_option('rating_image') : 'stars';
 
 	$total_score = $total_counter = $score = $ouput = 0;
 
-	# Get users rate ----------
+	// Get users rate
 	$users_rate = '';
 	if( taqyeem_get_option('allowtorate') != 'none' ){
 		$users_rate = taqyeem_get_user_rate();
 	}
 
-	# Review Style ----------
+	// Review Style
 	$review_class = array(
 		'review-box',
 		$position,
@@ -117,34 +133,8 @@ function taqyeem_get_review( $position = 'review-top' ){
 
 	$review_class = apply_filters( 'taqyeem_reviews_box_classes', $review_class );
 
-	# Rich Snippets ----------
-	$schema_review = $schema_data = '';
-	if( apply_filters( 'tie_taqyeem_rich_snippets', true )){
-		$schema_review = 'itemscope itemtype="http://schema.org/Review"';
-		$review_score  = ! empty( $get_meta['taq_review_score'][0] ) ? $get_meta['taq_review_score'][0] : 0;
-
-		$schema_data = '
-			<div style="display:none" itemprop="reviewBody">'. wp_trim_words( $post_description, 100 ) .'</div>
-			<div style="display:none" class="name entry-title" itemprop="name">'. get_the_title() .'</div>
-			<div style="display:none" class="entry-title" itemprop="itemReviewed" itemscope itemtype="http://schema.org/Thing"><span itemprop="name">'. get_the_title() .'</span></div>
-			<div style="display:none" class="updated">'. get_the_time( 'Y-m-d' ) .'</div>
-			<div style="display:none" class="vcard author" itemprop="author" itemscope itemtype="http://schema.org/Person"><strong class="fn" itemprop="name">'. get_the_author() .'</strong></div>
-			<meta itemprop="datePublished" content="'. get_the_time( 'Y-m-d' ) .'">
-
-			<span itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
-				<meta itemprop="worstRating" content="1">
-				<meta itemprop="bestRating" content="100">
-				<meta itemprop="ratingValue" content="'. $review_score .'">
-				<span style="display:none" itemprop="description">'. $summary .'</span>
-			</span>
-		';
-	}
-
 	$ouput = '
-		<div class="review_wrap" '. $schema_review .' >
-
-			'. $schema_data .'
-
+		<div class="review_wrap">
 			<div id="review-box" class="'. join( ' ', array_filter( $review_class ) )  .'">';
 
 			if( ! empty( $get_meta['taq_review_title'][0] )){
@@ -251,7 +241,7 @@ function taqyeem_get_review( $position = 'review-top' ){
 				$ouput = apply_filters('tie_taqyeem_before_user_rating', $ouput, $get_meta );
 			}
 
-	 		$ouput .= $users_rate;
+			$ouput .= $users_rate;
 
 			if( has_filter('tie_taqyeem_after_user_rating') ) {
 				$ouput = apply_filters('tie_taqyeem_after_user_rating', $ouput, $get_meta );
@@ -261,7 +251,218 @@ function taqyeem_get_review( $position = 'review-top' ){
 		</div>
 	</div>';
 
-	return $ouput ;
+	$ouput = apply_filters('tie_taqyeem_after_review_box', $ouput, $get_meta );
+
+	return $ouput;
+}
+
+
+/*-----------------------------------------------------------------------------------*/
+# Hook the rich snippet
+/*-----------------------------------------------------------------------------------*/
+add_filter( 'tie_taqyeem_after_review_box', 'taqyeem_review_rich_snippet' );
+function taqyeem_review_rich_snippet( $ouput ){
+
+	if( ! apply_filters( 'tie_taqyeem_rich_snippets', true ) || ! taqyeem_get_option( 'structured_data' ) ){
+		return $ouput;
+	}
+
+	// Get the rich snippet
+	$schema = taqyeem_review_get_rich_snippet();
+
+	// Print the schema
+	if( $schema ){
+		$ouput .= '<script type="application/ld+json">'. json_encode( $schema ) .'</script>';
+	}
+
+	return $ouput;
+}
+
+
+/*-----------------------------------------------------------------------------------*/
+# Get the rich snippet
+/*-----------------------------------------------------------------------------------*/
+function taqyeem_review_get_rich_snippet(){
+
+	$post    = get_post();
+	$post_id = $post->ID;
+
+	$schema_type = get_post_meta( $post_id, 'taq_review_structured_data', true );
+	$schema_type = ! empty( $schema_type ) ? $schema_type : taqyeem_get_option( 'default_structured_data' );
+	$schema_type = ! empty( $schema_type ) ? $schema_type : 'product';
+
+	// Get he total score and convert it to 0 ~ 5
+	$total_score = (int) get_post_meta( $post_id, 'taq_review_score', true );
+
+	if( ! empty( $total_score ) && $total_score > 0 ){
+		$total_score = round( ($total_score*5)/100, 1 );
+	}
+
+	// Post data
+	$description    = ! empty( $post->post_content ) ? strip_shortcodes( apply_filters('taqyeem_exclude_content', $post->post_content )) : '';
+	$description    = wp_html_excerpt( $description, 200 );
+	$puplished_date = ( get_the_time( 'c' ) ) ? get_the_time( 'c' ) : get_the_modified_date( 'c' );
+	$modified_date  = ( get_the_modified_date( 'c' ) ) ? get_the_modified_date( 'c' ) : $puplished_date;
+
+	// The Scemas Array
+	$schema = array(
+		'@context'       => 'http://schema.org',
+		'@type'          => 'review',
+		'dateCreated'    => $puplished_date,
+		'datePublished'  => $puplished_date,
+		'dateModified'   => $modified_date,
+		'headline'       => get_the_title(),
+		'name'           => get_the_title(),
+		'url'            => get_permalink(),
+		'description'    => $description,
+		'copyrightYear'  => get_the_time( 'Y' ),
+
+		'publisher'      => array(
+			'@type' => 'Organization',
+			'name'  => get_bloginfo(),
+		),
+
+		'author' => array(
+			'@type'  => 'Person',
+			'name'   => get_the_author(),
+			'sameAs' => get_author_posts_url( get_the_author_meta( 'ID' ) ),
+		),
+
+		'itemReviewed' => array(
+			'@type' => $schema_type,
+			'name'  => get_the_title(),
+		),
+
+		'reviewBody'    => $description,
+		'reviewRating' => array(
+			'@type'       => 'Rating',
+			'worstRating' => 1,
+			'bestRating'  => 5,
+			'ratingValue' => $total_score,
+			'description' => get_post_meta( get_the_ID(), 'taq_review_summary', true ),
+		),
+	);
+
+	// Post image
+	$image_id   = get_post_thumbnail_id();
+	$image_data = wp_get_attachment_image_src( $image_id, 'full' );
+
+	if( ! empty( $image_data ) ){
+		$schema['image'] = array(
+			'@type'  => 'ImageObject',
+			'url'    => $image_data[0],
+			'width'  => ( $image_data[1] > 696 ) ? $image_data[1] : 696,
+			'height' => $image_data[2],
+		);
+
+		$schema['itemReviewed']['image'] = $schema['image']['url'];
+	}
+
+
+	// Product
+	if( $schema_type == 'product' ){
+
+		$review = $schema;
+		unset( $review['itemReviewed'] );
+
+		$product_description = get_post_meta( $post_id, 'taq_review_structured_data_product_description', true );
+		$product_description = ! empty( $product_description ) ? $product_description : $description;
+
+		$schema = array(
+			'@context'    => 'http://schema.org',
+			'@type'       => $schema_type,
+			'name'        => get_the_title(),
+			'description' => $product_description,
+
+			'sku'  => get_post_meta( $post_id, 'taq_review_structured_data_product_sku', true ),
+			'mpn'  => get_post_meta( $post_id, 'taq_review_structured_data_product_mpn', true ),
+			'gtin' => get_post_meta( $post_id, 'taq_review_structured_data_product_gtin', true ),
+
+			'brand' => array(
+				'@type' => 'Thing',
+				'name'  => get_post_meta( $post_id, 'taq_review_structured_data_product_brand', true ),
+			),
+
+			'offers' => array(
+				'@type'           => 'Offer',
+				'url'             => get_post_meta( $post_id, 'taq_review_structured_data_product_url', true ),
+				'price'           => get_post_meta( $post_id, 'taq_review_structured_data_product_price', true ),
+				'priceCurrency'   => get_post_meta( $post_id, 'taq_review_structured_data_product_currency', true ),
+				'availability'    => get_post_meta( $post_id, 'taq_review_structured_data_product_availability', true ),
+				'priceValidUntil' => get_post_meta( $post_id, 'taq_review_structured_data_product_price_date', true ),
+			),
+
+			'review' => $review,
+		);
+
+		// aggregateRating
+		$rate  = get_post_meta( $post_id, 'tie_user_rate', true );
+		$count = get_post_meta( $post_id, 'tie_users_num', true );
+
+		if( ! empty( $rate ) && ! empty( $count ) ){
+
+			$totla_users_score = round( $rate/$count, 2 );
+			$totla_users_score = ( $totla_users_score > 5 ) ? 5 : $totla_users_score;
+
+				$schema['aggregateRating'] = array(
+					'@type' => 'AggregateRating',
+					'ratingValue' => $totla_users_score,
+					'reviewCount' => $count,
+				);
+		}
+
+		// Image
+		if( ! empty( $review['image'] ) ){
+			$schema['image'] = $review['image'];
+		}
+	}
+
+	// Books
+	elseif( $schema_type == 'book' ){
+		$schema['itemReviewed']['author'] = array(
+			'@type'  => 'Person',
+			'name'   => get_post_meta( $post_id, 'taq_review_structured_data_author', true ),
+			'sameAs' => get_post_meta( $post_id, 'taq_review_structured_data_author_url', true ),
+		);
+
+		$schema['itemReviewed']['isbn'] = get_post_meta( $post_id, 'taq_review_structured_data_book_isbn', true );
+	}
+
+	// Event
+	elseif( $schema_type == 'event' ){
+		$schema['itemReviewed']['description'] = $description;
+		$schema['itemReviewed']['location']    = array(
+			'@type'   => 'Place',
+			'name'    => get_post_meta( $post_id, 'taq_review_structured_data_event_location_name', true ),
+			'address' => get_post_meta( $post_id, 'taq_review_structured_data_event_location_address', true ),
+		);
+		$schema['itemReviewed']['startDate']   = get_post_meta( $post_id, 'taq_review_structured_data_event_startdate', true );
+		$schema['itemReviewed']['endDate']     = get_post_meta( $post_id, 'taq_review_structured_data_event_enddate', true );
+	}
+
+	// Movie
+	elseif( $schema_type == 'movie' ){
+		$schema['itemReviewed']['sameAs']      = get_post_meta( $post_id, 'taq_review_structured_data_movie_url', true );
+		$schema['itemReviewed']['dateCreated'] = get_post_meta( $post_id, 'taq_review_structured_data_movie_date', true );
+		$schema['itemReviewed']['director']    = get_post_meta( $post_id, 'taq_review_structured_data_movie_director', true );
+	}
+
+	// Course
+	elseif( $schema_type == 'course' ){
+		$schema['itemReviewed']['description'] = get_post_meta( $post_id, 'taq_review_structured_data_description', true );
+		$schema['itemReviewed']['provider']    = get_post_meta( $post_id, 'taq_review_structured_data_course_provider', true );
+	}
+
+	// restaurant
+	elseif( $schema_type == 'restaurant' ){
+		$schema['itemReviewed']['address']       = get_post_meta( $post_id, 'taq_review_structured_data_restaurant_address', true );
+		$schema['itemReviewed']['priceRange']    = get_post_meta( $post_id, 'taq_review_structured_data_restaurant_price', true );
+		$schema['itemReviewed']['servesCuisine'] = get_post_meta( $post_id, 'taq_review_structured_data_restaurant_cuisine', true );
+		$schema['itemReviewed']['telephone']     = get_post_meta( $post_id, 'taq_review_structured_data_restaurant_telephone', true );
+	}
+
+	// --
+	return apply_filters( 'tie_taqyeem_rich_snippets_code', $schema );;
 }
 
 
@@ -314,7 +515,7 @@ function taqyeem_rate_post(){
 		return false;
 	}
 
-	# Get user rate data ----------
+	# Get user rate data
 	$post_id = $_REQUEST['post'];
 	$rate    = abs( $_REQUEST['value'] );
 
@@ -322,7 +523,7 @@ function taqyeem_rate_post(){
 		$rate = 5;
 	}
 
-	# Get stored post data ----------
+	# Get stored post data
 	$rating = get_post_meta( $post_id, 'tie_user_rate', true );
 	$count 	= get_post_meta( $post_id, 'tie_users_num', true );
 
@@ -334,7 +535,7 @@ function taqyeem_rate_post(){
 	$total_rate = $rating + $rate;
 	$total      = round( $total_rate/$count, 2 );
 
-	# Registered user rate ----------
+	# Registered user rate
 	if ( is_user_logged_in() ) {
 
 		$current_user = wp_get_current_user();
@@ -366,7 +567,7 @@ function taqyeem_rate_post(){
 		}
 	}
 
-	# Guests rate ----------
+	# Guests rate
 	else{
 		$user_rated = $_COOKIE[ 'tie_rate_'.$post_id ];
 
@@ -518,7 +719,7 @@ function taqyeem_get_user_rate(){
 function taqyeem_get_score( $post_id = false, $size = 'small', $echo = true ){
 
 	$total_score = 0;
-	$rate_size 		= ( $size == 'large' ) ? 'large' : 'small';
+	$rate_size   = ( $size == 'large' ) ? 'large' : 'small';
 
 	$post_id = ! empty( $post_id ) ? $post_id : get_the_ID();
 
@@ -832,19 +1033,20 @@ var taqyeem = {"ajaxurl":"<?php echo admin_url('admin-ajax.php'); ?>" , "your_ra
 <?php
 foreach( $taqyeem_typography as $selector => $value){
 $option = taqyeem_get_option( $value );
-if( $option['font'] || $option['color'] || $option['size'] || $option['weight'] || $option['style'] ):
+if( ! empty( $option['font'] ) || ! empty( $option['color'] ) || ! empty( $option['size'] ) || ! empty( $option['weight'] ) || ! empty( $option['style'] ) ):
 echo "\n".$selector."{\n"; ?>
-<?php if($option['font'] )
+<?php if( ! empty( $option['font'] ) )
 	echo "	font-family: '". taqyeem_get_font( $option['font']  )."';\n"?>
-<?php if($option['color'] )
+<?php if( ! empty( $option['color'] ) )
 	echo "	color :". $option['color'].";\n"?>
-<?php if($option['size'] )
+<?php if( ! empty( $option['size'] ) )
 	echo "	font-size : ".$option['size']."px;\n"?>
-<?php if($option['weight'] )
+<?php if( ! empty( $option['weight'] ) )
 	echo "	font-weight: ".$option['weight'].";\n"?>
-<?php if($option['style'] )
+<?php if( ! empty( $option['style'] ) )
 	echo "	font-style: ". $option['style'].";\n"?>
 }
+
 <?php endif;
 } ?>
 <?php echo htmlspecialchars_decode( taqyeem_get_option('css') ) , "\n";?>
@@ -866,4 +1068,3 @@ echo "\n".$selector."{\n"; ?>
 </style>
 <?php
 }
-?>

@@ -23,13 +23,12 @@ if( ! class_exists( 'TIE_NEWSLETTER_WIDGET' )){
 
 			$text = isset( $instance['text'] ) ? $instance['text'] : '';
 
-			# WPML
+			// WPML
 			$text = apply_filters( 'wpml_translate_single_string', $text, TIELABS_THEME_SLUG, 'widget_content_'.$this->id );
 
 			echo ( $args['before_widget'] );
 
-
-			# Title
+			// Title
 			if ( ! empty($instance['title']) ){
 				echo ( $args['before_title'] . $instance['title'] . $args['after_title'] );
 			}
@@ -40,13 +39,13 @@ if( ! class_exists( 'TIE_NEWSLETTER_WIDGET' )){
 
 				<?php
 
-					# Show Icon
+					// Show Icon
 					if( ! empty( $instance['show_icon'] )){ ?>
 						<span class="fa fa-envelope newsletter-icon" aria-hidden="true"></span>
 						<?php
 					}
 
-					# Text
+					// Text
 					if( ! empty( $text ) ){ ?>
 						<div class="subscribe-widget-content">
 							<?php echo do_shortcode( $text ) ?>
@@ -73,6 +72,7 @@ if( ! class_exists( 'TIE_NEWSLETTER_WIDGET' )){
 										<label class="screen-reader-text" for="mce-EMAIL-<?php echo esc_attr( $args['widget_id'] ) ?>"><?php esc_html_e( 'Enter your Email address', TIELABS_TEXTDOMAIN ); ?></label>
 										<input type="email" value="" id="mce-EMAIL-<?php echo esc_attr( $args['widget_id'] ) ?>" placeholder="<?php esc_html_e( 'Enter your Email address', TIELABS_TEXTDOMAIN ); ?>" name="EMAIL" class="subscribe-input required email">
 									</div>
+									<?php do_action( 'TieLabs/Mailchimp/extra_fields' ); ?>
 									<input type="submit" value="<?php esc_html_e( 'Subscribe', TIELABS_TEXTDOMAIN ) ; ?>" name="subscribe" class="button subscribe-submit">
 							</form>
 						</div>
@@ -95,11 +95,11 @@ if( ! class_exists( 'TIE_NEWSLETTER_WIDGET' )){
 			$instance               = $old_instance;
 			$instance['title']      = sanitize_text_field( $new_instance['title'] );
 			$instance['text']       = $new_instance['text'];
-			$instance['show_icon']  = $new_instance['show_icon'];
+			$instance['show_icon']  = ! empty( $new_instance['show_icon'] ) ? 'true' : false;
 			$instance['mailchimp']  = $new_instance['mailchimp'];
 			$instance['feedburner'] = $new_instance['feedburner'];
 
-			# WPML
+			// WPML
 			do_action( 'wpml_register_single_string', TIELABS_THEME_SLUG, 'widget_content_'.$this->id, $new_instance['text'] );
 
 			return $instance;
@@ -119,11 +119,11 @@ if( ! class_exists( 'TIE_NEWSLETTER_WIDGET' )){
 
 			$instance = wp_parse_args( (array) $instance, $defaults );
 
-			$title      = isset( $instance['title'] ) ? $instance['title'] : '';
+			$title      = isset( $instance['title'] )      ? $instance['title']      : '';
 			$feedburner = isset( $instance['feedburner'] ) ? $instance['feedburner'] : '';
-			$mailchimp  = isset( $instance['mailchimp'] ) ? $instance['mailchimp'] : '';
-			$text       = isset( $instance['text'] ) ? $instance['text'] : '';
-			$show_icon  = isset( $instance['show_icon'] ) ? 'true' : '';
+			$mailchimp  = isset( $instance['mailchimp'] )  ? $instance['mailchimp']  : '';
+			$text       = isset( $instance['text'] )       ? $instance['text']       : '';
+			$show_icon  = isset( $instance['show_icon'] )  ? $instance['show_icon']  : '';
 
 
 			?>
