@@ -1,8 +1,8 @@
 Yoast News SEO for Yoast SEO
 ==========================
-Requires at least: 5.2
-Tested up to: 5.3.2
-Stable tag: 12.4.1
+Requires at least: 5.4
+Tested up to: 5.5
+Stable tag: 12.6
 Requires PHP: 5.6.20
 Depends: Yoast SEO
 
@@ -30,6 +30,18 @@ You can find the [Yoast News SEO FAQ](https://kb.yoast.com/kb/category/news-seo/
 
 Changelog
 =========
+### 12.6: August 18th, 2020
+Enhancements:
+* Adds 'Article' as `@type` to articles that are set to be included in the news sitemap. This results in a `@type` array with at least 'Article' and 'NewsArticle'.
+
+Other:
+* Enables tracking when activating the plugin. It can be disabled in the Yoast SEO configuration wizard.
+* Sets the minimum supported WordPress version to 5.4.
+
+### 12.5: July 21st, 2020
+Other:
+* Sets the minimum WordPress version to 5.3.
+
 ### 12.4.1: January 14th, 2020
 Bugfixes:
 * Fixes a bug where a large number of WordPress terms or post types would cause significant slowdowns and possible crashes on admin pages.
@@ -38,9 +50,11 @@ Other:
 * Removes the code tags from the term and post type names on the News SEO settings page. 
 
 ### 12.4: January 7th, 2020
+Bugfixes:
+* Fixes a bug where the sitemap could be invalidated twice on multisite with MultilingualPress.
+
 Other:
 * Show dates in UTC+0 format everywhere.
-* Fixes a bug where the sitemap could be invalidated twice on multisite with MultilingualPress.
 
 ### 12.3: November 27th, 2019
 Enhancements:

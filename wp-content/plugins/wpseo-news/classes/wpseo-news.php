@@ -5,10 +5,18 @@
  * @package WPSEO_News
  */
 
+use Yoast\WP\SEO\Presenters\Abstract_Indexable_Presenter;
+
 /**
  * Represents the news extension for Yoast SEO.
  */
 class WPSEO_News {
+
+	/**
+	 * Version number of the plugin.
+	 *
+	 * @var string
+	 */
 	const VERSION = WPSEO_NEWS_VERSION;
 
 	/**
@@ -29,9 +37,6 @@ class WPSEO_News {
 		// Sitemap.
 		new WPSEO_News_Sitemap();
 
-		// Head.
-		new WPSEO_News_Head();
-
 		// Schema.
 		new WPSEO_News_Schema();
 
@@ -44,13 +49,32 @@ class WPSEO_News {
 	 * Loading the hooks, which will be lead to methods withing this class.
 	 */
 	private function set_hooks() {
-		add_filter( 'plugin_action_links', array( $this, 'plugin_links' ), 10, 2 );
-		add_filter( 'wpseo_submenu_pages', array( $this, 'add_submenu_pages' ) );
-		add_action( 'admin_init', array( $this, 'init_helpscout_beacon' ) );
-		add_action( 'init', array( 'WPSEO_News_Option', 'register_option' ) );
+		add_filter( 'plugin_action_links', [ $this, 'plugin_links' ], 10, 2 );
+		add_filter( 'wpseo_submenu_pages', [ $this, 'add_submenu_pages' ] );
+		add_action( 'admin_init', [ $this, 'init_helpscout_beacon' ] );
+		add_action( 'init', [ 'WPSEO_News_Option', 'register_option' ] );
 
 		// Enable Yoast usage tracking.
 		add_filter( 'wpseo_enable_tracking', '__return_true' );
+
+		add_filter( 'wpseo_frontend_presenters', [ $this, 'add_frontend_presenter' ] );
+	}
+
+	/**
+	 * Adds the Google Bot News presenter.
+	 *
+	 * @param Abstract_Indexable_Presenter[] $presenters The presenter instances.
+	 *
+	 * @return Abstract_Indexable_Presenter[] The extended presenters.
+	 */
+	public function add_frontend_presenter( $presenters ) {
+		if ( ! is_array( $presenters ) ) {
+			return $presenters;
+		}
+
+		$presenters[] = new WPSEO_News_Googlebot_News_Presenter();
+
+		return $presenters;
 	}
 
 	/**
@@ -70,8 +94,6 @@ class WPSEO_News {
 				WPSEO_News_Sitemap::get_sitemap_name( false )
 			);
 		}
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
 	/**
@@ -83,8 +105,8 @@ class WPSEO_News {
 	 */
 	protected function check_dependencies( $wp_version ) {
 		// When WordPress function is too low.
-		if ( version_compare( $wp_version, '5.2', '<' ) ) {
-			add_action( 'all_admin_notices', array( $this, 'error_upgrade_wp' ) );
+		if ( version_compare( $wp_version, '5.3', '<' ) ) {
+			add_action( 'all_admin_notices', [ $this, 'error_upgrade_wp' ] );
 
 			return false;
 		}
@@ -93,14 +115,14 @@ class WPSEO_News {
 
 		// When WPSEO_VERSION isn't defined.
 		if ( $wordpress_seo_version === false ) {
-			add_action( 'all_admin_notices', array( $this, 'error_missing_wpseo' ) );
+			add_action( 'all_admin_notices', [ $this, 'error_missing_wpseo' ] );
 
 			return false;
 		}
 
-		// At least 12.6.1, in which we implemented the new HelpScout Beacon.
-		if ( version_compare( $wordpress_seo_version, '12.6.1-RC0', '<' ) ) {
-			add_action( 'all_admin_notices', array( $this, 'error_upgrade_wpseo' ) );
+		// At least 14.0, in which we implemented the Indexables.
+		if ( version_compare( $wordpress_seo_version, '14.0-RC0', '<' ) ) {
+			add_action( 'all_admin_notices', [ $this, 'error_upgrade_wpseo' ] );
 
 			return false;
 		}
@@ -124,10 +146,10 @@ class WPSEO_News {
 	/**
 	 * Add plugin links.
 	 *
-	 * @param array  $links The plugin links.
-	 * @param string $file  The file name.
+	 * @param string[] $links The plugin links.
+	 * @param string   $file  The file name.
 	 *
-	 * @return mixed
+	 * @return string[]
 	 */
 	public function plugin_links( $links, $file ) {
 		static $this_plugin;
@@ -157,43 +179,17 @@ class WPSEO_News {
 
 		$admin_page = new WPSEO_News_Admin_Page();
 
-		$submenu_pages[] = array(
+		$submenu_pages[] = [
 			'wpseo_dashboard',
 			'Yoast SEO: News SEO',
 			'News SEO',
 			'wpseo_manage_options',
 			'wpseo_news',
-			array( $admin_page, 'display' ),
-			array( array( $this, 'enqueue_admin_page' ) ),
-		);
+			[ $admin_page, 'display' ],
+			[ [ $this, 'enqueue_admin_page' ] ],
+		];
 
 		return $submenu_pages;
-	}
-
-	/**
-	 * Flattens a version number for use in a filename.
-	 *
-	 * @param string $version The original version number.
-	 *
-	 * @return string The flattened version number.
-	 */
-	public function flatten_version( $version ) {
-		$parts = explode( '.', $version );
-		if ( count( $parts ) === 2 && preg_match( '/^\d+$/', $parts[1] ) === 1 ) {
-			$parts[] = '0';
-		}
-		return implode( '', $parts );
-	}
-
-	/**
-	 * Enqueues the plugin scripts.
-	 */
-	public function enqueue_scripts() {
-		global $pagenow;
-
-		if ( $pagenow === 'post.php' || $pagenow === 'post-new.php' ) {
-			wp_enqueue_style( 'wpseo-news-admin-metabox-css', plugins_url( 'css/dist/admin-metabox-' . $this->flatten_version( WPSEO_NEWS_VERSION ) . WPSEO_CSSJS_SUFFIX . '.css', WPSEO_NEWS_FILE ), array(), WPSEO_NEWS_VERSION );
-		}
 	}
 
 	/**
@@ -206,7 +202,7 @@ class WPSEO_News {
 		wp_enqueue_script(
 			'wpseo-news-admin-page',
 			plugins_url( 'assets/admin-page.min.js', WPSEO_NEWS_FILE ),
-			array( 'jquery' ),
+			[ 'jquery' ],
 			self::VERSION,
 			true
 		);
@@ -302,9 +298,9 @@ class WPSEO_News {
 
 		if ( $post_types === null ) {
 			// Get supported post types.
-			$post_types = array();
-			$included_post_types = (array) WPSEO_Options::get( 'news_sitemap_include_post_types', array() );
-			foreach ( get_post_types( array( 'public' => true ), 'names' ) as $post_type ) {
+			$post_types          = [];
+			$included_post_types = (array) WPSEO_Options::get( 'news_sitemap_include_post_types', [] );
+			foreach ( get_post_types( [ 'public' => true ], 'names' ) as $post_type ) {
 				if ( array_key_exists( $post_type, $included_post_types ) && $included_post_types[ $post_type ] === 'on' ) {
 					$post_types[] = $post_type;
 				}
@@ -325,7 +321,7 @@ class WPSEO_News {
 	 * @return array
 	 */
 	public static function list_genres() {
-		return array(
+		return [
 			'none'          => __( 'None', 'wordpress-seo-news' ),
 			'pressrelease'  => __( 'Press Release', 'wordpress-seo-news' ),
 			'satire'        => __( 'Satire', 'wordpress-seo-news' ),
@@ -333,7 +329,7 @@ class WPSEO_News {
 			'oped'          => __( 'Op-Ed', 'wordpress-seo-news' ),
 			'opinion'       => __( 'Opinion', 'wordpress-seo-news' ),
 			'usergenerated' => __( 'User Generated', 'wordpress-seo-news' ),
-		);
+		];
 	}
 
 	/**
@@ -357,10 +353,10 @@ class WPSEO_News {
 	 */
 	public static function is_excluded_through_terms( $post_id, $post_type ) {
 		$terms          = self::get_terms_for_post( $post_id, $post_type );
-		$excluded_terms = (array) WPSEO_Options::get( 'news_sitemap_exclude_terms', array() );
+		$excluded_terms = (array) WPSEO_Options::get( 'news_sitemap_exclude_terms', [] );
 		foreach ( $terms as $term ) {
 			$option_key = $term->taxonomy . '_' . $term->slug . '_for_' . $post_type;
-			if ( array_key_exists( $option_key, $excluded_terms ) && $excluded_terms[ $option_key ] === 'on'  ) {
+			if ( array_key_exists( $option_key, $excluded_terms ) && $excluded_terms[ $option_key ] === 'on' ) {
 				return true;
 			}
 		}
@@ -377,7 +373,7 @@ class WPSEO_News {
 	 * @return array The terms for the item.
 	 */
 	public static function get_terms_for_post( $post_id, $post_type ) {
-		$terms                 = array();
+		$terms                 = [];
 		$excludable_taxonomies = new WPSEO_News_Excludable_Taxonomies( $post_type );
 
 		foreach ( $excludable_taxonomies->get() as $taxonomy ) {

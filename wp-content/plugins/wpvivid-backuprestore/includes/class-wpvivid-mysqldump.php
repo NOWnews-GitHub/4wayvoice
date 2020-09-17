@@ -131,7 +131,11 @@ class WPvivid_Mysqldump
             'skip-dump-date' => false,
             'where' => '',
             /* deprecated */
-            'disable-foreign-keys-check' => true
+            'disable-foreign-keys-check' => true,
+            'site_url'=>'',
+            'home_url'=>'',
+            'content_url'=>'',
+            'prefix'=>''
         );
 
         if(defined('DB_CHARSET'))
@@ -332,19 +336,12 @@ class WPvivid_Mysqldump
         // Write some basic info to output file
         $this->compressManager->write($this->getDumpFileHeader());
 
-        $this->compressManager->write('/* # site_url: '.site_url().' */;'.PHP_EOL);
-        $this->compressManager->write('/* # home_url: '.home_url().' */;'.PHP_EOL);
-        $this->compressManager->write('/* # content_url: '.content_url().' */;'.PHP_EOL);
+        $this->compressManager->write('/* # site_url: '.$this->dumpSettings['site_url'].' */;'.PHP_EOL);
+        $this->compressManager->write('/* # home_url: '.$this->dumpSettings['home_url'].' */;'.PHP_EOL);
+        $this->compressManager->write('/* # content_url: '.$this->dumpSettings['content_url'].' */;'.PHP_EOL);
         $upload_dir  = wp_upload_dir();
         $this->compressManager->write('/* # upload_url: '.$upload_dir['baseurl'].' */;'.PHP_EOL);
-        global $wpdb;
-        if (is_multisite() && !defined('MULTISITE'))
-        {
-            $prefix = $wpdb->base_prefix;
-        } else {
-            $prefix = $wpdb->get_blog_prefix(0);
-        }
-        $this->compressManager->write('/* # table_prefix: '.$prefix.' */;'.PHP_EOL.PHP_EOL.PHP_EOL);
+        $this->compressManager->write('/* # table_prefix: '.$this->dumpSettings['prefix'].' */;'.PHP_EOL.PHP_EOL.PHP_EOL);
 
         // Store server settings and use sanner defaults to dump
         $this->compressManager->write(
@@ -714,8 +711,8 @@ class WPvivid_Mysqldump
             }
             $stmt = $this->typeAdapter->show_create_table($tableName);
 
-            foreach ($this->query($stmt) as $r) {
-
+            foreach ($this->query($stmt) as $r)
+            {
                 $this->compressManager->write($ret);
                 if ($this->dumpSettings['add-drop-table']) {
                     $this->compressManager->write(

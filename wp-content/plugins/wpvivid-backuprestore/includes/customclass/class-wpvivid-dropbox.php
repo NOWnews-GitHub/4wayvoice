@@ -300,7 +300,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
             {
                 try {
                     if (!isset($_GET['name']) || empty($_GET['name'])) {
-                        echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: An alias for remote storage is required.', 'wpvivid').'</p></div>';
+                        echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: An alias for remote storage is required.', 'wpvivid-backuprestore').'</p></div>';
                         return;
                     }
 
@@ -309,7 +309,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
                     $remoteslist = WPvivid_Setting::get_all_remote_options();
                     foreach ($remoteslist as $key => $value) {
                         if (isset($value['name']) && $value['name'] == $_GET['name']) {
-                            echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: The alias already exists in storage list.', 'wpvivid').'</p></div>';
+                            echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: The alias already exists in storage list.', 'wpvivid-backuprestore').'</p></div>';
                             return;
                         }
                     }
@@ -366,7 +366,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
             {
                 try {
                     if (!isset($_GET['name']) || empty($_GET['name'])) {
-                        echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: An alias for remote storage is required.', 'wpvivid').'</p></div>';
+                        echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: An alias for remote storage is required.', 'wpvivid-backuprestore').'</p></div>';
                         return;
                     }
 
@@ -375,7 +375,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
                     $remoteslist = WPvivid_Setting::get_all_remote_options();
                     foreach ($remoteslist as $key => $value) {
                         if (isset($value['name']) && $value['name'] == $_GET['name'] && $key != $_GET['id']) {
-                            echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: The alias already exists in storage list.', 'wpvivid').'</p></div>';
+                            echo '<div class="notice notice-warning is-dismissible"><p>'.__('Warning: The alias already exists in storage list.', 'wpvivid-backuprestore').'</p></div>';
                             return;
                         }
                     }
@@ -430,7 +430,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
         }
     }
     public function wpvivid_show_notice_add_dropbox_success(){
-        echo '<div class="notice notice-success is-dismissible"><p>'.__('You have authenticated the Dropbox account as your remote storage.', 'wpvivid').'</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p>'.__('You have authenticated the Dropbox account as your remote storage.', 'wpvivid-backuprestore').'</p></div>';
     }
     public function wpvivid_show_notice_add_dropbox_error(){
         global $wpvivid_plugin;
@@ -438,7 +438,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
         echo '<div class="notice notice-error"><p>'.$_GET['resp_msg'].'</p></div>';
     }
     public function wpvivid_show_notice_edit_dropbox_success(){
-        echo '<div class="notice notice-success is-dismissible"><p>'.__('You have successfully updated the storage alias.', 'wpvivid').'</p></div>';
+        echo '<div class="notice notice-success is-dismissible"><p>'.__('You have successfully updated the storage alias.', 'wpvivid-backuprestore').'</p></div>';
     }
     public function wpvivid_show_notice_edit_dropbox_error(){
         global $wpvivid_plugin;
@@ -449,7 +449,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
     public function wpvivid_add_storage_tab_dropbox(){
         ?>
         <div class="storage-providers" remote_type="dropbox" onclick="select_remote_storage(event, 'storage_account_dropbox');">
-            <img src="<?php echo esc_url(WPVIVID_PLUGIN_URL.'/admin/partials/images/storage-dropbox.png'); ?>" style="vertical-align:middle;"/><?php _e('Dropbox', 'wpvivid'); ?>
+            <img src="<?php echo esc_url(WPVIVID_PLUGIN_URL.'/admin/partials/images/storage-dropbox.png'); ?>" style="vertical-align:middle;"/><?php _e('Dropbox', 'wpvivid-backuprestore'); ?>
         </div>
         <?php
     }
@@ -459,22 +459,22 @@ class WPvivid_Dropbox extends WPvivid_Remote {
         ?>
         <div id="storage_account_dropbox" class="storage-account-page" style="display:none;">
             <div style="background-color:#f1f1f1; padding: 10px;">
-                <?php _e('Please read <a target="_blank" href="https://wpvivid.com/privacy-policy" style="text-decoration: none;">this privacy policy</a> for use of our Dropbox authorization app (none of your backup data is sent to us).', 'wpvivid'); ?>
+                <?php _e('Please read <a target="_blank" href="https://wpvivid.com/privacy-policy" style="text-decoration: none;">this privacy policy</a> for use of our Dropbox authorization app (none of your backup data is sent to us).', 'wpvivid-backuprestore'); ?>
             </div>
             <div style="padding: 10px 10px 10px 0;">
-                <strong><?php _e('Enter Your Dropbox Information', 'wpvivid'); ?></strong>
+                <strong><?php _e('Enter Your Dropbox Information', 'wpvivid-backuprestore'); ?></strong>
             </div>
             <table class="wp-list-table widefat plugins" style="width:100%;">
                 <tbody>
                 <tr>
                     <td class="plugin-title column-primary">
                         <div class="wpvivid-storage-form">
-                            <input type="text" class="regular-text" autocomplete="off" option="dropbox" name="name" placeholder="<?php esc_attr_e('Enter a unique alias: e.g. Dropbox-001', 'wpvivid'); ?>" onkeyup="value=value.replace(/[^a-zA-Z0-9\-_]/g,'')" />
+                            <input type="text" class="regular-text" autocomplete="off" option="dropbox" name="name" placeholder="<?php esc_attr_e('Enter a unique alias: e.g. Dropbox-001', 'wpvivid-backuprestore'); ?>" onkeyup="value=value.replace(/[^a-zA-Z0-9\-_]/g,'')" />
                         </div>
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('A name to help you identify the storage if you have multiple remote storage connected.', 'wpvivid'); ?></i>
+                            <i><?php _e('A name to help you identify the storage if you have multiple remote storage connected.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>
@@ -486,7 +486,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('All backups will be uploaded to this directory.', 'wpvivid'); ?></i>
+                            <i><?php _e('All backups will be uploaded to this directory.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>
@@ -498,7 +498,7 @@ class WPvivid_Dropbox extends WPvivid_Remote {
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <a href="https://wpvivid.com/wpvivid-backup-pro-dropbox-custom-folder-name?utm_source=client_dropbox&utm_medium=inner_link&utm_campaign=access"><?php _e('Pro feature: Create a directory for storing the backups of the site', 'wpvivid'); ?></a>
+                            <a href="https://wpvivid.com/wpvivid-backup-pro-dropbox-custom-folder-name?utm_source=client_dropbox&utm_medium=inner_link&utm_campaign=access"><?php _e('Pro feature: Create a directory for storing the backups of the site', 'wpvivid-backuprestore'); ?></a>
                         </div>
                     </td>
                 </tr>
@@ -506,25 +506,25 @@ class WPvivid_Dropbox extends WPvivid_Remote {
                     <td class="plugin-title column-primary">
                         <div class="wpvivid-storage-select">
                             <label>
-                                <input type="checkbox" option="dropbox" name="default" checked /><?php _e('Set as the default remote storage.', 'wpvivid'); ?>
+                                <input type="checkbox" option="dropbox" name="default" checked /><?php _e('Set as the default remote storage.', 'wpvivid-backuprestore'); ?>
                             </label>
                         </div>
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('Once checked, all this sites backups sent to a remote storage destination will be uploaded to this storage by default.', 'wpvivid'); ?></i>
+                            <i><?php _e('Once checked, all this sites backups sent to a remote storage destination will be uploaded to this storage by default.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td class="plugin-title column-primary">
                         <div class="wpvivid-storage-form">
-                            <input onclick="wpvivid_dropbox_auth();" class="button-primary" type="submit" value="<?php esc_attr_e('Authenticate with Dropbox', 'wpvivid'); ?>">
+                            <input onclick="wpvivid_dropbox_auth();" class="button-primary" type="submit" value="<?php esc_attr_e('Authenticate with Dropbox', 'wpvivid-backuprestore'); ?>">
                         </div>
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('Click the button to get Dropbox authentication and add it to the storage list below.', 'wpvivid'); ?></i>
+                            <i><?php _e('Click the button to get Dropbox authentication and add it to the storage list below.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>
@@ -587,31 +587,31 @@ class WPvivid_Dropbox extends WPvivid_Remote {
         ?>
         <div id="remote_storage_edit_dropbox" class="postbox storage-account-block remote-storage-edit" style="display:none;">
             <div style="padding: 0 10px 10px 0;">
-                <strong><?php _e('Enter Your Dropbox Information', 'wpvivid'); ?></strong>
+                <strong><?php _e('Enter Your Dropbox Information', 'wpvivid-backuprestore'); ?></strong>
             </div>
             <table class="wp-list-table widefat plugins" style="width:100%;">
                 <tbody>
                 <tr>
                     <td class="plugin-title column-primary">
                         <div class="wpvivid-storage-form">
-                            <input type="text" class="regular-text" autocomplete="off" option="edit-dropbox" name="name" placeholder="<?php esc_attr_e('Enter a unique alias: e.g. Dropbox-001', 'wpvivid'); ?>" onkeyup="value=value.replace(/[^a-zA-Z0-9\-_]/g,'')" />
+                            <input type="text" class="regular-text" autocomplete="off" option="edit-dropbox" name="name" placeholder="<?php esc_attr_e('Enter a unique alias: e.g. Dropbox-001', 'wpvivid-backuprestore'); ?>" onkeyup="value=value.replace(/[^a-zA-Z0-9\-_]/g,'')" />
                         </div>
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('A name to help you identify the storage if you have multiple remote storage connected.', 'wpvivid'); ?></i>
+                            <i><?php _e('A name to help you identify the storage if you have multiple remote storage connected.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td class="plugin-title column-primary">
                         <div class="wpvivid-storage-form">
-                            <input onclick="wpvivid_dropbox_update_auth();" class="button-primary" type="submit" value="<?php esc_attr_e('Save Changes', 'wpvivid'); ?>">
+                            <input onclick="wpvivid_dropbox_update_auth();" class="button-primary" type="submit" value="<?php esc_attr_e('Save Changes', 'wpvivid-backuprestore'); ?>">
                         </div>
                     </td>
                     <td class="column-description desc">
                         <div class="wpvivid-storage-form-desc">
-                            <i><?php _e('Click the button to save the changes.', 'wpvivid'); ?></i>
+                            <i><?php _e('Click the button to save the changes.', 'wpvivid-backuprestore'); ?></i>
                         </div>
                     </td>
                 </tr>

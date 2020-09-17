@@ -3,7 +3,7 @@
  * Plugin Name: WP RSS Aggregator - Feed to Post
  * Plugin URI: https://www.wprssaggregator.com/#utm_source=wpadmin&utm_medium=plugin&utm_campaign=wpraplugin
  * Description: Adds feed-to-post conversion functionality to WP RSS Aggregator.
- * Version: 3.12
+ * Version: 3.13.1
  * Author: RebelCode
  * Author URI: https://www.wprssaggregator.com
  * Text Domain: wprss
@@ -36,7 +36,7 @@ use RebelCode\Wpra\FeedToPost\Modules\TemplatesModule;
 
 /* Set the version number of the plugin. */
 if( !defined( 'WPRSS_FTP_VERSION' ) )
-	define( 'WPRSS_FTP_VERSION', '3.12' );
+	define( 'WPRSS_FTP_VERSION', '3.13.1' );
 
 /* Set the database version number of the plugin. */
 if( !defined( 'WPRSS_FTP_DB_VERSION' ) )
@@ -154,7 +154,6 @@ add_action('plugins_loaded', function() {
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-extractor.php' );
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-custom-conversions.php' );
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-debug.php' );
-    require_once ( WPRSS_FTP_INC . 'wprss-ftp-url-shortener.php' );
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-legacy.php' );
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-taxonomies.php' );
     require_once ( WPRSS_FTP_INC . 'wprss-ftp-help.php' );
@@ -621,7 +620,7 @@ final class WPRSS_FTP {
 			wp_register_script( 'wprss-ftp-jquery-chosen', WPRSS_FTP_JS . 'jquery-chosen/chosen.jquery.min.js', array('jquery') );
 			wp_register_script( 'wprss-ftp-taxonomy-js', WPRSS_FTP_JS . 'admin-taxonomies.js', array('jquery', 'wprss-ftp-jquery-chosen') );
 			wp_localize_script( 'wprss-ftp-taxonomy-js', 'wprss_ftp_taxonomy_js', array(
-				'please_wait'		=> __('Please Wait...', WPRSS_TEXT_DOMAIN),
+				'please_wait'		=> __('Please wait...', WPRSS_TEXT_DOMAIN),
 				'choose_terms'		=> __('Choose terms', WPRSS_TEXT_DOMAIN),
 				'choose_tax'		=> __('Choose a taxonomy', WPRSS_TEXT_DOMAIN),
 				'choose_field'		=> __('Choose a field to filter on', WPRSS_TEXT_DOMAIN),
@@ -638,7 +637,7 @@ final class WPRSS_FTP {
 				wp_enqueue_script( 'wprss_ftp_extraction_rules_scripts', WPRSS_FTP_JS . 'post-appender.js', array('jquery-ui-tabs') );
 				wp_enqueue_script( 'wprss_ftp_custom_mappings_scripts', WPRSS_FTP_JS . 'custom-mappings.js', array('jquery') );
 				wp_localize_script( 'wprss_ftp_custom_mappings_scripts', 'wprss_ftp_custom_mappings_scripts', array(
-					'please_wait'			=> __('Please Wait...', WPRSS_TEXT_DOMAIN),
+					'please_wait'			=> __('Please wait...', WPRSS_TEXT_DOMAIN),
 					'namespace'				=> __('Namespace', WPRSS_TEXT_DOMAIN),
 					'with_url'				=> __('with URL', WPRSS_TEXT_DOMAIN),
 					'specify_feed_url'		=> __('Please specify a feed source URL first.', WPRSS_TEXT_DOMAIN),
@@ -766,7 +765,7 @@ final class WPRSS_FTP {
 	 * @since 2.5
 	 */
 	public function add_wprss_feed_columns( $columns ) {
-		$columns['post-type'] = __( "Post Type", WPRSS_TEXT_DOMAIN );
+		$columns['post-type'] = __( "Post type", WPRSS_TEXT_DOMAIN );
 		return $columns;
 	}
 
@@ -923,7 +922,7 @@ final class WPRSS_FTP {
 	 * @since 2.9
 	 */
 	public function fetch_items_row_action_text( $text ) {
-		return __( "Fetch Posts", WPRSS_TEXT_DOMAIN );
+		return __( "Fetch posts", WPRSS_TEXT_DOMAIN );
 	}
 
 
@@ -933,7 +932,7 @@ final class WPRSS_FTP {
 	 * @since 2.9
 	 */
 	public function view_feed_items_row_action_text( $text ) {
-		return __( "View Posts", WPRSS_TEXT_DOMAIN );
+		return __( "View posts", WPRSS_TEXT_DOMAIN );
 	}
 
 
@@ -943,7 +942,7 @@ final class WPRSS_FTP {
 	 * @since 1.3
 	 */
 	public function delete_posts_row_action_text( $text ) {
-		return __( 'Delete Posts', WPRSS_TEXT_DOMAIN );
+		return __( 'Delete posts', WPRSS_TEXT_DOMAIN );
 	}
 
 
@@ -1035,9 +1034,8 @@ final class WPRSS_FTP {
 		// Get the feed source for the post
 		$source = WPRSS_FTP_Meta::get_instance()->get_meta( $postId, 'feed_source' );
 
-
-		// IF AN IMPORTED POST
-		if ( $source !== '' && !is_single() ) {
+		// Only proceed if the post is an imported post and we're not currently on its singular dedicated page
+	    if ( $source !== '' && !(is_single() && get_the_ID() === $postId) ) {
 			// Check whether the title is to be linked to the external, original post
 			$filter_value = apply_filters( 'wprss_ftp_link_post_title', FALSE );
 			$setting_value = WPRSS_FTP_Utils::multiboolean($this->settings->get('link_posts_to_original'));

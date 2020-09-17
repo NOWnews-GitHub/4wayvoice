@@ -39,7 +39,7 @@ class WPvivid_Function_Realize
                 $wpvivid_plugin->add_monitor_event($task_id, 10);
             }*/
             $ret['result'] = 'success';
-            $ret['msg'] = __('The backup will be canceled after backing up the current chunk ends.', 'wpvivid');
+            $ret['msg'] = __('The backup will be canceled after backing up the current chunk ends.', 'wpvivid-backuprestore');
         }
         catch (Exception $error) {
             $message = 'An exception has occurred. class: '.get_class($error).';msg: '.$error->getMessage().';code: '.$error->getCode().';line: '.$error->getLine().';in_file: '.$error->getFile().';';
@@ -62,12 +62,12 @@ class WPvivid_Function_Realize
             $backup = WPvivid_Backuplist::get_backup_by_id($backup_id);
             if(!$backup) {
                 $ret['result']='failed';
-                $ret['error']=__('Retrieving the backup information failed while showing log. Please try again later.', 'wpvivid');
+                $ret['error']=__('Retrieving the backup information failed while showing log. Please try again later.', 'wpvivid-backuprestore');
                 return $ret;
             }
             if(!file_exists($backup['log'])) {
                 $ret['result']='failed';
-                $ret['error']=__('The log not found.', 'wpvivid');
+                $ret['error']=__('The log not found.', 'wpvivid-backuprestore');
                 return $ret;
             }
             $ret['result']='success';
@@ -79,7 +79,7 @@ class WPvivid_Function_Realize
             if(!file_exists($log_file_name))
             {
                 $information['result']='failed';
-                $information['error']=__('The log not found.', 'wpvivid');
+                $information['error']=__('The log not found.', 'wpvivid-backuprestore');
                 return $information;
             }
             $ret['result']='success';
@@ -90,13 +90,13 @@ class WPvivid_Function_Realize
             $option=WPvivid_taskmanager::get_task_options($backup_task_id,'log_file_name');
             if(!$option) {
                 $information['result']='failed';
-                $information['error']=__('Retrieving the backup information failed while showing log. Please try again later.', 'wpvivid');
+                $information['error']=__('Retrieving the backup information failed while showing log. Please try again later.', 'wpvivid-backuprestore');
                 return $information;
             }
             $log_file_name= $wpvivid_plugin->wpvivid_log->GetSaveLogFolder().$option.'_log.txt';
             if(!file_exists($log_file_name)) {
                 $information['result']='failed';
-                $information['error']=__('The log not found.', 'wpvivid');
+                $information['error']=__('The log not found.', 'wpvivid-backuprestore');
                 return $information;
             }
             $ret['result']='success';

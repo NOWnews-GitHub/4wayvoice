@@ -21,6 +21,12 @@ class WPvivid_error_log
                 @fclose($tempfile);
             }
         }
+
+        if(!file_exists($log_file_name))
+        {
+            return ;
+        }
+
         if(file_exists($dir.DIRECTORY_SEPARATOR.'error'.DIRECTORY_SEPARATOR.$file))
         {
             @unlink($dir.DIRECTORY_SEPARATOR.'error'.DIRECTORY_SEPARATOR.$file);

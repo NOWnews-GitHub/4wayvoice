@@ -4,6 +4,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.17.7] - 2020-08-12
+### Added
+* New HTML classes for pagination buttons.
+
+### Fixed
+* The featured image when using the Feed to Post add-on was not being saved.
+
+### Changed
+* FeedBurner feeds no longer need to have "format=xml" at the end of the URL.
+
+## [4.17.6] - 2020-07-29
+### Added
+* A link in the New/Edit Feed Source page on how to find an RSS feed.
+
+### Changed
+* The "Force feed" option turns off SSL verification.
+* Improved wording on the Help page.
+* Dates in templates can now be translated.
+* The link to the article on how to find an RSS feed now links to an article from the plugin's knowledge base.
+* The "Unique Titles" feed option can now be set to default to the global setting.
+
+### Fixed
+* Rewrite rules would always get flushed when plugins tamper with them, such as Polylang Pro.
+* The "Delete All Imported Items" reset option was deleting all posts on the site.
+* Image options would not show up when using Feed to Post to import Feed Items.
+
+### Removed
+* A `gettext` filter that changes the text for saving feeds, for performance reasons.
+
+## [4.17.5] - 2020-04-22
+### Changed
+* Now showing a case study of a site using the Pro Plan in the on-boarding wizard.
+* Licenses are now managed by the main site. Child sites do not have access to the licenses page.
+
+### Fixed
+* The custom feed did not include items imported as posts or other post types.
+
+### Removed
+* Temporarily disabled the "What's New" page.
+* Removed the integration with Lorem on the "Help & Support" page.
+* Removed the integration with Lorem on the "More Features" page.
+
 ## [4.17.4] - 2020-03-16
 ### Changed
 * The default template is now created based on type, not slug.

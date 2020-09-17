@@ -62,7 +62,7 @@ class WPvivid_Export_Import
 
         $menu['id']='wpvivid_admin_menu_export_import';
         $menu['parent']='wpvivid_admin_menu';
-        $menu['title']=__('Export & Import', 'wpvivid');
+        $menu['title']=__('Export & Import', 'wpvivid-backuprestore');
         $menu['tab']= 'admin.php?page=wpvivid-export-import';
         $menu['href']=$admin_url . 'admin.php?page=wpvivid-export-import';
         $menu['capability']='administrator';
@@ -75,7 +75,7 @@ class WPvivid_Export_Import
     {
         $submenu['parent_slug']=WPVIVID_PLUGIN_SLUG;
         $submenu['page_title']= 'WPvivid Backup';
-        $submenu['menu_title']=__('Export & Import', 'wpvivid');
+        $submenu['menu_title']=__('Export & Import', 'wpvivid-backuprestore');
         $submenu['capability']='administrator';
         $submenu['menu_slug']='wpvivid-export-import';
         $submenu['index']=3;
@@ -91,7 +91,7 @@ class WPvivid_Export_Import
             <h1><?php
                 $plugin_display_name = 'WPvivid Backup Plugin';
                 $plugin_display_name = apply_filters('wpvivid_display_pro_name', $plugin_display_name);
-                echo __('WPvivid Backup Plugin', 'wpvivid');
+                echo __('WPvivid Backup Plugin', 'wpvivid-backuprestore');
                 ?></h1>
             <div id="wpvivid_export_notice"></div>
             <?php
@@ -116,13 +116,13 @@ class WPvivid_Export_Import
                     <img src="<?php echo esc_url(WPVIVID_PLUGIN_IMAGES_URL.'export-import.png'); ?>" style="width:50px;height:50px;">
                 </div>
                 <div style="box-sizing: border-box;">
-                    <div class="wpvivid-text-space-bottom"><?php _e('Export posts or pages with images in bulk.', 'wpvivid'); ?>
+                    <div class="wpvivid-text-space-bottom"><?php _e('Export posts or pages with images in bulk.', 'wpvivid-backuprestore'); ?>
                         <span class="wpvivid-feature-pro">
-                            <a href="https://wpvivid.com/export-content" target="_blank" style="text-decoration: none;"><?php _e('Learn more', 'wpvivid'); ?></a>
+                            <a href="https://wpvivid.com/export-content" target="_blank" style="text-decoration: none;"><?php _e('Learn more', 'wpvivid-backuprestore'); ?></a>
                         </span>
                     </div>
-                    <div class="wpvivid-text-space-bottom"><?php _e('This will contain all of your posts, pages, comments, terms and images (original images, featured images and thumbnails).', 'wpvivid'); ?></div>
-                    <div class="wpvivid-text-space-bottom"><strong><?php _e('Note:', 'wpvivid'); ?></strong>&nbsp<?php _e('Try to select fewer items when you are facing a shortage of server resources (typically presented as a timeout error).', 'wpvivid'); ?></div>
+                    <div class="wpvivid-text-space-bottom"><?php _e('This will contain all of your posts, pages, comments, terms and images (original images, featured images and thumbnails).', 'wpvivid-backuprestore'); ?></div>
+                    <div class="wpvivid-text-space-bottom"><strong><?php _e('Note:', 'wpvivid-backuprestore'); ?></strong>&nbsp<?php _e('Try to select fewer items when you are facing a shortage of server resources (typically presented as a timeout error).', 'wpvivid-backuprestore'); ?></div>
                     <div style="clear: both;"></div>
                 </div>
                 <div style="clear: both;"></div>
@@ -132,30 +132,30 @@ class WPvivid_Export_Import
             <div style="background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; margin-bottom: 10px; padding: 10px;">
                 <div>
                     <?php
-                    echo sprintf(__('Exported files will be temporarily stored in %s directory', 'wpvivid'), $export_dir);
+                    echo sprintf(__('Exported files will be temporarily stored in %s directory', 'wpvivid-backuprestore'), $export_dir);
                     ?>
                 </div>
             </div>
 
             <div style="width:100%; border:1px solid #f1f1f1; float:left; box-sizing: border-box;margin-bottom:10px;">
-                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Choose post type', 'wpvivid'); ?></h2></div>
+                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Choose post type', 'wpvivid-backuprestore'); ?></h2></div>
             </div>
             <div style="clear: both;"></div>
 
             <div class="postbox wpvivid-element-space-bottom">
                 <div class="wpvivid-export-type-provider wpvivid-export-type-post wpvivid-export-type-provider-active" onclick="wpvivid_select_export_type('post');">
-                    <?php _e('Post', 'wpvivid'); ?>
+                    <?php _e('Post', 'wpvivid-backuprestore'); ?>
                 </div>
                 <div class="wpvivid-export-type-provider wpvivid-export-type-page" onclick="wpvivid_select_export_type('page');">
-                    <?php _e('Page', 'wpvivid'); ?>
+                    <?php _e('Page', 'wpvivid-backuprestore'); ?>
                 </div>
                 <div class="wpvivid-export-type-provider">
-                    <?php _e('More post types coming soon...', 'wpvivid'); ?>
+                    <?php _e('More post types coming soon...', 'wpvivid-backuprestore'); ?>
                 </div>
             </div>
 
             <div id="wpvivid_export_page">
-                <input class="button-primary wpvivid-button-export-archieve" type="submit" name="post" value="<?php esc_attr_e('Next Step', 'wpvivid'); ?>" />
+                <input class="button-primary wpvivid-button-export-archieve" type="submit" name="post" value="<?php esc_attr_e('Next Step', 'wpvivid-backuprestore'); ?>" />
             </div>
             <div class="postbox" id="wpvivid_export_task_progress" style="display: none; margin-top: 10px; margin-bottom: 0;">
                 <div class="action-progress-bar" id="wpvivid_export_bar_percent">
@@ -178,7 +178,7 @@ class WPvivid_Export_Import
                 jQuery('.wpvivid-export-type-'+export_type).addClass('wpvivid-export-type-provider-active');
                 if(current_export_type !== export_type){
                     current_export_type = export_type;
-                    var button_html = '<input class="button-primary wpvivid-button-export-archieve" type="submit" name="'+export_type+'" value="<?php esc_attr_e('Next Step', 'wpvivid'); ?>" />';
+                    var button_html = '<input class="button-primary wpvivid-button-export-archieve" type="submit" name="'+export_type+'" value="<?php esc_attr_e('Next Step', 'wpvivid-backuprestore'); ?>" />';
                     jQuery('#wpvivid_export_page').html(button_html);
                     jQuery('#wpvivid_export_summary').hide();
                 }
@@ -616,11 +616,12 @@ class WPvivid_Export_Import
             global $wpdb;
             $post_type = sanitize_text_field($_POST['post_type']);
             $descript_type = $post_type === 'post' ? 'posts' : 'pages';
+            $btn_text = $post_type === 'post' ? 'Show Posts' : 'Show Pages';
 
             ob_start();
             ?>
             <div style="width:100%; border:1px solid #f1f1f1; float:left; box-sizing: border-box;margin-bottom:10px;">
-                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Choose what to export', 'wpvivid'); ?></h2></div>
+                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Choose what to export', 'wpvivid-backuprestore'); ?></h2></div>
             </div>
             <div style="clear: both;"></div>
             <div style="width:100%; border:1px solid #f1f1f1; float:left; padding:10px 10px 0 10px;margin-bottom:10px; box-sizing: border-box;">
@@ -628,7 +629,7 @@ class WPvivid_Export_Import
                     <legend class="screen-reader-text"><span>input type="radio"</span></legend>
                     <div class="wpvivid-element-space-bottom wpvivid-element-space-right" style="float: left;">
                         <label>
-                            <input type="radio" option="export" name="contain" value="list" checked/><?php _e('Filter Posts/Pages', 'wpvivid'); ?>
+                            <input type="radio" option="export" name="contain" value="list" checked/><?php _e('Filter Posts/Pages', 'wpvivid-backuprestore'); ?>
                         </label>
                     </div>
                     <div style="clear: both;"></div>
@@ -647,7 +648,7 @@ class WPvivid_Export_Import
                                         wp_dropdown_categories(
                                             array(
                                                 'class' => 'regular-text',
-                                                'show_option_all' => __('All Categories', 'wpvivid')
+                                                'show_option_all' => __('All Categories', 'wpvivid-backuprestore')
                                             )
                                         );
                                         ?>
@@ -657,7 +658,7 @@ class WPvivid_Export_Import
                                     <div class="wpvivid-storage-form-desc">
                                         <i>
                                             <?php
-                                            echo sprintf(__('Export %s of all categories or a specific category.', 'wpvivid'), $descript_type);
+                                            echo sprintf(__('Export %s of all categories or a specific category.', 'wpvivid-backuprestore'), $descript_type);
                                             ?>
                                         </i>
                                     </div>
@@ -677,7 +678,7 @@ class WPvivid_Export_Import
                                             'include'         => $authors,
                                             'name'            => 'post_author',
                                             'multi'           => true,
-                                            'show_option_all' => __( 'All Authors', 'wpvivid' ),
+                                            'show_option_all' => __( 'All Authors', 'wpvivid-backuprestore' ),
                                             'show'            => 'display_name_with_login',
                                         )
                                     );
@@ -688,7 +689,7 @@ class WPvivid_Export_Import
                                 <div class="wpvivid-storage-form-desc">
                                     <i>
                                         <?php
-                                        echo sprintf(__('Export %s of all authors or a specific author.', 'wpvivid'), $descript_type);
+                                        echo sprintf(__('Export %s of all authors or a specific author.', 'wpvivid-backuprestore'), $descript_type);
                                         ?>
                                     </i>
                                 </div>
@@ -700,7 +701,7 @@ class WPvivid_Export_Import
                                 <div class="wpvivid-storage-form regular-text">
                                     <label for="post-start-date" class="label-responsive" style="display: block;"></label>
                                     <select class="regular-text" name="post_start_date" id="post-start-date">
-                                        <option value="0"><?php _e( '&mdash; Select &mdash;', 'wpvivid' ); ?></option>
+                                        <option value="0"><?php _e( '&mdash; Select &mdash;', 'wpvivid-backuprestore' ); ?></option>
                                         <?php $this->export_date_options($post_type); ?>
                                     </select>
                                 </div>
@@ -709,7 +710,7 @@ class WPvivid_Export_Import
                                 <div class="wpvivid-storage-form-desc">
                                     <i>
                                         <?php
-                                        echo sprintf(__('Export %s published after this date.', 'wpvivid'), $descript_type);
+                                        echo sprintf(__('Export %s published after this date.', 'wpvivid-backuprestore'), $descript_type);
                                         ?>
                                     </i>
                                 </div>
@@ -721,7 +722,7 @@ class WPvivid_Export_Import
                                 <div class="wpvivid-storage-form regular-text">
                                     <label for="post-end-date" class="label-responsive" style="display: block;"></label>
                                     <select class="regular-text" name="post_end_date" id="post-end-date">
-                                        <option value="0"><?php _e( '&mdash; Select &mdash;', 'wpvivid' ); ?></option>
+                                        <option value="0"><?php _e( '&mdash; Select &mdash;', 'wpvivid-backuprestore' ); ?></option>
                                         <?php $this->export_date_options($post_type); ?>
                                     </select>
                                 </div>
@@ -730,7 +731,7 @@ class WPvivid_Export_Import
                                 <div class="wpvivid-storage-form-desc">
                                     <i>
                                         <?php
-                                        echo sprintf(__('Export %s published before this date.', 'wpvivid'), $descript_type);
+                                        echo sprintf(__('Export %s published before this date.', 'wpvivid-backuprestore'), $descript_type);
                                         ?>
                                     </i>
                                 </div>
@@ -766,14 +767,14 @@ class WPvivid_Export_Import
                         <tr>
                             <td class="plugin-title column-primary">
                                 <div class="wpvivid-storage-form">
-                                    <input class="button-primary" id="wpvivid-post-query-submit" type="submit" name="<?php echo $post_type; ?>" value="<?php esc_attr_e('Search', 'wpvivid'); ?>" />
+                                    <input class="button-primary" id="wpvivid-post-query-submit" type="submit" name="<?php echo $post_type; ?>" value="<?php echo $btn_text; ?>" />
                                 </div>
                             </td>
                             <td class="column-description desc">
                                 <div class="wpvivid-storage-form-desc">
                                     <i>
                                         <?php
-                                        echo sprintf(__('Search for %s according to the above rules.', 'wpvivid'), $post_type);
+                                        echo sprintf(__('Search for %s according to the above rules.', 'wpvivid-backuprestore'), $post_type);
                                         ?>
                                     </i>
                                 </div>
@@ -786,29 +787,29 @@ class WPvivid_Export_Import
             </div>
 
             <div style="width:100%; border:1px solid #f1f1f1; float:left; box-sizing: border-box;margin-bottom:10px;">
-                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Comment the export (optional)', 'wpvivid'); ?></h2></div>
+                <div style="box-sizing: border-box; margin: 1px; background-color: #f1f1f1;"><h2><?php _e('Comment the export (optional)', 'wpvivid-backuprestore'); ?></h2></div>
             </div>
             <div style="clear: both;"></div>
             <div style="width:100%; border:1px solid #f1f1f1; float:left; padding:10px 10px 0 10px;margin-bottom:10px; box-sizing: border-box;">
                 <div>
-                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left; padding-top: 6px;"><?php _e('Comment the export: ', 'wpvivid'); ?></div>
+                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left; padding-top: 6px;"><?php _e('Comment the export: ', 'wpvivid-backuprestore'); ?></div>
                     <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left;">
                         <input type="text" option="export" name="post_comment" id="wpvivid_set_post_comment" onkeyup="value=value.replace(/[^a-zA-Z0-9]/g,'')" onpaste="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')" />
                     </div>
-                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left; padding-top: 6px;"><?php _e('Only letters (except for wpvivid) and numbers are allowed.', 'wpvivid'); ?></div>
+                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left; padding-top: 6px;"><?php _e('Only letters (except for wpvivid) and numbers are allowed.', 'wpvivid-backuprestore'); ?></div>
                     <div style="clear: both;"></div>
                 </div>
                 <div>
-                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left;"><?php _e('Sample:', 'wpvivid'); ?></div>
+                    <div class="wpvivid-element-space-bottom wpvivid-text-space-right" style="float: left;"><?php _e('Sample:', 'wpvivid-backuprestore'); ?></div>
                     <div class="wpvivid-element-space-bottom" style="float: left;">
-                        <div class="wpvivid-element-space-bottom" style="display: inline;" id="wpvivid_post_comment">*</div><div class="wpvivid-element-space-bottom" style="display: inline;">_wpvivid-5dbf8d6a5f133_2019-11-08-03-15_export_<?php _e($post_type, 'wpvivid'); ?>.zip</div>
+                        <div class="wpvivid-element-space-bottom" style="display: inline;" id="wpvivid_post_comment">*</div><div class="wpvivid-element-space-bottom" style="display: inline;">_wpvivid-5dbf8d6a5f133_2019-11-08-03-15_export_<?php _e($post_type, 'wpvivid-backuprestore'); ?>.zip</div>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
             </div>
 
             <div>
-                <input class="button-primary" id="wpvivid_start_export" type="submit" name="<?php echo $post_type; ?>" value="<?php esc_attr_e('Export and Download', 'wpvivid'); ?>" style="pointer-events: none; opacity: 0.4;">
+                <input class="button-primary" id="wpvivid_start_export" type="submit" name="<?php echo $post_type; ?>" value="<?php esc_attr_e('Export and Download', 'wpvivid-backuprestore'); ?>" style="pointer-events: none; opacity: 0.4;">
             </div>
             <?php
 
@@ -1113,14 +1114,14 @@ class WPvivid_Export_Import
             if(empty($posts_ids))
             {
                 $ret['result']='failed';
-                $ret['error']=__('Empty post id', 'wpvivid');
+                $ret['error']=__('Empty post id', 'wpvivid-backuprestore');
                 echo json_encode($ret);
                 die();
             }
             if(WPvivid_Exporter_taskmanager::is_tasks_running())
             {
                 $ret['result']='failed';
-                $ret['error']=__('A task is already running. Please wait until the running task is complete, and try again.', 'wpvivid');
+                $ret['error']=__('A task is already running. Please wait until the running task is complete, and try again.', 'wpvivid-backuprestore');
                 echo json_encode($ret);
                 die();
             }
@@ -1146,7 +1147,7 @@ class WPvivid_Export_Import
             if (!isset($_POST['task_id']) || empty($_POST['task_id']) || !is_string($_POST['task_id']))
             {
                 $ret['result'] = 'failed';
-                $ret['error'] = __('Error occurred while parsing the request data. Please try to run export task again.', 'wpvivid');
+                $ret['error'] = __('Error occurred while parsing the request data. Please try to run export task again.', 'wpvivid-backuprestore');
                 echo json_encode($ret);
                 die();
             }
@@ -1156,7 +1157,7 @@ class WPvivid_Export_Import
             if(WPvivid_Exporter_taskmanager::is_tasks_running())
             {
                 $ret['result'] = 'failed';
-                $ret['error'] = __('A task is already running. Please wait until the running task is complete, and try again.', 'wpvivid');
+                $ret['error'] = __('A task is already running. Please wait until the running task is complete, and try again.', 'wpvivid-backuprestore');
                 echo json_encode($ret);
                 die();
             }
@@ -1301,11 +1302,11 @@ class WPvivid_Export_Import
             $ret['doing']=$task['data']['doing']='export';
             if($status['str']=='ready')
             {
-                $ret['doing']=__('Ready to export. Progress: 0%, running time: 0second.','wpvivid');
+                $ret['doing']=__('Ready to export. Progress: 0%, running time: 0second.','wpvivid-backuprestore');
             }
             else if($status['str']=='running')
             {
-                $ret['doing']= ' '.__('Progress: ', 'wpvivid') . $progress['descript'] . ', '.__('running time: ', 'wpvivid') . $progress['running_time'];
+                $ret['doing']= ' '.__('Progress: ', 'wpvivid-backuprestore') . $progress['descript'] . ', '.__('running time: ', 'wpvivid-backuprestore') . $progress['running_time'];
             }
             else if($status['str']=='wait_resume')
             {
@@ -1313,7 +1314,7 @@ class WPvivid_Export_Import
             }
             else if($status['str']=='no_responds')
             {
-                $ret['doing']=__('The export task is not responding.','wpvivid');
+                $ret['doing']=__('The export task is not responding.','wpvivid-backuprestore');
             }
             else if($status['str']=='completed')
             {
@@ -1338,7 +1339,7 @@ class WPvivid_Export_Import
             else if($status['str']=='error')
             {
                 $ret['doing']='Export error: '.$task['status']['error'];
-                $ret['doing']='<div class="notice notice-error is-dismissible inline"><p>'.__('Export error:', 'wpvivid').' '.$task['status']['error'].'</p></div>';
+                $ret['doing']='<div class="notice notice-error is-dismissible inline"><p>'.__('Export error:', 'wpvivid-backuprestore').' '.$task['status']['error'].'</p></div>';
                 $ret['error']=true;
             }
 
@@ -1372,12 +1373,12 @@ class WPvivid_Export_Import
                 if($time_spend>=$limit)
                 {
                     //time out
-                    $message=__('Task time out.', 'wpvivid');
+                    $message=__('Task time out.', 'wpvivid-backuprestore');
                     WPvivid_Exporter_taskmanager::update_backup_task_status($task_id,false,'error',false,$status['resume_count'],$message);
-                    WPvivid_error_log::create_error_log($wpvivid_plugin->wpvivid_log->log_file);
-
                     if($wpvivid_plugin->wpvivid_log)
                         $wpvivid_plugin->wpvivid_log->WriteLog($message,'error');
+                    $wpvivid_plugin->wpvivid_log->CloseFile();
+                    WPvivid_error_log::create_error_log($wpvivid_plugin->wpvivid_log->log_file);
                 }
                 else {
                     $time_spend=time()-$status['run_time'];
@@ -1479,13 +1480,13 @@ class WPvivid_Export_Import
                     }
                     else{
                         $admin_url = admin_url();
-                        echo '<a href="'.$admin_url.'admin.php?page=wpvivid-export-import">'.__('File size not match. please retry again.', 'wpvivid').'</a>';
+                        echo '<a href="'.$admin_url.'admin.php?page=wpvivid-export-import">'.__('File size not match. please retry again.', 'wpvivid-backuprestore').'</a>';
                         die();
                     }
                 }
 
                 $admin_url = admin_url();
-                echo '<a href="'.$admin_url.'admin.php?page=wpvivid-export-import">'.__('File not found. please retry again.', 'wpvivid').'</a>';
+                echo '<a href="'.$admin_url.'admin.php?page=wpvivid-export-import">'.__('File not found. please retry again.', 'wpvivid-backuprestore').'</a>';
                 die();
             }
         }
@@ -1510,13 +1511,13 @@ class WPvivid_Export_Import
                     <img src="<?php echo esc_url(WPVIVID_PLUGIN_IMAGES_URL.'export-import.png'); ?>" style="width:50px;height:50px;">
                 </div>
                 <div style="box-sizing: border-box;">
-                    <div class="wpvivid-element-space-bottom wpvivid-element-space-right"><?php _e('Import posts or pages with images in bulk.', 'wpvivid'); ?>
+                    <div class="wpvivid-element-space-bottom wpvivid-element-space-right"><?php _e('Import posts or pages with images in bulk.', 'wpvivid-backuprestore'); ?>
                         <span class="wpvivid-feature-pro">
-                            <a href="https://wpvivid.com/import-content" target="_blank" style="text-decoration: none;"><?php _e('Learn more', 'wpvivid'); ?></a>
+                            <a href="https://wpvivid.com/import-content" target="_blank" style="text-decoration: none;"><?php _e('Learn more', 'wpvivid-backuprestore'); ?></a>
                         </span>
                     </div>
-                    <div class="wpvivid-element-space-bottom wpvivid-element-space-right"><strong><?php _e('Note:', 'wpvivid'); ?></strong>
-                        <?php _e('To properly display the imported content, please make sure that the importing and exporting sites have the same environment, for example, same theme or pages built with the same page builder.', 'wpvivid'); ?>
+                    <div class="wpvivid-element-space-bottom wpvivid-element-space-right"><strong><?php _e('Note:', 'wpvivid-backuprestore'); ?></strong>
+                        <?php _e('To properly display the imported content, please make sure that the importing and exporting sites have the same environment, for example, same theme or pages built with the same page builder.', 'wpvivid-backuprestore'); ?>
                     </div>
                     <div style="clear: both;"></div>
                 </div>
@@ -1525,41 +1526,41 @@ class WPvivid_Export_Import
             <div style="clear: both;"></div>
 
             <div style="background: #fff; border: 1px solid #e5e5e5; border-radius: 6px; margin-bottom: 10px; padding: 10px;">
-                <div style="margin-right: 10px; float: left; height: 28px; line-height: 28px;"><?php echo sprintf(__('Imported files will be temporarily stored in directory %s', 'wpvivid'), $import_dir) ?></div>
-                <div style="float: left;"><input class="button" type="submit" id="wpvivid_empty_import_folder" value="<?php esc_attr_e('Delete Exported Files In Folder', 'wpvivid'); ?>" onclick="wpvivid_clean_import_folder();" /></div>
+                <div style="margin-right: 10px; float: left; height: 28px; line-height: 28px;"><?php echo sprintf(__('Imported files will be temporarily stored in directory %s', 'wpvivid-backuprestore'), $import_dir) ?></div>
+                <div style="float: left;"><input class="button" type="submit" id="wpvivid_empty_import_folder" value="<?php esc_attr_e('Delete Exported Files In Folder', 'wpvivid-backuprestore'); ?>" onclick="wpvivid_clean_import_folder();" /></div>
                 <div style="clear: both;"></div>
             </div>
 
             <div id="wpvivid_import_step1">
-                <p><?php _e('Choose an export from your computer to import: ', 'wpvivid'); ?></p>
-                <input class="button button-primary" type="button" id="wpvivid_select_import_file_button" value="<?php esc_attr_e('Upload and Import', 'wpvivid'); ?>" />
+                <p><?php _e('Choose an export from your computer to import: ', 'wpvivid-backuprestore'); ?></p>
+                <input class="button button-primary" type="button" id="wpvivid_select_import_file_button" value="<?php esc_attr_e('Upload and Import', 'wpvivid-backuprestore'); ?>" />
                 <div id="wpvivid_upload_file_list" class="hide-if-no-js" style="margin-top: 10px; display: none;"></div>
                 <br>
-                <p><?php echo sprintf(__('Or you can use ftp to upload the export to the directory %s. Then click the button below to scan the file to import.', 'wpvivid'), $import_dir); ?></p>
-                <input class="button button-primary" type="button" value="<?php esc_attr_e('Scan Uploaded Exports', 'wpvivid'); ?>" onclick="wpvivid_refresh_import_list();" />
+                <p><?php echo sprintf(__('Or you can use ftp to upload the export to the directory %s. Then click the button below to scan the file to import.', 'wpvivid-backuprestore'), $import_dir); ?></p>
+                <input class="button button-primary" type="button" value="<?php esc_attr_e('Scan Uploaded Exports', 'wpvivid-backuprestore'); ?>" onclick="wpvivid_refresh_import_list();" />
                 <div class="wpvivid-export-import-block" id="wpvivid_import_list" style="margin-top: 10px; display: none;"></div>
             </div>
             <div id="wpvivid_import_step2" style="display: none;">
-                <h3><?php _e('The importing file info', 'wpvivid'); ?></h3>
+                <h3><?php _e('The importing file info', 'wpvivid-backuprestore'); ?></h3>
                 <div id="wpvivid_import_file_data">
                 </div>
-                <h3><?php _e('Assign author', 'wpvivid'); ?></h3>
+                <h3><?php _e('Assign author', 'wpvivid-backuprestore'); ?></h3>
                 <div>
-                    <?php _e('Select an existing author:', 'wpvivid'); ?>
-                    <?php wp_dropdown_users( array( 'name' => "user_map", 'multi' => true, 'show_option_all' => __( '- Select -', 'wpvivid' ) ) );?>
+                    <?php _e('Select an existing author:', 'wpvivid-backuprestore'); ?>
+                    <?php wp_dropdown_users( array( 'name' => "user_map", 'multi' => true, 'show_option_all' => __( '- Select -', 'wpvivid-backuprestore' ) ) );?>
                 </div>
-                <h3><?php _e('Import Setting', 'wpvivid'); ?></h3>
+                <h3><?php _e('Import Setting', 'wpvivid-backuprestore'); ?></h3>
                 <div style="margin-bottom: 10px;">
                     <label>
                         <input type="checkbox" id="wpvivid_overwrite_existing" />
-                        <span><strong><?php _e('Overwrite existing pages', 'wpvivid'); ?></strong></span>
+                        <span><strong><?php _e('Overwrite existing pages', 'wpvivid-backuprestore'); ?></strong></span>
                     </label>
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <span><?php _e('With this option checked, Pages/posts already existing will be overwritten with the updated ones in an import.', 'wpvivid'); ?></span>
+                    <span><?php _e('With this option checked, Pages/posts already existing will be overwritten with the updated ones in an import.', 'wpvivid-backuprestore'); ?></span>
                 </div>
-                <input class="button button-primary" type="button" id="wpvivid_start_import" value="<?php esc_attr_e('Start to Import', 'wpvivid'); ?>" />
-                <input class="button button-primary" type="button" id="wpvivid_rechoose_import_file" value="<?php esc_attr_e('Back to Import Page', 'wpvivid'); ?>" />
+                <input class="button button-primary" type="button" id="wpvivid_start_import" value="<?php esc_attr_e('Start to Import', 'wpvivid-backuprestore'); ?>" />
+                <input class="button button-primary" type="button" id="wpvivid_rechoose_import_file" value="<?php esc_attr_e('Back to Import Page', 'wpvivid-backuprestore'); ?>" />
             </div>
             <div id="wpvivid_import_step3" style="display: none;">
                 <div class="postbox wpvivid-import-log" id="wpvivid_import_log" style="margin-top: 10px; margin-bottom: 0;"></div>
@@ -2591,8 +2592,8 @@ class WPvivid_Export_Import
             $log = new WPvivid_Log();
             $log->CreateLogFile($log_file_name, 'no_folder', 'import');
             $log->WriteLog($ret['error'], 'notice');
-            WPvivid_error_log::create_error_log($log->log_file);
             $log->CloseFile();
+            WPvivid_error_log::create_error_log($log->log_file);
             echo json_encode($ret);
             die();
         }

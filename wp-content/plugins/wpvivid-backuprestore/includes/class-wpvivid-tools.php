@@ -118,19 +118,22 @@ class WPvivid_tools
                 $contents=file_get_contents($file);
                 if($contents==false)
                 {
-                    $wpvivid_plugin->restore_data->write_log('file_get_contents failed.', 'notice');
+                    if( $wpvivid_plugin->restore_data)
+                        $wpvivid_plugin->restore_data->write_log('file_get_contents failed.', 'notice');
                 }
                 $get_file_ret = json_decode($contents,true);
                 if(empty($get_file_ret))
                 {
-                    $wpvivid_plugin->restore_data->write_log('Failed to decode restore data file.', 'notice');
+                    if( $wpvivid_plugin->restore_data)
+                        $wpvivid_plugin->restore_data->write_log('Failed to decode restore data file.', 'notice');
                 }
 
                 return $get_file_ret;
             }
             return $get_file_ret;
         }else{
-            $wpvivid_plugin->restore_data->write_log('Failed to open restore data file, the file may not exist.', 'notice');
+            if( $wpvivid_plugin->restore_data)
+                $wpvivid_plugin->restore_data->write_log('Failed to open restore data file, the file may not exist.', 'notice');
             return array();
         }
     }

@@ -485,7 +485,11 @@ class TypeAdapterMysql extends TypeAdapterFactory
 
     public function connect($host,$dbname,$user,$pass,$init_commands=array())
     {
-        $res = explode(':',DB_HOST);
+        if(empty($host))
+        {
+            $host=DB_HOST;
+        }
+        $res = explode(':',$host);
         $db_host = $res[0];
         $db_port = empty($res[1])?'':$res[1];
         if(!empty($db_port)) {

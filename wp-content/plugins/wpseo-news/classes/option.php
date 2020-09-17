@@ -22,13 +22,13 @@ class WPSEO_News_Option extends WPSEO_Option {
 	 *
 	 * @var array
 	 */
-	protected $defaults = array(
+	protected $defaults = [
 		'news_sitemap_name'               => '',
 		'news_sitemap_default_genre'      => '',
 		'news_version'                    => '0',
-		'news_sitemap_include_post_types' => array(),
-		'news_sitemap_exclude_terms'      => array(),
-	);
+		'news_sitemap_include_post_types' => [],
+		'news_sitemap_exclude_terms'      => [],
+	];
 
 	/**
 	 * Registers the option to the WPSEO Options framework.
@@ -66,18 +66,18 @@ class WPSEO_News_Option extends WPSEO_Option {
 			switch ( $key ) {
 				case 'news_version':
 					$clean[ $key ] = WPSEO_NEWS_VERSION;
-				break;
+					break;
 				case 'news_sitemap_name':
 					if ( isset( $dirty[ $key ] ) && $dirty[ $key ] !== '' ) {
 						$clean[ $key ] = WPSEO_Utils::sanitize_text_field( $dirty[ $key ] );
 					}
 					break;
-				case 'news_sitemap_default_genre' :
+				case 'news_sitemap_default_genre':
 					if ( isset( $dirty[ $key ] ) && is_array( $dirty[ $key ] ) ) {
 						$clean[ $key ] = array_map( [ 'WPSEO_Utils', 'sanitize_text_field' ], $dirty[ $key ] );
 					}
 
-					if ( isset( $dirty[ $key ] ) &&  is_string( $dirty[ $key ] ) ) {
+					if ( isset( $dirty[ $key ] ) && is_string( $dirty[ $key ] ) ) {
 						$clean[ $key ] = WPSEO_Utils::sanitize_text_field( $dirty[ $key ] );
 					}
 
@@ -85,9 +85,9 @@ class WPSEO_News_Option extends WPSEO_Option {
 
 				case 'news_sitemap_include_post_types':
 				case 'news_sitemap_exclude_terms':
-					$clean[ $key ] = array();
+					$clean[ $key ] = [];
 
-					if ( isset( $dirty[ $key ] ) && ( is_array( $dirty[ $key ] ) && $dirty[ $key ] !== array() ) ) {
+					if ( isset( $dirty[ $key ] ) && ( is_array( $dirty[ $key ] ) && $dirty[ $key ] !== [] ) ) {
 						foreach ( $dirty[ $key ] as $name => $posted_value ) {
 							if ( is_string( $name ) ) {
 								$clean[ $key ][ $name ] = 'on';

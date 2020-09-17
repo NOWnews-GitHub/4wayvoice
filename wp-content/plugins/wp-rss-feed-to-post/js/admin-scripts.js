@@ -47,14 +47,13 @@ jQuery(document).ready( function($) {
 			$('#wprss-ftp-images-metabox'),
 			$('#wprss-ftp-taxonomy-metabox'),
 			$('#wprss-ftp-author-metabox'),
-			$('#wprss-ftp-wysiwyg-editor'),
 			$('#wprss-ftp-prepend-metabox'),
 			$('#wprss-ftp-append-metabox'),
 			$('#wprss-ftp-extraction-metabox'),
 			$('#wprss-ftp-custom-fields-metabox'),
-			$('#wprss-ftp-integrations-metabox'),
 			$('#wprss-ftp-word-trimming-metabox'),
 			$('#wprss-ftp-url-shortening-metabox'),
+			$('#wprss-ftp-advanced'),
 		];
 
 		var isFeedItem = isPostTypeFeedItem();

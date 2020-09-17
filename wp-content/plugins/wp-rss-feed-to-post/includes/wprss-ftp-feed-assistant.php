@@ -282,7 +282,7 @@ class WPRSS_FTP_Feed_Assistant {
 		}
 
 
-		$content = $item->get_content();
+		$content = $item->get_description(true) . "\n" . $item->get_content(true);
 		if ( stripos($content, '<img') !== FALSE ) {
 			$ret['locations'][] = 'content';
 			if ( empty($autoselect_val) ) {

@@ -568,7 +568,8 @@ function wpvivid_clear_notice(notice_id){
     jQuery('#'+notice_id).hide();
 }
 
-function wpvivid_click_switch_page(tab, type, scroll){
+function wpvivid_click_switch_page(tab, type, scroll)
+{
     jQuery('.'+tab+'-tab-content:not(.' + type + ')').hide();
     jQuery('.'+tab+'-tab-content.' + type).show();
     jQuery('.'+tab+'-nav-tab:not(#' + type + ')').removeClass('nav-tab-active');

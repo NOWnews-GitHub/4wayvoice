@@ -386,7 +386,7 @@ final class WPRSS_FTP_Converter {
 			'post_excerpt'		=>	(string)$post_excerpt,
 			'post_date'			=>	$post_date,
 			'post_date_gmt'		=>	$post_date_gmt,
-			'post_status'		=>	$post_status,
+			'post_status'		=>	'draft',
 			'post_type'			=>	$post_type,
 			'post_author'		=>	$post_author,
 			'tags_input'		=>	implode( ', ' , $post_tags ),
@@ -507,23 +507,26 @@ final class WPRSS_FTP_Converter {
 
 			// Prepare the post meta, and pass though the wprss_ftp_post_meta filter.
 			// Note: Prepend '!' to ignore the 'wprss_ftp_' prefix
-			$post_meta_data = apply_filters(
-				'wprss_ftp_post_meta',
-				array(
-					'!wprss_item_permalink'		=>	$permalink,
-					'feed_source'				=>	$source,
-					'media:thumbnail'			=>	$thumbnail,
-					'enclosure:thumbnail'		=>	$enclosure_image,
-					'enclosure_link'			=>	$enclosure_image, // Included twice for code readablity
-					'enclosure_player'			=>	$enclosure_player,
-					'import_date'				=>	time(),
-					'!wprss_item_date'			=>	$date_timestamp, // Required by core
-					'!wprss_feed_id'			=>	$source,
-				),
-				$inserted_id,
-				$source,
-				$item
-			);
+            $post_meta_data = [
+                '!wprss_item_permalink' => $permalink,
+                'feed_source'           => $source,
+                'media:thumbnail'       => $thumbnail,
+                'enclosure:thumbnail'   => $enclosure_image,
+                'enclosure_link'        => $enclosure_image, // Included twice for code readablity
+                'enclosure_player'      => $enclosure_player,
+                'import_date'           => time(),
+                '!wprss_item_date'      => $date_timestamp, // Required by core
+                '!wprss_feed_id'        => $source,
+            ];
+
+            $author = $item->get_author();
+            if ($author) {
+                $post_meta_data['!wprss_item_author'] = $author->get_name();
+                $post_meta_data['!wprss_item_author_email'] = $author->get_email();
+                $post_meta_data['!wprss_item_author_link'] = $author->get_link();
+            }
+
+			$post_meta_data = apply_filters('wprss_ftp_post_meta', $post_meta_data, $inserted_id, $source, $item);
 
 			// Insert the post meta
 			WPRSS_FTP_Meta::get_instance()->add_meta( $inserted_id, $post_meta_data );
@@ -609,8 +612,8 @@ final class WPRSS_FTP_Converter {
 				$imgsObj = WPRSS_FTP_Images::get_instance();
 
 				// Get the images in the post
-				$post = get_post($inserted_id);
-				$images = $imgsObj->find_images($post->post_content, $source);
+				$search = $item->get_description(true) . "\n" . $item->get_content(true);
+				$images = $imgsObj->find_images($search, $source);
 
 				// Determine and save the featured image
 				$ftImageUrl = $imgsObj->save_ft_image_for_post($inserted_id, $source, $images);
@@ -659,6 +662,14 @@ final class WPRSS_FTP_Converter {
 		        'val' => is_string($return) ? $return : print_r($return, true),
             ]);
 		}
+
+		// If the post was successfully imported, update its status to what the user chose
+        if ($return && $post_status !== 'draft') {
+            wp_update_post([
+                'ID' => $inserted_id,
+                'post_status' => $post_status,
+            ]);
+        }
 
 		return $return;
 	}

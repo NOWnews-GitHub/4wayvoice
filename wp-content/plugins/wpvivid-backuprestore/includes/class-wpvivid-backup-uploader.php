@@ -149,17 +149,6 @@ class Wpvivid_BackupUploader
         die();
     }
 
-    function wpvivid_write_upload_log($message, $id = ''){
-        if($id === ''){
-            $id=uniqid('wpvivid-');
-        }
-        global $wpvivid_plugin;
-        $wpvivid_plugin->upload_log=new WPvivid_Log();
-        $wpvivid_plugin->upload_log->CreateLogFile($id.'_upload','no_folder','upload');
-        $wpvivid_plugin->upload_log->WriteLogHander();
-        $wpvivid_plugin->upload_log->WriteLog($message,'notice');
-    }
-
     function upload_files_finish()
     {
         global $wpvivid_plugin;
@@ -172,8 +161,6 @@ class Wpvivid_BackupUploader
             $files =json_decode($files,true);
             if(is_null($files))
             {
-                $message = 'Failed to decode files.';
-                $this->wpvivid_write_upload_log($message);
                 die();
             }
 
@@ -219,12 +206,7 @@ class Wpvivid_BackupUploader
                         }
                     }
                     if($check_result === true){
-                        global $wpvivid_plugin;
-                        $wpvivid_plugin->wpvivid_log=new WPvivid_Log();
-                        $wpvivid_plugin->wpvivid_log->CreateLogFile($id.'_upload','no_folder','upload');
-                        $wpvivid_plugin->wpvivid_log->WriteLogHander();
-                        $wpvivid_plugin->wpvivid_log->WriteLog('Upload finished.','notice');
-                        WPvivid_Backuplist::add_new_upload_backup($id,$backup_data,$time,$wpvivid_plugin->wpvivid_log->log_file);
+                        WPvivid_Backuplist::add_new_upload_backup($id,$backup_data,$time,'');
                         $html = '';
                         $html = apply_filters('wpvivid_add_backup_list', $html);
                         $ret['result']=WPVIVID_SUCCESS;
@@ -238,29 +220,21 @@ class Wpvivid_BackupUploader
                         $ret['result']=WPVIVID_FAILED;
                         $ret['error']='Upload file failed.';
                         $ret['unlinked']=$unlinked_file;
-                        $message = $ret['error'] . $unlinked_file;
-                        $this->wpvivid_write_upload_log($message);
                     }
                 }
                 else
                 {
-                    $message = 'The backup is not created by WPvivid backup plugin.';
-                    $this->wpvivid_write_upload_log($message);
                     $ret['result']=WPVIVID_FAILED;
                     $ret['error']='The backup is not created by WPvivid backup plugin.';
                 }
             }
             else
             {
-                $message = 'The backup is not created by WPvivid backup plugin.';
-                $this->wpvivid_write_upload_log($message);
                 $ret['result']=WPVIVID_FAILED;
                 $ret['error']='The backup is not created by WPvivid backup plugin.';
             }
         }
         else{
-            $message = 'Failed to post file name.';
-            $this->wpvivid_write_upload_log($message);
             $ret['result']=WPVIVID_FAILED;
             $ret['error']='Failed to post file name.';
         }
@@ -412,12 +386,6 @@ class Wpvivid_BackupUploader
             }
         }
         else{
-            global $wpvivid_plugin;
-            $wpvivid_plugin->wpvivid_log=new WPvivid_Log();
-            $id=uniqid('wpvivid-');
-            $wpvivid_plugin->wpvivid_log->CreateLogFile($id.'_scan','no_folder','scan');
-            $wpvivid_plugin->wpvivid_log->WriteLogHander();
-            $wpvivid_plugin->wpvivid_log->WriteLog('Failed to get local storage directory.','notice');
             $ret['result']=WPVIVID_FAILED;
             $ret['error']='Failed to get local storage directory.';
         }
@@ -455,12 +423,7 @@ class Wpvivid_BackupUploader
                     $backup_data['files'][]=$add_file;
                 }
 
-                global $wpvivid_plugin;
-                $wpvivid_plugin->wpvivid_log=new WPvivid_Log();
-                $wpvivid_plugin->wpvivid_log->CreateLogFile($backup_id.'_scan','no_folder','scan');
-                $wpvivid_plugin->wpvivid_log->WriteLogHander();
-                $wpvivid_plugin->wpvivid_log->WriteLog('Upload finished.','notice');
-                WPvivid_Backuplist::add_new_upload_backup($backup_id,$backup_data,$time,$wpvivid_plugin->wpvivid_log->log_file);
+                WPvivid_Backuplist::add_new_upload_backup($backup_id,$backup_data,$time,'');
             }
         }
         $ret['result']=WPVIVID_SUCCESS;
@@ -490,10 +453,10 @@ class Wpvivid_BackupUploader
         $backupdir=WPvivid_Setting::get_backupdir();
         ?>
         <div style="padding-top: 10px;">
-            <span><?php _e('Tips: Click the button below to scan all uploaded or received backups in directory', 'wpvivid'); ?>&nbsp<?php echo WP_CONTENT_DIR.'/'.$backupdir; ?></span>
+            <span><?php _e('Tips: Click the button below to scan all uploaded or received backups in directory', 'wpvivid-backuprestore'); ?>&nbsp<?php echo WP_CONTENT_DIR.'/'.$backupdir; ?></span>
         </div>
         <div style="padding-top: 10px;">
-            <input type="submit" class="button-primary" value="<?php esc_attr_e('Scan uploaded backup or received backup', 'wpvivid'); ?>" onclick="wpvivid_rescan_local_folder();" />
+            <input type="submit" class="button-primary" value="<?php esc_attr_e('Scan uploaded backup or received backup', 'wpvivid-backuprestore'); ?>" onclick="wpvivid_rescan_local_folder();" />
         </div>
         <script type="text/javascript">
             function wpvivid_rescan_local_folder()
@@ -540,9 +503,9 @@ class Wpvivid_BackupUploader
         <div id="wpvivid_plupload-upload-ui" class="hide-if-no-js">
             <div id="drag-drop-area">
                 <div class="drag-drop-inside">
-                    <p class="drag-drop-info"><?php _e('Drop files here', 'wpvivid'); ?></p>
+                    <p class="drag-drop-info"><?php _e('Drop files here', 'wpvivid-backuprestore'); ?></p>
                     <p><?php _ex('or', 'Uploader: Drop files here - or - Select Files'); ?></p>
-                    <p class="drag-drop-buttons"><input id="wpvivid_select_file_button" type="button" value="<?php esc_attr_e('Select Files', 'wpvivid'); ?>" class="button" /></p>
+                    <p class="drag-drop-buttons"><input id="wpvivid_select_file_button" type="button" value="<?php esc_attr_e('Select Files', 'wpvivid-backuprestore'); ?>" class="button" /></p>
                 </div>
             </div>
         </div>

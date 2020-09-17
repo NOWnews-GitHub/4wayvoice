@@ -83,11 +83,11 @@ class WPvivid_Export_List extends WP_List_Table
     {
         $posts_columns = array();
 
-        $posts_columns['file_name'] = __( 'File Name', 'wpvivid' );
-        $posts_columns['export_type'] = __( 'Post Types', 'wpvivid' );
-        $posts_columns['posts_count'] = __( 'Count', 'wpvivid' );
-        $posts_columns['media_size'] = __( 'Media Files Size', 'wpvivid' );
-        $posts_columns['import'] = __( 'Action', 'wpvivid' );
+        $posts_columns['file_name'] = __( 'File Name', 'wpvivid-backuprestore' );
+        $posts_columns['export_type'] = __( 'Post Types', 'wpvivid-backuprestore' );
+        $posts_columns['posts_count'] = __( 'Count', 'wpvivid-backuprestore' );
+        $posts_columns['media_size'] = __( 'Media Files Size', 'wpvivid-backuprestore' );
+        $posts_columns['import'] = __( 'Action', 'wpvivid-backuprestore' );
 
         return $posts_columns;
     }
@@ -154,7 +154,7 @@ class WPvivid_Export_List extends WP_List_Table
                         '.$item['file_name'].'
                     </div>
                      <div style="padding-bottom: 5px;">
-                        <div class="backuptime">Data Modified: ' . __(date('M d, Y H:i', $item['time']), 'wpvivid') . '</div>              
+                        <div class="backuptime">Data Modified: ' . __(date('M d, Y H:i', $item['time']), 'wpvivid-backuprestore') . '</div>              
                     </div>
                 </td>';
     }
@@ -191,7 +191,7 @@ class WPvivid_Export_List extends WP_List_Table
     {
         echo '<td style="min-width:100px;">
                    <div class="export-list-import" style="cursor:pointer;padding:10px 0 10px 0;">
-                        <img src="' . esc_url(WPVIVID_PLUGIN_URL . '/admin/partials/images/Restore.png') . '" style="vertical-align:middle;" /><span>' . __('Import', 'wpvivid') . '</span>
+                        <img src="' . esc_url(WPVIVID_PLUGIN_URL . '/admin/partials/images/Restore.png') . '" style="vertical-align:middle;" /><span>' . __('Import', 'wpvivid-backuprestore') . '</span>
                    </div>                
                </td>';
     }
@@ -1666,7 +1666,7 @@ class WPvivid_media_importer
 
         if(!file_exists($new_file))
         {
-            return new WP_Error( 'import_file_error', __('File not exist, file:'.$new_file, 'wpvivid') );
+            return new WP_Error( 'import_file_error', __('File not exist, file:'.$new_file, 'wpvivid-backuprestore') );
         }
 
         $wp_filetype = wp_check_filetype( $file_name );
@@ -1721,7 +1721,7 @@ class WPvivid_media_importer
     {
         if ( ! $this->fetch_attachments )
             return new WP_Error( 'attachment_processing_error',
-                __( 'Fetching attachments is not enabled', 'wpvivid' ) );
+                __( 'Fetching attachments is not enabled', 'wpvivid-backuprestore' ) );
 
         // if the URL is absolute, but does not contain address, then upload it assuming base_site_url
         if ( preg_match( '|^/[\w\W]+$|', $url ) )
@@ -1734,7 +1734,7 @@ class WPvivid_media_importer
         if ( $info = wp_check_filetype( $upload['file'] ) )
             $post['post_mime_type'] = $info['type'];
         else
-            return new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wpvivid') );
+            return new WP_Error( 'attachment_processing_error', __('Invalid file type', 'wpvivid-backuprestore') );
 
         $post['guid'] = $upload['url'];
 
@@ -1779,7 +1779,7 @@ class WPvivid_media_importer
 
         if(!file_exists($new_file))
         {
-            return new WP_Error( 'import_file_error', __('File not exist file:'.$new_file, 'wpvivid') );
+            return new WP_Error( 'import_file_error', __('File not exist file:'.$new_file, 'wpvivid-backuprestore') );
         }
 
         return apply_filters(
@@ -1874,8 +1874,8 @@ class WPvivid_WXR_Parser
                 $error = $result->get_error_data();
                 $msg.= $error[0] . ':' . $error[1] . ' ' . esc_html( $error[2] );
             }
-            $msg.=__( 'There was an error when reading this WXR file', 'wpvivid' ) ;
-            $msg.=__( 'Details are shown above. The importer will now try again with a different parser...', 'wpvivid' );
+            $msg.=__( 'There was an error when reading this WXR file', 'wpvivid-backuprestore' ) ;
+            $msg.=__( 'Details are shown above. The importer will now try again with a different parser...', 'wpvivid-backuprestore' );
 
             return new WP_Error( 'WXR_Parser_error', $msg,'' );
         }
@@ -1910,7 +1910,7 @@ class WPvivid_WXR_Parser_SimpleXML
 
         if ( ! $success || isset( $dom->doctype ) )
         {
-            return new WP_Error( 'SimpleXML_parse_error', __( 'There was an error when reading this WXR file', 'wpvivid' ), libxml_get_errors() );
+            return new WP_Error( 'SimpleXML_parse_error', __( 'There was an error when reading this WXR file', 'wpvivid-backuprestore' ), libxml_get_errors() );
         }
 
         $xml = simplexml_import_dom( $dom );
@@ -1918,16 +1918,16 @@ class WPvivid_WXR_Parser_SimpleXML
 
         // halt if loading produces an error
         if ( ! $xml )
-            return new WP_Error( 'SimpleXML_parse_error', __( 'There was an error when reading this WXR file', 'wpvivid' ), libxml_get_errors() );
+            return new WP_Error( 'SimpleXML_parse_error', __( 'There was an error when reading this WXR file', 'wpvivid-backuprestore' ), libxml_get_errors() );
 
         $wxr_version = $xml->xpath('/rss/channel/wp:wxr_version');
         if ( ! $wxr_version )
-            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid' ) );
+            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid-backuprestore' ) );
 
         $wxr_version = (string) trim( $wxr_version[0] );
         // confirm that we are dealing with the correct file format
         if ( ! preg_match( '/^\d+\.\d+$/', $wxr_version ) )
-            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid' ) );
+            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid-backuprestore' ) );
 
         $base_url = $xml->xpath('/rss/channel/wp:base_site_url');
         $base_url = (string) trim( $base_url[0] );
@@ -2152,7 +2152,7 @@ class WPvivid_WXR_Parser_XML {
         xml_parser_free( $xml );
 
         if ( ! preg_match( '/^\d+\.\d+$/', $this->wxr_version ) )
-            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid' ) );
+            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid-backuprestore' ) );
 
         return array(
             'authors' => $this->authors,
@@ -2348,7 +2348,7 @@ class WPvivid_WXR_Parser_Regex {
         }
 
         if ( ! $wxr_version )
-            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid' ) );
+            return new WP_Error( 'WXR_parse_error', __( 'This does not appear to be a WXR file, missing/invalid WXR version number', 'wpvivid-backuprestore' ) );
 
         return array(
             'authors' => $this->authors,

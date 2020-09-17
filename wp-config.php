@@ -67,7 +67,7 @@ define('WP_TEMP_DIR',dirname(__FILE__).'/wp-content/uploads');
 /**
  * Turn off automatic updates since these are managed upstream.
  */
-define('AUTOMATIC_UPDATER_DISABLED', true);
+// define('AUTOMATIC_UPDATER_DISABLED', true);
 
 
 /**#@-*/
@@ -93,6 +93,15 @@ $table_prefix  = 'wp_';
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
 define('WP_DEBUG', false);
+
+// Disable all updates, including core, plugins, themes and language files. Done by Alex@Baiyuan
+define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+// Define Autosave Interval, unit is second and default is 60. Done by Alex@Baiyuan
+define( 'AUTOSAVE_INTERVAL', 120 );
+
+// Define how many revisions for each post, default is true and means unlimited revisions. Done by Alex@Baiyuan
+define( 'WP_POST_REVISIONS', 5 );
 
 /* That's all, stop editing! Happy blogging. */
 

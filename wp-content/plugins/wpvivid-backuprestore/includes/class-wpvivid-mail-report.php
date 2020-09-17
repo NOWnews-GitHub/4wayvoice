@@ -102,18 +102,17 @@ class WPvivid_mail_report
         $content='';
 
         $backup_options=$task['options']['backup_options'];
-
         if($backup_options!==false)
         {
-            if(isset($backup_options['backup']['backup_type'][WPVIVID_BACKUP_TYPE_DB])&&isset($backup_options['backup']['backup_type'][WPVIVID_BACKUP_TYPE_THEMES]))
+            if(isset($backup_options['backup'][WPVIVID_BACKUP_TYPE_DB])&&isset($backup_options['backup'][WPVIVID_BACKUP_TYPE_THEMES]))
             {
                 $content.='Entire Website';
             }
-            else if(isset($backup_options['backup']['backup_type'][WPVIVID_BACKUP_TYPE_DB]))
+            else if(isset($backup_options['backup'][WPVIVID_BACKUP_TYPE_DB]))
             {
                 $content.='Database';
             }
-            else if(isset($backup_options['backup']['backup_type'][WPVIVID_BACKUP_TYPE_THEMES]))
+            else if(isset($backup_options['backup'][WPVIVID_BACKUP_TYPE_THEMES]))
             {
                 $content.='All Files (Exclude Database)';
             }
@@ -555,7 +554,7 @@ class WPvivid_mail_report
         if(wp_mail( $send_to, $subject, $body,$headers,$attachments)===false)
         {
             $ret['result']='failed';
-            $ret['error']=__('Unable to send email. Please check the configuration of email server.', 'wpvivid');
+            $ret['error']=__('Unable to send email. Please check the configuration of email server.', 'wpvivid-backuprestore');
         }
         else
         {

@@ -135,7 +135,7 @@ class WPvivid_Interface_MainWP
         global $wpvivid_plugin;
         if (!isset($task_id)||empty($task_id)||!is_string($task_id))
         {
-            $ret['error']=__('Error occurred while parsing the request data. Please try to run backup again.', 'wpvivid');
+            $ret['error']=__('Error occurred while parsing the request data. Please try to run backup again.', 'wpvivid-backuprestore');
             return $ret;
         }
         $task_id=sanitize_key($task_id);
@@ -179,7 +179,7 @@ class WPvivid_Interface_MainWP
             $file = fopen($ret['log_file'], 'r');
             if (!$file) {
                 $ret['result'] = 'failed';
-                $ret['error'] = __('Unable to open the log file.', 'wpvivid');
+                $ret['error'] = __('Unable to open the log file.', 'wpvivid-backuprestore');
                 return $ret;
             }
             $buffer = '';
@@ -208,7 +208,7 @@ class WPvivid_Interface_MainWP
         if(!isset($log_file_name)||empty($log_file_name)||!is_string($log_file_name))
         {
             $ret['result']='failed';
-            $ret['error']=__('Reading the log failed. Please try again.', 'wpvivid');
+            $ret['error']=__('Reading the log failed. Please try again.', 'wpvivid-backuprestore');
             return $ret;
         }
         $log_file_name=sanitize_text_field($log_file_name);
@@ -217,7 +217,7 @@ class WPvivid_Interface_MainWP
             $file = fopen($ret['log_file'], 'r');
             if (!$file) {
                 $ret['result'] = 'failed';
-                $ret['error'] = __('Unable to open the log file.', 'wpvivid');
+                $ret['error'] = __('Unable to open the log file.', 'wpvivid-backuprestore');
                 return $ret;
             }
             $buffer = '';
@@ -270,7 +270,7 @@ class WPvivid_Interface_MainWP
             $file = fopen($ret['log_file'], 'r');
             if (!$file) {
                 $ret['result'] = 'failed';
-                $ret['error'] = __('Unable to open the log file.', 'wpvivid');
+                $ret['error'] = __('Unable to open the log file.', 'wpvivid-backuprestore');
                 return $ret;
             }
             $buffer = '';

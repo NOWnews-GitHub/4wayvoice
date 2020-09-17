@@ -88,19 +88,19 @@ class WPvivid_Schedule
             if($schedule_check['result']){
                 $html.=' <label><input type="radio" option="schedule" name="recurrence" value="'.$schedule_check['type'].'" />';
                 if($display === '12Hours'){
-                    $html.='<span>'.__('12Hours', 'wpvivid').'</span></label><br>';
+                    $html.='<span>'.__('12Hours', 'wpvivid-backuprestore').'</span></label><br>';
                 }
                 if($display === 'Daily'){
-                    $html.='<span>'.__('Daily', 'wpvivid').'</span></label><br>';
+                    $html.='<span>'.__('Daily', 'wpvivid-backuprestore').'</span></label><br>';
                 }
                 if($display === 'Weekly'){
-                    $html.='<span>'.__('Weekly', 'wpvivid').'</span></label><br>';
+                    $html.='<span>'.__('Weekly', 'wpvivid-backuprestore').'</span></label><br>';
                 }
                 if($display === 'Fortnightly'){
-                    $html.='<span>'.__('Fortnightly', 'wpvivid').'</span></label><br>';
+                    $html.='<span>'.__('Fortnightly', 'wpvivid-backuprestore').'</span></label><br>';
                 }
                 if($display === 'Monthly'){
-                    $html.='<span>'.__('Monthly', 'wpvivid').'</span></label><br>';
+                    $html.='<span>'.__('Monthly', 'wpvivid-backuprestore').'</span></label><br>';
                 }
             }
             else{
@@ -110,11 +110,11 @@ class WPvivid_Schedule
         $html.='<label>';
         $html.='<div style="float: left;">';
         $html.='<input type="radio" disabled />';
-        $html.='<span class="wpvivid-element-space-right" style="color: #ddd;">'.__('Custom', 'wpvivid').'</span>';
+        $html.='<span class="wpvivid-element-space-right" style="color: #ddd;">'.__('Custom', 'wpvivid-backuprestore').'</span>';
         $html.='</div>';
         $html.='<div style="float: left; height: 32px; line-height: 32px;">';
         $html.='<span class="wpvivid-feature-pro">';
-        $html.='<a href="https://wpvivid.com/wpvivid-backup-pro-schedule-overview?utm_source=client_custom_cycles&utm_medium=inner_link&utm_campaign=access" style="text-decoration: none; margin-top: 10px;">'.__('Pro feature: learn more', 'wpvivid').'</a>';
+        $html.='<a href="https://wpvivid.com/wpvivid-backup-pro-schedule-overview?utm_source=client_custom_cycles&utm_medium=inner_link&utm_campaign=access" style="text-decoration: none; margin-top: 10px;">'.__('Pro feature: learn more', 'wpvivid-backuprestore').'</a>';
         $html.='</span>';
         $html.='</div>';
         $html.='</label><br>';
@@ -279,7 +279,7 @@ class WPvivid_Schedule
         if($schedule_data===false)
         {
             $ret['result']='failed';
-            $ret['error']=__('Creating scheduled tasks failed. Please try again later.', 'wpvivid');
+            $ret['error']=__('Creating scheduled tasks failed. Please try again later.', 'wpvivid-backuprestore');
             return $ret;
         }
 
@@ -293,7 +293,7 @@ class WPvivid_Schedule
             if(wp_schedule_event($schedule_data['start_time'], $schedule_data['type'], $schedule_data['event'])===false)
             {
                 $ret['result']='failed';
-                $ret['error']=__('Creating scheduled tasks failed. Please try again later.', 'wpvivid');
+                $ret['error']=__('Creating scheduled tasks failed. Please try again later.', 'wpvivid-backuprestore');
                 $ret['data']=$schedule_data;
                 return $ret;
             }

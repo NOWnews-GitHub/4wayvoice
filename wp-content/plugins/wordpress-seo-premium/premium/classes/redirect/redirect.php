@@ -159,22 +159,21 @@ class WPSEO_Redirect implements ArrayAccess {
 	}
 
 	/**
-	 * (PHP 5 &gt;= 5.0.0) - Whether a offset exists
+	 * Whether a offset exists.
 	 *
 	 * @link http://php.net/manual/en/arrayaccess.offsetexists.php
 	 *
 	 * @param string $offset An offset to check for.
 	 *
 	 * @return bool True on success or false on failure.
-	 *
-	 * The return value will be casted to boolean if non-boolean was returned.
+	 *              The return value will be cast to boolean if non-boolean was returned.
 	 */
 	public function offsetExists( $offset ) {
 		return in_array( $offset, [ 'url', 'type' ], true );
 	}
 
 	/**
-	 * (PHP 5 &gt;= 5.0.0) - Offset to retrieve
+	 * Offset to retrieve.
 	 *
 	 * @link http://php.net/manual/en/arrayaccess.offsetget.php
 	 *
@@ -198,7 +197,7 @@ class WPSEO_Redirect implements ArrayAccess {
 	}
 
 	/**
-	 * (PHP 5 &gt;= 5.0.0) - Offset to set
+	 * Offset to set.
 	 *
 	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
 	 *
@@ -219,7 +218,7 @@ class WPSEO_Redirect implements ArrayAccess {
 	}
 
 	/**
-	 * (PHP 5 &gt;= 5.0.0) - Offset to unset
+	 * Offset to unset.
 	 *
 	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
 	 *

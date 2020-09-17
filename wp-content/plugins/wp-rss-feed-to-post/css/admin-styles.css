@@ -293,8 +293,10 @@ button#wprss-ftp-add-custom-mapping {
 
 /* NAMESPACE DETECTOR */
 #wprss-ftp-namespace-detector-refresh {
-	margin-top: 10px;
 	vertical-align: baseline;
+}
+#wprss-ftp-namespace-detector-refresh:not(:first-child) {
+	margin-top: 10px;
 }
 #wprss-ftp-namespace-detector-results {
 	padding: 10px 0;
@@ -316,8 +318,11 @@ button#wprss-ftp-add-custom-mapping {
 .ftp-author-using-in-feed:not(:last-child) {
 	margin-bottom: 15px;
 }
-.ftp-author-using-in-feed > input[type="radio"] {
+.postbox .ftp-author-using-in-feed > input[type="radio"] {
 	vertical-align: text-bottom;
+}
+.ftp-author-using-in-feed > input[type="radio"] {
+	vertical-align: baseline;
 }
 .ftp-author-using-in-feed > input[type="radio"] + label {
 	margin-right: 10px;

@@ -45,6 +45,27 @@ class WPRSS_FTP_Admin_User_Ajax {
 	
 	
 	public function admin_head() {
+	    $screen = get_current_screen();
+	    if ($screen === null) {
+	        return;
+        }
+
+        if ($screen->id === 'wprss_feed') {
+            $action = filter_input(INPUT_GET, 'action');
+            // Stop if a WPRA feed CPT page and not on new/edit page
+            if ($action !== 'edit' && $screen->action !== 'add') {
+                return;
+            }
+        } elseif ($screen->id === "wprss_feed_page_wprss-aggregator-settings") {
+	        $tab = filter_input(INPUT_GET, 'tab');
+            // Stop if WPRA settings page and not on F2P tab
+	        if ($tab !== 'ftp_settings') {
+	            return;
+            }
+        } else {
+            return;
+        }
+
 		?>
 				<!-- <?php echo __METHOD__ ?> -->
 				<script type="text/javascript">
@@ -155,7 +176,7 @@ class WPRSS_FTP_Admin_User_Ajax {
 		
 		if( !$existing_only ) {
 			$users = array(
-				'.'						=> __( 'Author in feed', WPRSS_TEXT_DOMAIN ),
+				'.'						=> __( 'Import the author', WPRSS_TEXT_DOMAIN ),
 				__( 'Existing user' )	=> $users
 			);
 		}

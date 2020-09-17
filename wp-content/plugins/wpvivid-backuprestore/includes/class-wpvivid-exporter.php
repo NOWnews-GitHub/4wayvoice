@@ -192,7 +192,7 @@ class WPvivid_Post_List extends WP_List_Table
         $this->set_pagination_args(
             array(
                 'total_items' => $total_items,
-                'per_page'    => 1,
+                'per_page'    => 30,
             )
         );
     }
@@ -262,7 +262,7 @@ class WPvivid_Post_List extends WP_List_Table
         global $mode;
 
         if ( '0000-00-00 00:00:00' === $post->post_date ) {
-            $t_time    = $h_time = __( 'Unpublished', 'wpvivid' );
+            $t_time    = $h_time = __( 'Unpublished', 'wpvivid-backuprestore' );
             $time_diff = 0;
         } else {
             $t_time = get_the_time( 'Y/m/d g:i:s a' );
@@ -272,22 +272,22 @@ class WPvivid_Post_List extends WP_List_Table
             $time_diff = time() - $time;
 
             if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
-                $h_time = sprintf( __( '%s ago', 'wpvivid' ), human_time_diff( $time ) );
+                $h_time = sprintf( __( '%s ago', 'wpvivid-backuprestore' ), human_time_diff( $time ) );
             } else {
                 $h_time = mysql2date( 'Y/m/d', $m_time );
             }
         }
 
         if ( 'publish' === $post->post_status ) {
-            $status = __( 'Published', 'wpvivid' );
+            $status = __( 'Published', 'wpvivid-backuprestore' );
         } elseif ( 'future' === $post->post_status ) {
             if ( $time_diff > 0 ) {
-                $status = '<strong class="error-message">' . __( 'Missed schedule', 'wpvivid' ) . '</strong>';
+                $status = '<strong class="error-message">' . __( 'Missed schedule', 'wpvivid-backuprestore' ) . '</strong>';
             } else {
-                $status = __( 'Scheduled', 'wpvivid' );
+                $status = __( 'Scheduled', 'wpvivid-backuprestore' );
             }
         } else {
-            $status = __( 'Last Modified', 'wpvivid' );
+            $status = __( 'Last Modified', 'wpvivid-backuprestore' );
         }
 
         /**
@@ -464,7 +464,7 @@ class WPvivid_Post_List extends WP_List_Table
         $count=0;
         while ( $count<$page )
         {
-            $page_post_ids = array_splice( $post_ids, 0, 1);
+            $page_post_ids = array_splice( $post_ids, 0, 30);
             $count++;
         }
         foreach ( $page_post_ids as $post_id)
@@ -807,7 +807,7 @@ class WPvivid_Exporter_taskmanager
             $ret['progress']=$task['data'][$ret['type']]['progress'];
             $ret['doing']=$task['data'][$ret['type']]['doing'];
             if(isset($task['data'][$ret['type']]['sub_job'][$ret['doing']]['progress']))
-                $ret['descript']=__($task['data'][$ret['type']]['sub_job'][$ret['doing']]['progress'], 'wpvivid');
+                $ret['descript']=__($task['data'][$ret['type']]['sub_job'][$ret['doing']]['progress'], 'wpvivid-backuprestore');
             else
                 $ret['descript']='';
             if(isset($task['data'][$ret['type']]['sub_job'][$ret['doing']]['upload_data']))

@@ -4,12 +4,13 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita8385b4aa14c61581b6586a8b9624d97
+class ComposerStaticInit3318e879b59d719b6155915dc11526b5
 {
     public static $classMap = array (
         'WPSEO_News' => __DIR__ . '/../..' . '/classes/wpseo-news.php',
         'WPSEO_News_Admin_Page' => __DIR__ . '/../..' . '/classes/admin-page.php',
         'WPSEO_News_Excludable_Taxonomies' => __DIR__ . '/../..' . '/classes/excludable-taxonomies.php',
+        'WPSEO_News_Googlebot_News_Presenter' => __DIR__ . '/../..' . '/classes/googlebot-news-presenter.php',
         'WPSEO_News_Head' => __DIR__ . '/../..' . '/classes/head.php',
         'WPSEO_News_Javascript_Strings' => __DIR__ . '/../..' . '/classes/javascript-strings.php',
         'WPSEO_News_Meta_Box' => __DIR__ . '/../..' . '/classes/meta-box.php',
@@ -28,7 +29,7 @@ class ComposerStaticInita8385b4aa14c61581b6586a8b9624d97
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInita8385b4aa14c61581b6586a8b9624d97::$classMap;
+            $loader->classMap = ComposerStaticInit3318e879b59d719b6155915dc11526b5::$classMap;
 
         }, null, ClassLoader::class);
     }

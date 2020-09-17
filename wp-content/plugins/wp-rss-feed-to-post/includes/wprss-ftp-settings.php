@@ -248,7 +248,6 @@ final class WPRSS_FTP_Settings {
             'wprss_settings_ftp_images_section'             => 'https://kb.wprssaggregator.com/article/308-how-to-set-up-feed-to-posts-image-options',
             'wprss_settings_ftp_full_text_section'          => 'https://kb.wprssaggregator.com/article/96-an-introduction-to-full-text-rss-feeds',
             'wprss_settings_ftp_namespaces_section'         => 'https://kb.wprssaggregator.com/article/311-how-to-set-up-feed-to-posts-custom-field-mapping',
-            'wprss_settings_ftp_url_shortening_section'     => 'https://kb.wprssaggregator.com/article/309-how-to-set-up-feed-to-posts-url-shortening-option',
         ));
 
         if (is_null($sectionCode)) {
@@ -347,7 +346,7 @@ final class WPRSS_FTP_Settings {
         // POST TYPE
         add_settings_field(
             'wprss-settings-ftp-post-type',				// ID used to identify the field
-            __( 'Post Type', WPRSS_TEXT_DOMAIN ),					// The label to the left of the option element
+            __( 'Post type', WPRSS_TEXT_DOMAIN ),					// The label to the left of the option element
             array( $this, 'render_post_type' ),			// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -356,7 +355,7 @@ final class WPRSS_FTP_Settings {
         // POST STATUS
         add_settings_field(
             'wprss-settings-ftp-post-status',			// ID used to identify the field
-            __( 'Post Status', WPRSS_TEXT_DOMAIN ),				// The label to the left of the option element
+            __( 'Post status', WPRSS_TEXT_DOMAIN ),				// The label to the left of the option element
             array( $this, 'render_post_status' ),		// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -365,7 +364,7 @@ final class WPRSS_FTP_Settings {
         // POST FORMAT
         add_settings_field(
             'wprss-settings-ftp-post-format',			// ID used to identify the field
-            __( 'Post Format', WPRSS_TEXT_DOMAIN ),				// The label to the left of the option element
+            __( 'Post format', WPRSS_TEXT_DOMAIN ),				// The label to the left of the option element
             array( $this, 'render_post_format' ),		// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -374,7 +373,7 @@ final class WPRSS_FTP_Settings {
         // POST DATE
         add_settings_field(
             'wprss-settings-ftp-post-date',				// ID used to identify the field
-            __( 'Post Date', WPRSS_TEXT_DOMAIN ),					// The label to the left of the option element
+            __( 'Post date', WPRSS_TEXT_DOMAIN ),					// The label to the left of the option element
             array( $this, 'render_post_date' ),			// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -383,7 +382,7 @@ final class WPRSS_FTP_Settings {
         // ENABLE COMMENTS
         add_settings_field(
             'wprss-settings-ftp-comment-status',		// ID used to identify the field
-            __( 'Enable Comments', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
+            __( 'Enable comments', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
             array( $this, 'render_comment_status' ),	// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -419,7 +418,7 @@ final class WPRSS_FTP_Settings {
         // SOURCE LINK TEXT
         add_settings_field(
             'wprss-settings-ftp-source-link-text',		// ID used to identify the field
-            __( 'Source Link Text', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
+            __( 'Source link text', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
             array( $this, 'render_source_link_text' ),	// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'		// The section to which this field belongs
@@ -428,7 +427,7 @@ final class WPRSS_FTP_Settings {
         // SOURCE LINK POSITION
         add_settings_field(
             'wprss-settings-ftp-source-link-position',
-            __( 'Source Link Position', WPRSS_TEXT_DOMAIN ),
+            __( 'Source link position', WPRSS_TEXT_DOMAIN ),
             array( $this, 'render_source_link_position' ),
             'wprss_settings_ftp',
             'wprss_settings_ftp_general_section'
@@ -490,7 +489,7 @@ final class WPRSS_FTP_Settings {
         // WORD LIMIT
         add_settings_field(
             'wprss-settings-ftp-word-limit',				// ID used to identify the field
-            __( 'Word Limit', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
+            __( 'Word limit', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
             array( $this, 'render_word_limit' ),			// The function that renders the option interface
             'wprss_settings_ftp',							// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'			// The section to which this field belongs
@@ -499,7 +498,7 @@ final class WPRSS_FTP_Settings {
         // TRIMMING TYPE
         add_settings_field(
             'wprss-settings-ftp-trimming-type',				// ID used to identify the field
-            __( 'Trimming Type', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
+            __( 'Trimming type', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
             array( $this, 'render_trimming_type' ),			// The function that renders the option interface
             'wprss_settings_ftp',							// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'			// The section to which this field belongs
@@ -509,7 +508,7 @@ final class WPRSS_FTP_Settings {
         // CANONICAL LINK
         add_settings_field(
             'wprss-settings-ftp-canonical-link',			// ID used to identify the field
-            __( 'Canonical Link', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
+            __( 'Canonical link', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
             array( $this, 'render_canonical_link' ),		// The function that renders the option interface
             'wprss_settings_ftp',							// The page on which this option will be displayed
             'wprss_settings_ftp_general_section'			// The section to which this field belongs
@@ -545,7 +544,7 @@ final class WPRSS_FTP_Settings {
         // DEFAULT AUTHOR
         add_settings_field(
             'wprss-settings-ftp-def-author',			// ID used to identify the field
-            __( 'Author for imported items', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
+            __( 'Post author', WPRSS_TEXT_DOMAIN ),		// The label to the left of the option element
             array( $this, 'render_def_author' ),		// The function that renders the option interface
             'wprss_settings_ftp',						// The page on which this option will be displayed
             'wprss_settings_ftp_authors_section'		// The section to which this field belongs
@@ -569,7 +568,7 @@ final class WPRSS_FTP_Settings {
         // SAVE IMAGES LOCALLY
         add_settings_field(
             'wprss-settings-ftp-save-images-locally',		// ID used to identify the field
-            __( "Save Images Locally", WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
+            __( "Save images locally", WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
             array( $this, 'render_save_images_locally' ),	// The function that renders the option interface
             'wprss_settings_ftp',							// The page on which this option will be displayed
             'wprss_settings_ftp_images_section'				// The section to which this field belongs
@@ -607,7 +606,7 @@ final class WPRSS_FTP_Settings {
         // FALLBACK TO FEED IMAGE
         add_settings_field(
             'wprss-settings-ftp-fallback-to-feed-image',		// ID used to identify the field
-            __( 'Fallback to Feed Image', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
+            __( 'Fallback to feed image', WPRSS_TEXT_DOMAIN ),			// The label to the left of the option element
             array( $this, 'render_fallback_to_feed_image' ),	// The function that renders the option interface
             'wprss_settings_ftp',							// The page on which this option will be displayed
             'wprss_settings_ftp_images_section'				// The section to which this field belongs
@@ -658,7 +657,7 @@ final class WPRSS_FTP_Settings {
 
             add_settings_field(
                 'wprss-settings-license',
-                __( 'License Key', WPRSS_TEXT_DOMAIN ),
+                __( 'License key', WPRSS_TEXT_DOMAIN ),
                 array( $this, 'license_callback' ),
                 'wprss_settings_license_keys',
                 'wprss_settings_ftp_licenses_section'
@@ -666,7 +665,7 @@ final class WPRSS_FTP_Settings {
 
             add_settings_field(
                 'wprss-settings-license-activation',
-                __( 'Activate License', WPRSS_TEXT_DOMAIN ),
+                __( 'Activate license', WPRSS_TEXT_DOMAIN ),
                 array( $this, 'license_activation_callback' ),
                 'wprss_settings_license_keys',
                 'wprss_settings_ftp_licenses_section'
@@ -1340,7 +1339,7 @@ final class WPRSS_FTP_Settings {
         <span id="wprss-ftp-namespaces-marker"></span>
 
         <button type="button" id="wprss-ftp-add-namespace" class="button-secondary">
-            <?php _e( 'Add Another Namespace', WPRSS_TEXT_DOMAIN ); ?>
+            <?php _e( 'Add another namespace', WPRSS_TEXT_DOMAIN ); ?>
         </button>
 
         <?php // Print the field template and the remove btn as a script variables
@@ -1413,7 +1412,7 @@ final class WPRSS_FTP_Settings {
         if ( $status === 'site_inactive' ) $status = 'inactive';
 
         $valid = $status == 'valid';
-        $btn_text = $valid ? 'Deactivate License' : 'Activate License';
+        $btn_text = $valid ? 'Deactivate license' : 'Activate license';
         $btn_name = 'wprss_ftp_license_' . ( $valid? 'deactivate' : 'activate' );
         wp_nonce_field( 'wprss_ftp_license_nonce', 'wprss_ftp_license_nonce' ); ?>
 
@@ -1601,7 +1600,7 @@ final class WPRSS_FTP_Settings {
             <!-- Radio group if author has no user -->
             <span class="ftp-author-using-in-feed">
                 <label for="<?php echo $ids['author_fallback_method']; ?>">
-                    <?php _e( 'If the author in the feed is not an existing user', WPRSS_TEXT_DOMAIN ); ?>:
+                    <?php _e( 'If the article author is not an existing WordPress user', WPRSS_TEXT_DOMAIN ); ?>:
                 </label>
                 <br/>
                 <?php
@@ -1647,7 +1646,7 @@ final class WPRSS_FTP_Settings {
             <tr class="wprss-tr-hr wprss-ftp-authors-hide-if-using-existing">
                 <th>
                     <label for="<?php echo $ids['fallback_author']; ?>">
-                        <?php _e( 'Fallback User', WPRSS_TEXT_DOMAIN ); ?>
+                        <?php _e( 'Fallback user', WPRSS_TEXT_DOMAIN ); ?>
                     </label>
                 </th>
                 <td>
@@ -1791,6 +1790,8 @@ final class WPRSS_FTP_Settings {
         unset($post_types['user_request']);
         unset($post_types['wp_block']);
         unset($post_types['wprss_blacklist']);
+        unset($post_types['wprss_feed']);
+        unset($post_types['wprss_feed_template']);
 
         // Return the list, mapping the post type objects to their singular name
         return array_map( array( __CLASS__, 'post_type_singular_name' ), $post_types );
@@ -1931,7 +1932,7 @@ final class WPRSS_FTP_Settings {
         return apply_filters(
             'wprss_ftp_full_text_rss_service_options',
             array(
-                'free'			=>	__( 'Free Services', WPRSS_TEXT_DOMAIN ),
+                'free'			=>	__( 'Free services', WPRSS_TEXT_DOMAIN ),
             )
         );
     }
@@ -1962,7 +1963,7 @@ final class WPRSS_FTP_Settings {
         return apply_filters(
             'wprss_ftp_default_namespaces',
             array(
-                __( 'No Namespace', WPRSS_TEXT_DOMAIN ) => '',
+                __( 'No namespace', WPRSS_TEXT_DOMAIN ) => '',
             )
         );
     }

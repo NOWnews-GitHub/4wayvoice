@@ -51,6 +51,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 			?>
 
 			<?php the_content(); ?>
+			
+			<!-- 開始Dable in-article_h / 如有任何疑問，請瀏覽http://dable.io --> <div id="dablewidget_klr6gelm" data-widget_id="klr6gelm"> <script> (function(d,a,b,l,e,_) { if(d[b]&&d[b].q)return;d[b]=function(){(d[b].q=d[b].q||[]).push(arguments)};e=a.createElement(l); e.async=1;e.charset='utf-8';e.src='//static.dable.io/dist/plugin.min.js'; _=a.getElementsByTagName(l)[0];_.parentNode.insertBefore(e,_); })(window,document,'dable','script'); dable('renderWidget', 'dablewidget_klr6gelm'); </script> </div> <!-- 結束Dable in-article_h / 如有任何疑問，請瀏覽http://dable.io -->
 
 			<?php
 				/**
@@ -64,7 +66,43 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 				 */
 				do_action( 'TieLabs/after_post_content' );
 			?>
+			<script async id="vd534244823" src="https://tags.viewdeos.com/nownews/player-nownews-4wayvoice.js"></script>
+			<?php $randNum = rand(0, 100) ?>
+			<?php if ( $randNum > 50 ) : ?>
+			<div id="_popIn_recommend_word"></div>
+			<script type="text/javascript">
 
+				(function() {
+
+					var pa = document.createElement('script'); pa.type = 'text/javascript'; pa.charset = "utf-8"; pa.async = true;
+
+					pa.src = window.location.protocol + "//api.popin.cc/searchbox/nownews_4wayvoice.js";
+
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pa, s);
+
+				})(); 
+
+			</script>
+			<?php else : ?>
+			<!-- 開始Dable responsive / 如有任何疑問，請瀏覽http://dable.io --> <div id="dablewidget_JXdqz8ob_BoxWpkX8" data-widget_id-pc="JXdqz8ob" data-widget_id-mo="BoxWpkX8"> <script> (function(d,a,b,l,e,_) { if(d[b]&&d[b].q)return;d[b]=function(){(d[b].q=d[b].q||[]).push(arguments)};e=a.createElement(l); e.async=1;e.charset='utf-8';e.src='//static.dable.io/dist/plugin.min.js'; _=a.getElementsByTagName(l)[0];_.parentNode.insertBefore(e,_); })(window,document,'dable','script'); dable('renderWidgetByWidth', 'dablewidget_JXdqz8ob_BoxWpkX8'); </script> </div> <!-- 結束Dable responsive / 如有任何疑問，請瀏覽http://dable.io -->	
+			<?php endif; ?>
+			<?php 
+// 				$postID = get_the_id();
+// 			if ( !empty(get_post_meta( $postID, 'relatedArticleTitle1', true )) || !empty(get_post_meta( $postID, 'relatedArticleTitle2', true )) || !empty(get_post_meta( $postID, 'relatedArticleTitle3', true )) ) {
+// 				echo "<h4 class='block-title'><span>延伸閱讀</span></h4>";
+// 				echo "<ul class='relativeArticles'>";
+// 				if ( !empty(get_post_meta( $postID, 'relatedArticleTitle1', true )) ) {
+// 					echo "<li><a href=". get_post_meta( $postID, 'relatedArticleLink1', true ) .">" . get_post_meta( $postID, 'relatedArticleTitle1', true ) . "</a></li>";
+// 				}
+// 				if ( !empty(get_post_meta( $postID, 'relatedArticleTitle2', true )) ) {
+// 					echo "<li><a href=". get_post_meta( $postID, 'relatedArticleLink2', true ) .">" . get_post_meta( $postID, 'relatedArticleTitle2', true ) . "</a></li>";
+// 				}
+// 				if ( !empty(get_post_meta( $postID, 'relatedArticleTitle3', true )) ) {
+// 					echo "<li><a href=". get_post_meta( $postID, 'relatedArticleLink3', true ) .">" . get_post_meta( $postID, 'relatedArticleTitle3', true ) . "</a></li>";
+// 				}
+// 				echo "</ul>";
+// 			}
+			?>
 		</div><!-- .entry-content /-->
 
 		<?php
@@ -79,6 +117,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 		?>
 
 	</article><!-- #the-post /-->
+	
+	<!-- 開始Dable responsive / 如有任何疑問，請瀏覽http://dable.io --> <div id="dablewidget_GlG3d5lx_zlvj6Kl8" data-widget_id-pc="GlG3d5lx" data-widget_id-mo="zlvj6Kl8"> <script> (function(d,a,b,l,e,_) { if(d[b]&&d[b].q)return;d[b]=function(){(d[b].q=d[b].q||[]).push(arguments)};e=a.createElement(l); e.async=1;e.charset='utf-8';e.src='//static.dable.io/dist/plugin.min.js'; _=a.getElementsByTagName(l)[0];_.parentNode.insertBefore(e,_); })(window,document,'dable','script'); dable('renderWidgetByWidth', 'dablewidget_GlG3d5lx_zlvj6Kl8'); </script> </div> <!-- 結束Dable responsive / 如有任何疑問，請瀏覽http://dable.io -->
 
 	<?php
 		/**

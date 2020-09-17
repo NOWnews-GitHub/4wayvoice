@@ -56,7 +56,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
                         }
                     }
                 }
-                $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_flag']))
+                    $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_path']))
+                    $package['json']['root_path'] = $data['root_path'];
                 $package['json']['file']=basename($path);
                 $package['path'] = $path;
                 $package['files'] = $files[$i];
@@ -88,8 +91,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
             $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
             $package['json']['root'] = substr($data['root_path'], $remove_path_size);
             */
-
-            $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_flag']))
+                $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_path']))
+                $package['json']['root_path'] = $data['root_path'];
             $package['json']['file']=basename($path);
             $package['path'] = $path;
             $package['files'] = $files[0];
@@ -134,7 +139,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
                 $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
                 $package['json']['root'] = substr($data['root_path'], $remove_path_size);
                 */
-                $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_flag']))
+                    $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_path']))
+                    $package['json']['root_path'] = $data['root_path'];
                 $package['json']['file']=basename($path);
                 $package['path'] = $path;
                 $package['files'] = $files[$i];
@@ -152,7 +160,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
             $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
             $package['json']['root'] = substr($data['root_path'], $remove_path_size);
             */
-            $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_flag']))
+                $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_path']))
+                $package['json']['root_path'] = $data['root_path'];
             $package['json']['file']=basename($path);
             $package['path'] = $path;
             $package['files'] = $files[0];
@@ -198,7 +209,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
                 $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
                 $package['json']['root'] = substr($data['root_path'], $remove_path_size);
                 */
-                $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_flag']))
+                    $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_path']))
+                    $package['json']['root_path'] = $data['root_path'];
                 $package['json']['file']=basename($path);
                 $package['path'] = $path;
                 $package['files'] = $file;
@@ -216,7 +230,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
             $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
             $package['json']['root'] = substr($data['root_path'], $remove_path_size);
             */
-            $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_flag']))
+                $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_path']))
+                $package['json']['root_path'] = $data['root_path'];
             $package['json']['file']=basename($path);
             $package['path'] = $path;
             $package['files'] = $files[0];
@@ -256,7 +273,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
                     }
                 }
             }
-            $package_file['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_path']))
+                $package['json']['root_path'] = $data['root_path'];
+            if(isset($data['root_flag']))
+                $package_file['json']['root_flag'] = $data['root_flag'];
             $package_file['json']['file']=basename($path);
             $package_file['path'] = $path;
             $package_file['files'] = $file;
@@ -303,7 +323,10 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
                 $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
                 $package['json']['root'] = substr($data['root_path'], $remove_path_size);
                 */
-                $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($data['root_flag']))
+                    $package['json']['root_flag'] = $data['root_flag'];
+                if(isset($options['root_path']))
+                    $package['json']['root_path'] = $data['root_path'];
                 $package['json']['file']=basename($path);
                 $package['path'] = $path;
                 $package['files'] = $files[$i];
@@ -320,7 +343,11 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
             $remove_path_size = strlen( $this -> transfer_path(get_home_path()));
             $package['json']['root'] = substr($data['root_path'], $remove_path_size);
             */
-            $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($data['root_flag']))
+                $package['json']['root_flag'] = $data['root_flag'];
+            if(isset($options['root_path']))
+                $package['json']['root_path'] = $data['root_path'];
+
             $package['json']['file']=basename($path);
             $package['path'] = $path;
             $package['files'] = $files[0];
@@ -479,7 +506,7 @@ class WPvivid_ZipClass extends Wpvivid_Compress_Default
 
     public function _zip($name,$files,$options,$json_info=false)
     {
-        $zip_object_class=apply_filters('wpvivid_get_zip_object_class','WPvivid_PclZip_Class');
+        $zip_object_class=apply_filters('wpvivid_get_zip_object_class_ex','WPvivid_PclZip_Class',$options);
         $zip=new $zip_object_class();
         return $zip->zip($name,$files,$options,$json_info);
     }

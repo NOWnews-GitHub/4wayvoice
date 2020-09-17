@@ -154,7 +154,7 @@ class WPSEO_News_Sitemap_Item {
 	/**
 	 * Gets the SEO title of the item, with a fallback to the item title.
 	 *
-	 * @param WP_Post $item The post object.
+	 * @param WP_Post|null $item The post object.
 	 *
 	 * @return string The formatted title or, if no formatted title can be created, the post_title.
 	 */
@@ -191,9 +191,10 @@ class WPSEO_News_Sitemap_Item {
 	/**
 	 * Getting the publication language.
 	 *
-	 * @return string
+	 * @return string Publication language.
 	 */
 	private function get_publication_lang() {
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPSEO hook.
 		$locale = apply_filters( 'wpseo_locale', get_locale() );
 
 		// Fallback to 'en', if the length of the locale is less than 2 characters.
@@ -201,9 +202,7 @@ class WPSEO_News_Sitemap_Item {
 			$locale = 'en';
 		}
 
-		$publication_lang = substr( $locale, 0, 2 );
-
-		return $publication_lang;
+		return substr( $locale, 0, 2 );
 	}
 
 	/**

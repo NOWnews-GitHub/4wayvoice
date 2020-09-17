@@ -344,6 +344,9 @@ function wprss_get_feed_cache_dir()
             // If turned on, force the feed
             if ($force_feed == 'true' || $param_force_feed) {
                 $feed->force_feed(true);
+
+                global $wpraNoSslVerification;
+                $wpraNoSslVerification = true;
             }
         }
 
@@ -540,6 +543,9 @@ function wprss_get_feed_cache_dir()
 	 * Insert wprss_feed_item posts into the DB
 	 *
 	 * @since 3.0
+     *
+     * @param SimplePie_Item[] $items
+     * @param int|string $feed_ID
 	 */
 	function wprss_items_insert_post( $items, $feed_ID ) {
 		update_post_meta( $feed_ID, 'wprss_feed_is_updating', $update_started_at = time() );
@@ -579,6 +585,7 @@ function wprss_get_feed_cache_dir()
 				// Apply filters that determine if the feed item should be inserted into the DB or not.
                 $ogItem = $item;
 				$item = apply_filters( 'wprss_insert_post_item_conditionals', $item, $feed_ID, $permalink );
+				/* @var $item SimplePie_Item */
 
 				// Check if the imported count should still be updated, even if the item is NULL
                 $still_update_count = apply_filters( 'wprss_still_update_import_count', FALSE );
@@ -1029,7 +1036,7 @@ function wprss_get_feed_cache_dir()
      *
      * @param string $url The URL to parse.
      *
-     * @return string
+     * @return array
      */
     function wpra_parse_url($url)
     {

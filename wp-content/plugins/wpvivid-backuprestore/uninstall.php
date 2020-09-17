@@ -5,6 +5,42 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+function wpvivid_clear_free_dir($directory){
+    if(file_exists($directory)){
+        if($dir_handle=@opendir($directory)){
+            while($filename=readdir($dir_handle)){
+                if($filename!='.' && $filename!='..'){
+                    $subFile=$directory."/".$filename;
+                    if(is_dir($subFile)){
+                        wpvivid_clear_free_dir($subFile);
+                    }
+                    if(is_file($subFile)){
+                        unlink($subFile);
+                    }
+                }
+            }
+            closedir($dir_handle);
+            rmdir($directory);
+        }
+    }
+}
+
+$wpvivid_common_setting = get_option('wpvivid_common_setting', array());
+if(!empty($wpvivid_common_setting)){
+    if(isset($wpvivid_common_setting['uninstall_clear_folder']) && $wpvivid_common_setting['uninstall_clear_folder']){
+        $wpvivid_local_setting = get_option('wpvivid_local_setting', array());
+        if(isset($wpvivid_local_setting['path'])){
+            if($wpvivid_local_setting['path'] !== 'wpvividbackups'){
+                wpvivid_clear_free_dir(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'wpvividbackups');
+            }
+            wpvivid_clear_free_dir(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.$wpvivid_local_setting['path']);
+        }
+        else{
+            wpvivid_clear_free_dir(WP_CONTENT_DIR.DIRECTORY_SEPARATOR.'wpvividbackups');
+        }
+    }
+}
+
 delete_option('wpvivid_schedule_setting');
 delete_option('wpvivid_email_setting');
 delete_option('wpvivid_compress_setting');

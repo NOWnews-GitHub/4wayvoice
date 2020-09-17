@@ -117,7 +117,20 @@ if( (( tie_get_option( 'related' ) && ! tie_get_postdata( 'tie_hide_related' )) 
 
 					</div><!-- .related-posts-list /-->
 				</div><!-- #related-posts /-->
+					<div id="_popIn_recommend"></div>
+					<script type="text/javascript">
 
+						(function() {
+
+							var pa = document.createElement('script'); pa.type = 'text/javascript'; pa.charset = "utf-8"; pa.async = true;
+
+							pa.src = window.location.protocol + "//api.popin.cc/searchbox/nownews_4wayvoice.js";
+
+							var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(pa, s);
+
+						})(); 
+
+					</script>
 			<?php if( tie_get_option( 'related_position') == 'footer' ){ ?>
 			</div><!-- .tie-col-md-12 -->
 		</div><!-- .tie-row -->

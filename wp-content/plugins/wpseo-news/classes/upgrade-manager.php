@@ -5,9 +5,10 @@
  * @package WPSEO_News
  */
 
+// Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-} // Exit if accessed directly.
+}
 
 /**
  * Represents the update routine when a newer version has been installed.
@@ -38,7 +39,6 @@ class WPSEO_News_Upgrade_Manager {
 			// Update version code.
 			$this->update_current_version_code();
 		}
-
 	}
 
 	/**
@@ -82,7 +82,7 @@ class WPSEO_News_Upgrade_Manager {
 	 * Update the current version code.
 	 */
 	private function update_current_version_code() {
-		$options = get_option( 'wpseo_news' );
+		$options                 = get_option( 'wpseo_news' );
 		$options['news_version'] = WPSEO_News::VERSION;
 
 		update_option( 'wpseo_news', $options );
@@ -96,10 +96,10 @@ class WPSEO_News_Upgrade_Manager {
 		$current_options = get_option( 'wpseo_news' );
 
 		// Set new options.
-		$new_options = array(
+		$new_options = [
 			'news_sitemap_name'          => ( ( isset( $current_options['newssitemapname'] ) ) ? $current_options['newssitemapname'] : '' ),
 			'news_sitemap_default_genre' => ( ( isset( $current_options['newssitemap_default_genre'] ) ) ? $current_options['newssitemap_default_genre'] : '' ),
-		);
+		];
 
 		// Save new options.
 		update_option( 'wpseo_news', $new_options );
@@ -146,7 +146,7 @@ class WPSEO_News_Upgrade_Manager {
 				continue;
 			}
 
-			$slug                                        = str_replace( 'catexclude_', '', $key );
+			$slug = str_replace( 'catexclude_', '', $key );
 			$options[ 'news_sitemap_exclude_term_category_' . $slug ] = $value;
 			unset( $options[ $key ] );
 		}
@@ -202,8 +202,8 @@ class WPSEO_News_Upgrade_Manager {
 	private function upgrade_1241() {
 		$options = get_option( 'wpseo_news' );
 
-		$included_post_types = array();
-		$excluded_terms      = array();
+		$included_post_types = [];
+		$excluded_terms      = [];
 
 		if ( isset( $options['news_sitemap_include_post_types'] ) && is_array( $options['news_sitemap_include_post_types'] ) ) {
 			$included_post_types = $options['news_sitemap_include_post_types'];
@@ -242,18 +242,21 @@ class WPSEO_News_Upgrade_Manager {
 	/**
 	 * Deletes post meta fields by key.
 	 *
-	 * @param string $key The key to delete post meta fields for.
-	 *
 	 * @link https://codex.wordpress.org/Class_Reference/wpdb#DELETE_Rows
+	 *
+	 * @param string $key The key to delete post meta fields for.
 	 */
 	private function delete_meta_by_key( $key ) {
 		global $wpdb;
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.SlowDBQuery -- Upgrade routines are only used intermittently.
 		$wpdb->delete(
 			$wpdb->postmeta,
-			array(
+			[
 				'meta_key' => $key,
-			),
-			array( '%s' )
+			],
+			[ '%s' ]
 		);
+		// phpcs:enable
 	}
 }

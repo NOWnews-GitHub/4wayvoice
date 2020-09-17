@@ -138,10 +138,6 @@ if ( class_exists('WPRSS_Help') ) {
         // Legacy Feed Items
         'legacy_enabled'			=>	__("Tick this box to re-enable the <strong>Feed Items</strong> and turn off post conversion for some feed sources.", WPRSS_TEXT_DOMAIN),
 
-		// URL Shortening
-		'url_shortening_method'		=>	__("The service or algorithm to use for shortening", WPRSS_TEXT_DOMAIN),
-		'google_api_key'			=>	__("This key will be used for requests to the Google URL Shortener API", WPRSS_TEXT_DOMAIN),
-
         // Word Trimming
         'word_limit_enabled'        =>  'Choose whether or not to enable word trimming or not. Choosing "Use General Settings" will use the setting chosen in the Feed to Post settings page.',
         'word_limit'                =>  'Choose the number of words to keep when trimming. Entering zero, less than zero or leaving it blank will use the word limit set in the Feed to Post settings page.',

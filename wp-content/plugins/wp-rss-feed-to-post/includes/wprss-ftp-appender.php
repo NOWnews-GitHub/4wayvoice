@@ -142,6 +142,9 @@ final class WPRSS_FTP_Appender {
 			$values[ $placeholder ] = $meta;
 		}
 
+		// Remove extraneous "https://" and "http://" prefixes that are automatically added by TinyMCE
+        $append = preg_replace('/https?:\/\/{{/m', '{{', $append);
+
 		// Return the append/prepend text with all placeholders replaced with their respective text value
 		$return = WPRSS_FTP_Utils::str_mass_replace( $append, $values );
 		$return = apply_filters( 'wprss_ftp_handled_append_text', $return, $post->ID );

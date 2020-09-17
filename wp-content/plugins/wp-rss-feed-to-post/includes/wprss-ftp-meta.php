@@ -131,7 +131,7 @@ class WPRSS_FTP_Meta {
 	public function add_meta_boxes() {
 		add_meta_box(
 			'wprss-ftp-general-metabox',							// $id
-			__( 'Feed to Post - General', WPRSS_TEXT_DOMAIN ),		// $title
+			__( 'General', WPRSS_TEXT_DOMAIN ),		// $title
 			array( $this, 'render_general_metabox' ),				// $callback
 			'wprss_feed',											// $page
 			'normal',												// $context
@@ -139,7 +139,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-images-metabox',								// $id
-			__( 'Feed to Post - Images', WPRSS_TEXT_DOMAIN ),		// $title
+			__( 'Images', WPRSS_TEXT_DOMAIN ),		// $title
 			array( $this, 'render_images_metabox' ),				// $callback
 			'wprss_feed',											// $page
 			'normal',												// $context
@@ -147,7 +147,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-taxonomy-metabox',							// $id
-			__( 'Feed to Post - Taxonomies', WPRSS_TEXT_DOMAIN ),	// $title
+			__( 'Taxonomies (Categories, Tags, etc.)', WPRSS_TEXT_DOMAIN ),	// $title
 			array( $this, 'render_taxonomy_metabox' ),				// $callback
 			'wprss_feed',											// $page
 			'normal',												// $context
@@ -155,23 +155,23 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-author-metabox',								// $id
-			__( 'Feed to Post - Author', WPRSS_TEXT_DOMAIN ),		// $title
+			__( 'Author', WPRSS_TEXT_DOMAIN ),		// $title
 			array( $this, 'render_author_metabox' ),				// $callback
 			'wprss_feed',											// $page
 			'normal',												// $context
 			'default'												// $priority
 		);
 		add_meta_box(
-			'wprss-ftp-wysiwyg-editor',							      	// $id
-			__( 'Feed to Post - WYSIWYG Editor', WPRSS_TEXT_DOMAIN ),		// $title
-			array( $this, 'render_wysiwyg_editors_metabox' ),				// callback
+			'wprss-ftp-advanced',							      	// $id
+			__( 'Advanced', WPRSS_TEXT_DOMAIN ),		// $title
+			array( $this, 'render_advanced_metabox' ),				// callback
 			'wprss_feed',													// $page
 			'normal',															// $context
-			'default'														// $priority
+			'low'														// $priority
 		);
 		add_meta_box(
 			'wprss-ftp-prepend-metabox',									// $id
-			__( 'Feed to Post - Prepend To Content', WPRSS_TEXT_DOMAIN ),	// $title
+			__( 'Prepend To Content', WPRSS_TEXT_DOMAIN ),	// $title
 			array( $this, 'render_prepend_metabox' ),						// $callback
 			'wprss_feed',													// $page
 			'normal',														// $context
@@ -179,7 +179,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-append-metabox',										// $id
-			__( 'Feed to Post - Append To Content', WPRSS_TEXT_DOMAIN ),	// $title
+			__( 'Append To Content', WPRSS_TEXT_DOMAIN ),	// $title
 			array( $this, 'render_append_metabox' ),						// $callback
 			'wprss_feed',													// $page
 			'normal',														// $context
@@ -187,7 +187,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-extraction-metabox',									// $id
-			__( 'Feed to Post - Extraction Rules', WPRSS_TEXT_DOMAIN ),		// $title
+			__( 'Extraction Rules', WPRSS_TEXT_DOMAIN ),		// $title
 			array( $this, 'render_extraction_metabox' ),					// $callback
 			'wprss_feed',													// $page
 			'normal',														// $context
@@ -200,7 +200,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-custom-fields-metabox',								// $id
-			__( 'Feed to Post - Custom Field Mapping', WPRSS_TEXT_DOMAIN ),	// $title
+			__( 'Custom Field Mapping', WPRSS_TEXT_DOMAIN ),	// $title
 			array( $this, 'render_custom_fields_metabox' ),					// $callback
 			'wprss_feed',													// $page
 			'normal',														// $context
@@ -208,7 +208,7 @@ class WPRSS_FTP_Meta {
 		);
 		add_meta_box(
 			'wprss-ftp-word-trimming-metabox',								// $id
-			__( 'Feed to Post - Word Trimming', WPRSS_TEXT_DOMAIN ),		// $title
+			__( 'Word Trimming', WPRSS_TEXT_DOMAIN ),		// $title
 			array( $this, 'render_word_trimming_metabox' ),					// $callback
 			'wprss_feed',													// $page
 			'side',															// $context
@@ -217,7 +217,7 @@ class WPRSS_FTP_Meta {
 		if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
 			add_meta_box(
 				'wprss-ftp-multi-language-metabox',							// $id
-				__( 'Feed to Post - Multi Language', WPRSS_TEXT_DOMAIN ),	// $title
+				__( 'Multi Language', WPRSS_TEXT_DOMAIN ),	// $title
 				array( $this, 'render_multi_language_metabox' ),			// $callback
 				'wprss_feed',												// $page
 				'normal',													// $context
@@ -235,15 +235,6 @@ class WPRSS_FTP_Meta {
         	'wprss_feed',
         	'side',
             'default'
-        );
-
-        add_meta_box(
-            'wprss-ftp-integrations-metabox',
-            __( 'Feed to Post - Integrations', WPRSS_TEXT_DOMAIN ),
-            array( $this, 'render_integrations_metabox' ),
-            'wprss_feed',
-            'normal',
-            'low'
         );
 	}
 
@@ -266,51 +257,51 @@ class WPRSS_FTP_Meta {
 				),
 				#== Post Type ==
 				'post_type' => array(
-					'label'			=>	__( 'Post Type', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Post type', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	$this->get_new_data_source( array( $this, 'get_post_types' ), $source_id ),
 				),
 				#== Post Status =====
 				'post_status' => array(
-					'label'			=>	__( 'Post Status', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Post status', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	$this->get_new_data_source( array( 'WPRSS_FTP_Settings', 'get_post_statuses' ) ),
 				),
 				#== Post Format =====
 				'post_format' => array(
-					'label'			=>	__( 'Post Format', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Post format', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	$this->get_new_data_source( array( 'WPRSS_FTP_Settings', 'get_post_formats' ) ),
 				),
 				#== Post Date =====
 				'post_date' => array(
-					'label'			=>	__( 'Post Date', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Post date', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	$this->get_new_data_source( array( 'WPRSS_FTP_Settings', 'get_post_date_options' ) ),
 				),
 				#== Comment Status =====
 				'comment_status' => array(
-					'label'			=>	__( 'Enable Comments', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Enable comments', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'checkbox'
 				),
 				#== Force full content =====
 				'force_full_content' => array(
-					'label'			=>	__( 'Force Full Content', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Force full content', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'checkbox'
 				),
                 #== Import the excerpt content =====
                 'import_excerpt' => array(
-                    'label'			=>	__( 'Import Post Excerpt', WPRSS_TEXT_DOMAIN ),
+                    'label'			=>	__( 'Import post excerpt', WPRSS_TEXT_DOMAIN ),
                     'type'			=>	'checkbox',
                 ),
 				#== Allow embedded content =====
 				'allow_embedded_content' => array(
-					'label'			=>	__( 'Allow Embedded Content', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Allow embedded content', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'checkbox'
 				),
 				#== Rel canonical head =====
 				'canonical_link' => array(
-					'label'			=>	__( 'Canonical Link', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Canonical link', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'checkbox'
 				)
 			),
@@ -319,14 +310,14 @@ class WPRSS_FTP_Meta {
 			'tax'	=>	array(
 				#== Post Taxonomy ==========
 				'post_taxonomy' 	=> array(
-					'label'				=>	__( 'Post Taxonomy', WPRSS_TEXT_DOMAIN ),
+					'label'				=>	__( 'Post taxonomy', WPRSS_TEXT_DOMAIN ),
 					'desc'				=>	__( 'Choose the taxonomy to apply to imported feeds.', WPRSS_TEXT_DOMAIN ),
 					'type'				=>	'msg',
 					'text'				=>	__( 'Please wait ...', WPRSS_TEXT_DOMAIN ),
 					'custom_render'		=>	array( $this, 'render_taxonomies' ),
 				),
                 'post_taxonomy_compare_method'  => array(
-                    'label'             => __('Taxonomy Compare Method', WPRSS_TEXT_DOMAIN),
+                    'label'             => __('Taxonomy compare method', WPRSS_TEXT_DOMAIN),
                     'desc'              => __('Choose how the keywords compare with the terms'),
                     'type'              => 'dropdown',
                     'text'              => __('Choose a method'),
@@ -335,14 +326,14 @@ class WPRSS_FTP_Meta {
                 ),
 				#== Post Taxonomy ==========
 				'post_terms' => array(
-					'label'				=>	__( 'Post Terms', WPRSS_TEXT_DOMAIN ),
+					'label'				=>	__( 'Post terms', WPRSS_TEXT_DOMAIN ),
 					'desc'				=>	__( 'Choose the taxonomy terms to apply to imported feeds.', WPRSS_TEXT_DOMAIN ),
 					'type'				=>	'msg',
 					'text'				=>	__( 'Please wait ...', WPRSS_TEXT_DOMAIN ),
 					'ignore'			=>	TRUE
 				),
 				'post_tags' => array(
-					'label'				=>	__( 'Post Tags', WPRSS_TEXT_DOMAIN ),
+					'label'				=>	__( 'Post tags', WPRSS_TEXT_DOMAIN ),
 					'desc'				=>	__( 'Enter the post tags, comma separated, to assign to posts imported from this source.', WPRSS_TEXT_DOMAIN ),
 					'type'				=>	'text',
 					'placeholder'		=>	__( 'Post tags, comma separated', WPRSS_TEXT_DOMAIN ),
@@ -361,7 +352,7 @@ class WPRSS_FTP_Meta {
 			'author'	=>	array(
 				#== Default Author Type =====
 				'def_author' => array(
-					'label'			=>	__( 'Post Author', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Post author', WPRSS_TEXT_DOMAIN ),
 					'desc'			=>	__( 'Choose the author to use for imported feeds', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'ignore'		=>	TRUE,
@@ -375,14 +366,14 @@ class WPRSS_FTP_Meta {
 				),
 				#== No Author Found =====
 				'no_author_found' => array(
-					'label'			=>	__( 'Fallback Author', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Fallback author', WPRSS_TEXT_DOMAIN ),
 					'desc'			=>	'',
 					'type'			=>	'none',
 					'ignore'		=>	TRUE,
 				),
 				#== Fallback Author =====
 				'fallback_author' => array(
-					'label'			=>	__( 'Fallback Author', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Fallback author', WPRSS_TEXT_DOMAIN ),
 					'desc'			=>	__( 'Choose the user to use if the above option is set to "Use Existing", or if the feed does not specify an author.', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	$this->get_new_data_source( array( 'WPRSS_FTP_Settings', 'get_users' ) ),
@@ -425,7 +416,7 @@ class WPRSS_FTP_Meta {
 					'add_hr'		=>	true,
 				),
 				'featured_image' => array(
-					'label'			=>	__( 'Featured Image to use', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Featured image to use', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'dropdown',
 					'options'		=>	array(
 						'first'			=>	__( 'First image in post content', WPRSS_TEXT_DOMAIN ),
@@ -453,12 +444,12 @@ class WPRSS_FTP_Meta {
 			#== Prepend / Append Metabox fields ===================
 			'prepend'	=>	array(
                 'singular_prepend' => array(
-                    'label'			=>	__( 'Prepend only to singular posts ', WPRSS_TEXT_DOMAIN ),
+                    'label'			=>	__( 'Add only when viewing a single post', WPRSS_TEXT_DOMAIN ),
                     'type'			=>	'checkbox',
                     'default'		=>	'false',
                 ),
                 'post_prepend' => array(
-                    'label'			=>	__( 'Prepend text to post content', WPRSS_TEXT_DOMAIN ),
+                    'label'			=>	__( 'Add content at the top of the post', WPRSS_TEXT_DOMAIN ),
                     'desc'			=>	__( 'Use the following placeholders to replace with the post\'s details: <br />(Hover over them for a description of what they represent)', WPRSS_TEXT_DOMAIN ),
                     'type'			=>	'editor',
                     'custom_render'	=>	array( $this, 'render_post_prepend_editor' ),
@@ -467,12 +458,12 @@ class WPRSS_FTP_Meta {
             ),
             'append'	=>	array(
                 'singular_append' => array(
-                    'label'			=>	__( 'Append only to singular posts', WPRSS_TEXT_DOMAIN ),
+                    'label'			=>	__( 'Add only when viewing a single post', WPRSS_TEXT_DOMAIN ),
                     'type'			=>	'checkbox',
                     'default'		=>	'false',
                 ),
 				'post_append' => array(
-					'label'			=>	__( 'Append text to post content', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Add content at the top of the post', WPRSS_TEXT_DOMAIN ),
 					'desc'			=>	__( 'Use the following placeholders to replace with the post\'s details: <br />(Hover over them for a description of what they represent)', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'editor',
 					'custom_render'	=>	array( $this, 'render_post_append_editor' ),
@@ -484,7 +475,7 @@ class WPRSS_FTP_Meta {
 			#== Extraction Rules Metabox fields ===================
 			'extraction'	=>	array(
 				'extraction_rules'	=>	array(
-					'label'				=>	__( 'Extraction Rules', WPRSS_TEXT_DOMAIN ),
+					'label'				=>	__( 'Extraction rules', WPRSS_TEXT_DOMAIN ),
 					'type'				=>	'none',
 					'custom_render'		=>	array( $this, 'render_extraction_rules' ),
 					'settings'			=>	FALSE,
@@ -511,7 +502,7 @@ class WPRSS_FTP_Meta {
 				),
 				// The custom meta field names to which to import
 				'custom_fields'		=>	array(
-					'label'			=>	__( 'Custom Field Mapping', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Custom field mapping', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'none',
 					'custom_render'	=>	array( $this, 'render_custom_fields' ),
 					'settings'		=>	FALSE,
@@ -525,13 +516,13 @@ class WPRSS_FTP_Meta {
 					'label'		=>	__( 'Enabled', WPRSS_TEXT_DOMAIN ),
 					'type'		=>	'dropdown',
 					'options'	=>	array(
-						'general'	=>	__( 'Use General Settings', WPRSS_TEXT_DOMAIN ),
+						'general'	=>	__( 'Use general settings', WPRSS_TEXT_DOMAIN ),
 						'true'		=>	__( 'Enabled', WPRSS_TEXT_DOMAIN ),
 						'false'		=>	__( 'Disabled', WPRSS_TEXT_DOMAIN ),
 					)
 				),
 				'word_limit'	=>	array(
-					'label'			=>	__( 'Word Limit', WPRSS_TEXT_DOMAIN ),
+					'label'			=>	__( 'Word limit', WPRSS_TEXT_DOMAIN ),
 					'placeholder'	=>	__( 'Default', WPRSS_TEXT_DOMAIN ),
 					'type'			=>	'number',
 				),
@@ -541,7 +532,7 @@ class WPRSS_FTP_Meta {
 					'default'		=>	'general',
 					'settings'		=>	FALSE,
 					'options'		=>	array(
-						'general'		=>	__( 'Use General Setting', WPRSS_TEXT_DOMAIN ),
+						'general'		=>	__( 'Use general setting', WPRSS_TEXT_DOMAIN ),
 						'db'			=>	__( 'Trim the content', WPRSS_TEXT_DOMAIN ),
 						'excerpt'		=>	__( 'Generate an excerpt', WPRSS_TEXT_DOMAIN ),
 					),
@@ -553,15 +544,12 @@ class WPRSS_FTP_Meta {
 				),
 			),
 
-            'integrations' => array(
+            'advanced' => array(
                 'powerpress_enabled' => array(
                     'label'         => __('PowerPress', 'wprss'),
                     'desc'          => __('Enable this option to attempt to import audio files and show the PowerPress audio player.', 'wprss'),
                     'type'			=>	'checkbox',
                 ),
-            ),
-
-            'wysiwyg_editors' => array(
 				'disable_visual_editor' => array(
 					'label'         => __( 'Disable visual editors', WPRSS_TEXT_DOMAIN ),
 					'desc'          => __( 'Disable the visual editor tabs in the Append and Prepend to Content options. This requires saving the feed source to take effect.', WPRSS_TEXT_DOMAIN ),
@@ -597,7 +585,7 @@ class WPRSS_FTP_Meta {
 		$languages = WPRSS_FTP_Utils::get_wpml_languages();
 		$fields['multi-language'] = array(
 			'post_language'	=>	array(
-				'label'			=>	__( 'Post Language', WPRSS_TEXT_DOMAIN ),
+				'label'			=>	__( 'Post language', WPRSS_TEXT_DOMAIN ),
 				'desc'			=>	__( 'Choose the language to assign to posts imported from this source', WPRSS_TEXT_DOMAIN ),
 				'type'			=>	'dropdown',
 				'options'		=>	$languages
@@ -649,7 +637,7 @@ class WPRSS_FTP_Meta {
 	public function render_extraction_metabox($object, $box) { $this->render_metabox('extraction', $object, $box); }
 	public function render_custom_fields_metabox($object, $box) { $this->render_metabox('custom_fields', $object, $box); }
 	public function render_word_trimming_metabox($object, $box) { $this->render_metabox('word_trimming', $object, $box); }
-	public function render_wysiwyg_editors_metabox($object, $box) { $this->render_metabox('wysiwyg_editors', $object, $box); }
+	public function render_advanced_metabox($object, $box) { $this->render_metabox('advanced', $object, $box); }
 	public function render_multi_language_metabox($object, $box) { $this->render_metabox('multi-language', $object, $box); }
 	public function render_author_metabox($object, $box) {
 		//$this->render_metabox('author');
@@ -657,18 +645,14 @@ class WPRSS_FTP_Meta {
 		?>
 			<table class="form-table wprss-form-table">
 				<tbody>
-					<?php WPRSS_FTP_Settings::get_instance()->render_author_options( $post->ID, __( 'Post Author', WPRSS_TEXT_DOMAIN ), 'def_author' ); ?>
+					<?php WPRSS_FTP_Settings::get_instance()->render_author_options(
+					        $post->ID,
+                            __( 'Post author', 'wprss' ),
+                            'def_author' );
+					?>
 				</tbody>
 			</table>
 		<?php
-	}
-    public function render_integrations_metabox($object, $box) {
-	    ?>
-
-        <p><?= __('Configure integrations with other plugins', 'wprss') ?></p>
-
-        <?php
-	    $this->render_metabox('integrations',$object, $box);
 	}
 
 	/**
@@ -886,7 +870,7 @@ class WPRSS_FTP_Meta {
 		<tr id="wprss-ftp-taxonomies-add-section" class="wprss-tr-hr">
 			<th>
 				<button type="button" class="button-secondary" id="ftp-add-taxonomy">
-					<i class="fa fa-fw fa-plus"></i> <?php _e( 'Add New', WPRSS_TEXT_DOMAIN ); ?>
+					<i class="fa fa-fw fa-plus"></i> <?php _e( 'Add new', WPRSS_TEXT_DOMAIN ); ?>
 				</button>
 				<?php echo WPRSS_Help::get_instance()->do_tooltip( WPRSS_FTP_HELP_PREFIX.'taxonomies' ); ?>
 			</th>
@@ -917,11 +901,11 @@ class WPRSS_FTP_Meta {
 			</th>
 
 			<td>
-				<i class="fa fa-fw fa-arrows-h" title="<?php _e( 'Image Width', WPRSS_TEXT_DOMAIN ); ?>"></i>
+				<i class="fa fa-fw fa-arrows-h" title="<?php _e( 'Image width', WPRSS_TEXT_DOMAIN ); ?>"></i>
 				<input class="wprss-number-roller" type="number" id="<?php echo $width_name; ?>"  name="<?php echo $width_name; ?>" min="0" placeholder="<?php _e( 'Width', WPRSS_TEXT_DOMAIN ); ?>" value="<?php echo $width ;?>" />
 				<i class="fa fa-fw fa-times"></i>
 				<input class="wprss-number-roller" type="number" id="<?php echo $height_name; ?>" name="<?php echo $height_name; ?>" min="0" placeholder="<?php _e( 'Height', WPRSS_TEXT_DOMAIN ); ?>" value="<?php echo $height ;?>" />
-				<i class="fa fa-fw fa-arrows-v" title="<?php _e( 'Image Height', WPRSS_TEXT_DOMAIN ); ?>"></i>
+				<i class="fa fa-fw fa-arrows-v" title="<?php _e( 'Image height', WPRSS_TEXT_DOMAIN ); ?>"></i>
 				<?php echo WPRSS_Help::get_instance()->do_tooltip( WPRSS_FTP_HELP_PREFIX.'image_min_dimensions' ); ?>
 			</td>
 		</tr>
@@ -1098,7 +1082,7 @@ class WPRSS_FTP_Meta {
 		// The class of a each section
 		$input_section_class = 'wprss-ftp-extraction-rule-section';
 		// The text field for each section
-		$input_field = '<input type="text" name="' . self::META_PREFIX . 'extraction_rules[]" value="{{value}}" placeholder="'.__( 'CSS Selector', WPRSS_TEXT_DOMAIN ).'" /> ';
+		$input_field = '<input type="text" name="' . self::META_PREFIX . 'extraction_rules[]" value="{{value}}" placeholder="'.__( 'CSS selector', WPRSS_TEXT_DOMAIN ).'" /> ';
 		// The button for each section
 		$remove_btn = '<button type="button" class="button-secondary wprss-ftp-extraction-rule-remove"><i class="fa fa-trash-o"></i></button>';
 		// The manipulation type dropdown
@@ -1159,7 +1143,7 @@ class WPRSS_FTP_Meta {
 
 					<span id="wprss-ftp-extraction-rules-end"></span>
 					<button type="button" class="button-primary wprss-ftp-add-extraction-rule">
-						<i class="fa fa-plus"></i> <?php _e( 'Add New', WPRSS_TEXT_DOMAIN ); ?>
+						<i class="fa fa-plus"></i> <?php _e( 'Add new', WPRSS_TEXT_DOMAIN ); ?>
 					</button>
 
 					<?php echo WPRSS_Help::get_instance()->do_tooltip( WPRSS_FTP_HELP_PREFIX.$field_id ); ?>
@@ -1275,7 +1259,7 @@ class WPRSS_FTP_Meta {
 					<span id="wprss-ftp-custom-fields-marker"></span>
 
 					<button type="button" id="wprss-ftp-add-custom-mapping" class="button-primary">
-						<i class="fa fa-plus"></i> <?php _e( 'Add New', WPRSS_TEXT_DOMAIN ); ?>
+						<i class="fa fa-plus"></i> <?php _e( 'Add new', WPRSS_TEXT_DOMAIN ); ?>
 					</button>
 
 					<?php echo WPRSS_Help::get_instance()->do_tooltip( WPRSS_FTP_HELP_PREFIX.$field_id ); ?>
@@ -1300,7 +1284,7 @@ class WPRSS_FTP_Meta {
 			<tr>
 				<th>
 					<label for="wprss-ftp-namespace-detector-refresh">
-						<?php _e( 'Namespace Detector' ); ?>
+						<?php _e( 'Namespace detector' ); ?>
 					</label>
 				</th>
 
@@ -1413,6 +1397,11 @@ class WPRSS_FTP_Meta {
 	 * @since 1.0
 	 */
 	public function save_post_meta( $post_id, $post ) {
+	    // Do nothing if using the WordPress importer
+	    if (filter_input(INPUT_GET, 'import') === 'wordpress') {
+	        return;
+        }
+
 		# Get all meta fields
 		$meta_fields = self::get_meta_fields( 'all' );
 
@@ -1460,12 +1449,12 @@ class WPRSS_FTP_Meta {
 				}
 
 				$tax = array();
-				$tax['taxonomy'] = $taxonomies[ $i ];
-				$tax['terms'] = $terms[ $i ];
-				$tax['auto'] = $autos[ $i ];
-				$tax['filter_subject'] = $subjects[ $i ];
-				$tax['filter_keywords'] = $keywords[ $i ];
-                $tax['post_taxonomy_compare_method'] = $compare_methods[$i];
+				$tax['taxonomy'] = isset($taxonomies[$i]) ? $taxonomies[$i] : '';
+				$tax['terms'] = isset($terms[$i]) ? $terms[$i] : '';
+				$tax['auto'] = isset($autos[$i]) ? $autos : '';
+				$tax['filter_subject'] = isset($subjects[$i]) ? $subjects[$i] : '';
+				$tax['filter_keywords'] = isset($keywords[$i]) ? $keywords[$i] : '';
+                $tax['post_taxonomy_compare_method'] = isset($compare_methods[$i]) ? $compare_methods[$i] : '';
 				$final_tax[] = $tax;
 			}
 		}
@@ -1614,7 +1603,7 @@ class WPRSS_FTP_Meta {
 		if( $existing_only ) return $user_options;
 
 		// Create a new array
-		$return_array = array( '.' => 'Author in feed' );
+		$return_array = array( '.' => 'Import the author' );
 		$existing_key = __( 'Existing user', WPRSS_TEXT_DOMAIN );
 		$return_array[ $existing_key ] = $user_options;
 

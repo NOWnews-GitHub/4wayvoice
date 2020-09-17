@@ -68,7 +68,7 @@
                 'slug'  => 'advanced_settings',
             );
 
-            if (count(wprss_get_addons()) > 0) {
+            if (count(wprss_get_addons()) > 0 && is_main_site()) {
                 $tabs[] = array(
                     'label' => __( 'Licenses', WPRSS_TEXT_DOMAIN ),
                     'slug'  => 'licenses_settings'
@@ -105,7 +105,17 @@
                 }
                 elseif ( $show_tabs ) {
 
-                    if ( $active_tab === 'licenses_settings' ) {
+                    if ( $active_tab === 'licenses_settings') {
+
+                        if (!is_main_site()) {
+                            printf(
+                                '<p><strong>%s</strong></p>',
+                                __('You do not have access to this page', 'wprss')
+                            );
+
+                            return;
+                        }
+
                         settings_fields( 'wprss_settings_license_keys' );
                         do_settings_sections( 'wprss_settings_license_keys' );
                     }
@@ -185,7 +195,7 @@
 
         $settings['styles']  = array(
             'styles-disable' => array(
-                'label'     =>  __( 'Disable Styles', 'wprss' ),
+                'label'     =>  __( 'Disable styles', 'wprss' ),
                 'callback'  =>  'wprss_setting_styles_disable_callback'
             )
         );
@@ -880,7 +890,7 @@
         }
 
         if ( isset($input['unique_titles']) ) {
-            $output['unique_titles'] = (int) $input['unique_titles'];
+            $output['unique_titles'] = $input['unique_titles'];
         }
 
         if ( isset($input['cron_interval']) && $input['cron_interval'] != $current_cron_interval ) {
